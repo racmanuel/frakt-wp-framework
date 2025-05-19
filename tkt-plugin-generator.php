@@ -13,15 +13,15 @@
  * @package           Tkt_Plugin_Generator
  *
  * @wordpress-plugin
- * Plugin Name:       TukuToi Plugin Generator
- * Plugin URI:        https://www.tukutoi.com/program/tukutoi-plugin-generator
- * Description:       Plugin to generate ohter Plugins.
+ * Plugin Name:       Frakt WP Generator
+ * Plugin URI:        https://racmanuel.dev
+ * Description:       Modern WordPress plugin framework based on Better WP Plugin Boilerplate. Includes SCF, Local/Sync JSON, Composer, Bulma CSS and more. Build powerful, modular plugins with clean architecture.
  * Version:           2.0.0
- * Author:            TukuToi
- * Author URI:        https://www.tukutoi.com/
+ * Author:            racmanuel
+ * Author URI:        https://racmanuel.dev
  * License:           GPL-2.0+
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       tkt-plugin-generator
+ * Text Domain:       tkt-plugin-generato
  * Domain Path:       /languages
  */
 
