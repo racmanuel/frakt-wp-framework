@@ -142,6 +142,17 @@ class Tkt_Plugin_Generator_Public
 
         }
 
+        // 🧩 Ejecutar composer install si existe composer.json en el nuevo origen
+        $composer_json_path = $orig_path . '/composer.json';
+
+        if (file_exists($composer_json_path)) {
+            $cmd    = 'cd ' . escapeshellarg($orig_path) . ' && composer install --no-dev --prefer-dist 2>&1';
+            $output = shell_exec($cmd);
+
+            // Guarda salida del comando por si se necesita depurar
+            file_put_contents(plugin_dir_path(__DIR__) . 'composer.log', $output);
+        }
+
         // Build a new zip with the new source.
         $zip = $this->zip_up_folder_recursive($orig_path, $zip_path);
 
