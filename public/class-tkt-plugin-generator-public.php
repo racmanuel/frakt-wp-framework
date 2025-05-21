@@ -142,15 +142,35 @@ class Tkt_Plugin_Generator_Public
 
         }
 
-        // 🧩 Ejecutar composer install si existe composer.json en el nuevo origen
+        // 🧩 Ejecutar composer update si existe composer.json y composer está disponible
         $composer_json_path = $orig_path . '/composer.json';
 
-        if (file_exists($composer_json_path)) {
-            $cmd    = 'cd ' . escapeshellarg($orig_path) . ' && composer install --no-dev --prefer-dist 2>&1';
-            $output = shell_exec($cmd);
+        // Validar que shell_exec esté habilitado
+        if (function_exists('shell_exec') && file_exists($composer_json_path)) {
 
-            // Guarda salida del comando por si se necesita depurar
-            file_put_contents(plugin_dir_path(__DIR__) . 'composer.log', $output);
+            $is_windows         = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+            $check_composer_cmd = $is_windows ? 'where composer' : 'command -v composer';
+            $composer_path      = trim(shell_exec($check_composer_cmd));
+
+            if (! empty($composer_path)) {
+                $cmd    = 'cd ' . escapeshellarg($orig_path) . ' && composer update --no-dev --prefer-dist 2>&1';
+                $output = shell_exec($cmd);
+                file_put_contents(plugin_dir_path(__DIR__) . 'composer.log', $output);
+            } else {
+                file_put_contents(
+                    plugin_dir_path(__DIR__) . 'composer.log',
+                    "⚠️ Composer no está disponible en el entorno. Se usará la carpeta vendor existente.\n",
+                    FILE_APPEND
+                );
+            }
+
+        } else {
+            // shell_exec está deshabilitado
+            file_put_contents(
+                plugin_dir_path(__DIR__) . 'composer.log',
+                "❌ shell_exec() no está disponible. No se ejecutó composer.\n",
+                FILE_APPEND
+            );
         }
 
         // Build a new zip with the new source.
