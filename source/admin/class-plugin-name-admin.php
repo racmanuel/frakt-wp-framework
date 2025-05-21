@@ -145,7 +145,7 @@ class Plugin_Name_Admin
 	 */
     public function scf_show_admin_menu()
     {
-        return false;
+        return true;
     }
 
 	/**
