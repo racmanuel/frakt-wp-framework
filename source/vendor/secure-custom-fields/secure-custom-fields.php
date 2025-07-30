@@ -6,7 +6,7 @@
  * Plugin Name:       Secure Custom Fields
  * Plugin URI:        https://developer.wordpress.org/secure-custom-fields/
  * Description:       Secure Custom Fields (SCF) offers an intuitive way for developers to enhance WordPress content management by adding extra fields and options without coding requirements.
- * Version:           6.4.2
+ * Version:           6.5.2
  * Author:            WordPress.org
  * Author URI:        https://wordpress.org/
  * Text Domain:       secure-custom-fields
@@ -28,14 +28,12 @@ if ( ! class_exists( 'ACF' ) ) {
 	 */
 	#[AllowDynamicProperties]
 	class ACF {
-
-
 		/**
 		 * The plugin version number.
 		 *
 		 * @var string
 		 */
-		public $version = '6.4.2';
+		public $version = '6.5.2';
 
 		/**
 		 * The plugin settings array.
@@ -77,14 +75,14 @@ if ( ! class_exists( 'ACF' ) ) {
 		public function initialize() {
 
 			// Define constants.
-			$this->define( 'ACF', true );
-			$this->define( 'ACF_PATH', plugin_dir_path( __FILE__ ) );
-			$this->define( 'ACF_BASENAME', plugin_basename( __FILE__ ) );
-			$this->define( 'ACF_VERSION', $this->version );
-			$this->define( 'ACF_MAJOR_VERSION', 6 );
-			$this->define( 'ACF_FIELD_API_VERSION', 5 );
-			$this->define( 'ACF_UPGRADE_VERSION', '5.5.0' ); // Highest version with an upgrade routine. See upgrades.php.
-			$this->define( 'ACF_PRO', true );
+			defined( 'ACF' ) || define( 'ACF', true );
+			defined( 'ACF_PATH' ) || define( 'ACF_PATH', plugin_dir_path( __FILE__ ) );
+			defined( 'ACF_BASENAME' ) || define( 'ACF_BASENAME', plugin_basename( __FILE__ ) );
+			defined( 'ACF_VERSION' ) || define( 'ACF_VERSION', $this->version );
+			defined( 'ACF_MAJOR_VERSION' ) || define( 'ACF_MAJOR_VERSION', 6 );
+			defined( 'ACF_FIELD_API_VERSION' ) || define( 'ACF_FIELD_API_VERSION', 5 );
+			defined( 'ACF_UPGRADE_VERSION' ) || define( 'ACF_UPGRADE_VERSION', '5.5.0' ); // Highest version with an upgrade routine. See upgrades.php.
+			defined( 'ACF_PRO' ) || define( 'ACF_PRO', true );
 
 			// Register activation hook.
 			register_activation_hook( __FILE__, array( $this, 'acf_plugin_activated' ) );
@@ -133,6 +131,9 @@ if ( ! class_exists( 'ACF' ) ) {
 				'pro'                     => true,
 			);
 
+			// Include autoloader.
+			include_once __DIR__ . '/vendor/autoload.php';
+
 			// Include utility functions.
 			include_once ACF_PATH . 'includes/acf-utility-functions.php';
 
@@ -152,6 +153,13 @@ if ( ! class_exists( 'ACF' ) ) {
 
 			// Include functions.
 			acf_include( 'includes/acf-helper-functions.php' );
+
+			acf_new_instance( 'SCF\Meta\Comment' );
+			acf_new_instance( 'SCF\Meta\Post' );
+			acf_new_instance( 'SCF\Meta\Term' );
+			acf_new_instance( 'SCF\Meta\User' );
+			acf_new_instance( 'SCF\Meta\Option' );
+
 			acf_include( 'includes/acf-hook-functions.php' );
 			acf_include( 'includes/acf-field-functions.php' );
 			acf_include( 'includes/acf-bidirectional-functions.php' );
@@ -215,6 +223,8 @@ if ( ! class_exists( 'ACF' ) ) {
 				acf_include( 'includes/admin/admin-notices.php' );
 				acf_include( 'includes/admin/admin-tools.php' );
 				acf_include( 'includes/admin/admin-upgrade.php' );
+				acf_include( 'includes/admin/admin-commands.php' );
+				acf_include( 'includes/admin/beta-features.php' );
 				acf_include( 'includes/admin/class-acf-admin-options-page.php' );
 			}
 
@@ -228,10 +238,12 @@ if ( ! class_exists( 'ACF' ) ) {
 			add_action( 'init', array( $this, 'register_post_status' ), 4 );
 			add_action( 'init', array( $this, 'init' ), 5 );
 			add_action( 'init', array( $this, 'register_post_types' ), 5 );
+			add_action( 'woocommerce_init', array( $this, 'init_hpos_integration' ), 99 );
 
 			// Add filters.
 			add_filter( 'posts_where', array( $this, 'posts_where' ), 10, 2 );
 		}
+
 
 		/**
 		 * Completes the setup process on "init" of earlier.
@@ -260,7 +272,7 @@ if ( ! class_exists( 'ACF' ) ) {
 			// Update the name setting now that we're in the init hook.
 			acf_update_setting( 'name', __( 'Secure Custom Fields', 'secure-custom-fields' ) );
 
-			// Include 3rd party compatiblity.
+			// Include 3rd party compatibility.
 			acf_include( 'includes/third-party.php' );
 
 			// Include wpml support.
@@ -330,14 +342,14 @@ if ( ! class_exists( 'ACF' ) ) {
 			acf_include( 'includes/fields/class-acf-field-flexible-content.php' );
 			acf_include( 'includes/fields/class-acf-field-gallery.php' );
 			acf_include( 'includes/fields/class-acf-field-clone.php' );
+			acf_include( 'includes/fields/class-acf-field-nav-menu.php' );
 
 			/**
 			 * Fires after field types have been included.
 			 *
-			 * @date    28/09/13
 			 * @since   ACF 5.0.0
 			 *
-			 * @param   int ACF_FIELD_API_VERSION The field API version.
+			 * @param   int $version The field API version.
 			 */
 			do_action( 'acf/include_field_types', ACF_FIELD_API_VERSION );
 
@@ -369,20 +381,18 @@ if ( ! class_exists( 'ACF' ) ) {
 			/**
 			 * Fires after location types have been included.
 			 *
-			 * @date    28/09/13
 			 * @since   ACF 5.0.0
 			 *
-			 * @param   int ACF_FIELD_API_VERSION The field API version.
+			 * @param   int $version The field API version.
 			 */
 			do_action( 'acf/include_location_rules', ACF_FIELD_API_VERSION );
 
 			/**
 			 * Fires during initialization. Used to add local fields.
 			 *
-			 * @date    28/09/13
 			 * @since   ACF 5.0.0
 			 *
-			 * @param   int ACF_FIELD_API_VERSION The field API version.
+			 * @param   int $version The field API version.
 			 */
 			do_action( 'acf/include_fields', ACF_FIELD_API_VERSION );
 
@@ -391,7 +401,7 @@ if ( ! class_exists( 'ACF' ) ) {
 			 *
 			 * @since ACF 6.1
 			 *
-			 * @param int ACF_MAJOR_VERSION The major version of ACF.
+			 * @param int $version The major version of ACF.
 			 */
 			do_action( 'acf/include_post_types', ACF_MAJOR_VERSION );
 
@@ -400,18 +410,18 @@ if ( ! class_exists( 'ACF' ) ) {
 			 *
 			 * @since ACF 6.1
 			 *
-			 * @param int ACF_MAJOR_VERSION The major version of ACF.
+			 * @param int $version The major version of ACF.
 			 */
 			do_action( 'acf/include_taxonomies', ACF_MAJOR_VERSION );
 
 			/**
 			 * Fires during initialization. Used to add local option pages.
 			 *
-			 * @param int ACF_MAJOR_VERSION The major version of ACF.
+			 * @param int $version The major version of ACF.
 			 */
 			do_action( 'acf/include_options_pages', ACF_MAJOR_VERSION );
 
-			// If we're on 6.5 or newer, load block bindings. This will move to an autoloader in 6.3.
+			// If we're on WP 6.5 or newer, load block bindings. This will move to an autoloader in ACF 6.3.
 			if ( version_compare( get_bloginfo( 'version' ), '6.5-beta1', '>=' ) ) {
 				acf_include( 'includes/Blocks/Bindings.php' );
 				new ACF\Blocks\Bindings();
@@ -420,10 +430,9 @@ if ( ! class_exists( 'ACF' ) ) {
 			/**
 			 * Fires after ACF is completely "initialized".
 			 *
-			 * @date    28/09/13
 			 * @since   ACF 5.0.0
 			 *
-			 * @param   int ACF_MAJOR_VERSION The major version of ACF.
+			 * @param   int $version The major version of ACF.
 			 */
 			do_action( 'acf/init', ACF_MAJOR_VERSION );
 		}
@@ -585,14 +594,15 @@ if ( ! class_exists( 'ACF' ) ) {
 		/**
 		 * Defines a constant if doesnt already exist.
 		 *
-		 * @date    3/5/17
 		 * @since   ACF 5.5.13
+		 * @deprecated 6.5.0 -- Use vanilla PHP defined() || define() instead.
 		 *
 		 * @param   string $name  The constant name.
 		 * @param   mixed  $value The constant value.
 		 * @return  void
 		 */
 		public function define( $name, $value = true ) {
+			_deprecated_function( __METHOD__, '6.5.0', 'defined() || define()' );
 			if ( ! defined( $name ) ) {
 				define( $name, $value );
 			}
@@ -675,7 +685,7 @@ if ( ! class_exists( 'ACF' ) ) {
 		 * @param   string $class The instance class name.
 		 * @return  object
 		 */
-		public function get_instance( $class ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound -- Opting not to rename due to PHP 8.0 named arugments.
+		public function get_instance( $class ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound -- Opting not to rename due to PHP 8.0 named arguments.
 			$name = strtolower( $class );
 			return isset( $this->instances[ $name ] ) ? $this->instances[ $name ] : null;
 		}
@@ -689,7 +699,7 @@ if ( ! class_exists( 'ACF' ) ) {
 		 * @param   string $class The instance class name.
 		 * @return  object
 		 */
-		public function new_instance( $class ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound -- Opting not to rename due to PHP 8.0 named arugments.
+		public function new_instance( $class ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.classFound -- Opting not to rename due to PHP 8.0 named arguments.
 			$instance                 = new $class();
 			$name                     = strtolower( $class );
 			$this->instances[ $name ] = $instance;
@@ -744,6 +754,18 @@ if ( ! class_exists( 'ACF' ) ) {
 				}
 			}
 		}
+
+		/**
+		 * Initializes the ACF WooCommerce HPOS integration.
+		 *
+		 * @since 6.5
+		 *
+		 * @return void
+		 */
+		public function init_hpos_integration() {
+			acf_new_instance( 'SCF\Meta\WooOrder' );
+			acf_new_instance( 'SCF\Forms\WC_Order' );
+		}
 	}
 
 	/**
@@ -789,6 +811,7 @@ if ( ! function_exists( 'scf_deactivate_other_instances' ) ) {
 		} elseif ( is_plugin_active( 'advanced-custom-fields/acf.php' ) ) {
 			// Check if the plugin to deactivate is 'advanced-custom-fields/acf.php' but the title is 'Secure Custom Fields'.
 			if ( ! function_exists( 'get_plugin_data' ) ) {
+				/** @phpstan-ignore-next-line */ // phpcs:ignore
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_to_deactivate );
@@ -843,4 +866,23 @@ if ( ! function_exists( 'scf_plugin_deactivated_notice' ) ) {
 	}
 
 	add_action( 'pre_current_active_plugins', 'scf_plugin_deactivated_notice' );
+}
+/**
+ * Clean up plugin data on uninstall
+ */
+register_uninstall_hook( __FILE__, 'scf_plugin_uninstall' );
+
+/**
+ * Cleanup function that runs when the plugin is uninstalled
+ */
+function scf_plugin_uninstall() {
+	// List of known beta features.
+	$beta_features = array(
+		'editor_sidebar',
+		'connect_fields',
+	);
+
+	foreach ( $beta_features as $beta_feature ) {
+		delete_option( 'scf_beta_feature_' . $beta_feature . '_enabled' );
+	}
 }

@@ -10,6 +10,13 @@ if ( ! class_exists( 'acf_validation' ) ) :
 	 * Validation Class
 	 */
 	class acf_validation {
+
+		/**
+		 * Array of errors.
+		 *
+		 * @var array $errors
+		 */
+		public $errors = array();
 		/**
 		 * This function will setup the class functionality
 		 *
@@ -38,7 +45,7 @@ if ( ! class_exists( 'acf_validation' ) ) :
 		 * @date    25/11/2013
 		 * @since   ACF 5.0.0
 		 *
-		 * @param   string $input name attribute of DOM elmenet.
+		 * @param   string $input name attribute of DOM element.
 		 * @param   string $message error message.
 		 */
 		public function add_error( $input, $message ) {
@@ -58,7 +65,7 @@ if ( ! class_exists( 'acf_validation' ) ) :
 		 * @date    5/03/2016
 		 * @since   ACF 5.3.2
 		 *
-		 * @param   string $input name attribute of DOM elmenet.
+		 * @param   string $input name attribute of DOM element.
 		 * @return  array|bool
 		 */
 		public function get_error( $input ) {
@@ -124,13 +131,19 @@ if ( ! class_exists( 'acf_validation' ) ) :
 		 */
 		public function ajax_validate_save_post() {
 			if ( ! acf_verify_ajax() ) {
+				if ( empty( $_REQUEST['nonce'] ) ) {
+					$nonce_error = __( 'SCF was unable to perform validation because no nonce was received by the server.', 'secure-custom-fields' );
+				} else {
+					$nonce_error = __( 'SCF was unable to perform validation because the provided nonce failed verification.', 'secure-custom-fields' );
+				}
+
 				wp_send_json_success(
 					array(
 						'valid'  => 0,
 						'errors' => array(
 							array(
 								'input'   => false,
-								'message' => __( 'ACF was unable to perform validation due to an invalid security nonce being provided.', 'secure-custom-fields' ),
+								'message' => __( 'SCF was unable to perform validation due to an invalid security nonce being provided.', 'secure-custom-fields' ),
 							),
 						),
 					)
@@ -192,7 +205,7 @@ endif; // class_exists check
  * @date    6/10/13
  * @since   ACF 5.0.0
  *
- * @param   string $input name attribute of DOM elmenet.
+ * @param   string $input name attribute of DOM element.
  * @param   string $message error message.
  * @return  void
  */
@@ -223,9 +236,9 @@ function acf_get_validation_errors() {
  * @type    function
  * @date    6/10/13
  * @since   ACF 5.0.0
- * @since   6.4.1 Added the $input parameter, which is required in the get_error method.
+ * @since   SCF 6.4.1 Added the $input parameter, which is required in the get_error method.
  *
- * @param   string $input name attribute of DOM elmenet.
+ * @param   string $input name attribute of DOM element.
  *
  * @return  string|bool
  */

@@ -126,7 +126,7 @@ const md5 = __webpack_require__(/*! md5 */ "./node_modules/md5/md5.js");
    * @return boolean
    */
   function isSiteEditor() {
-    return typeof pagenow === 'string' && pagenow === 'site-editor';
+    return document.querySelectorAll('iframe[name="editor-canvas"]').length > 0;
   }
 
   /**
@@ -778,7 +778,7 @@ const md5 = __webpack_require__(/*! md5 */ "./node_modules/md5/md5.js");
           attributes.mode = modes[0];
         }
       }
-      if (isBlockInQueryLoop(clientId) || isSiteEditor() || isiFramedMobileDevicePreview() || isEditingTemplate()) {
+      if (isBlockInQueryLoop(clientId) || isSiteEditor()) {
         restrictMode(['preview']);
       } else {
         switch (blockType.mode) {
@@ -802,7 +802,7 @@ const md5 = __webpack_require__(/*! md5 */ "./node_modules/md5/md5.js");
         clientId
       } = this.props;
       const blockType = getBlockType(name);
-      const forcePreview = isBlockInQueryLoop(clientId) || isSiteEditor() || isiFramedMobileDevicePreview() || isEditingTemplate();
+      const forcePreview = isBlockInQueryLoop(clientId) || isSiteEditor();
       let {
         mode
       } = attributes;
@@ -2566,7 +2566,7 @@ function isSlowBuffer (obj) {
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
 /*!*********************************************!*\

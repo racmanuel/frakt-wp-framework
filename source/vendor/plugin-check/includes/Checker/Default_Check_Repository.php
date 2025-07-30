@@ -79,6 +79,7 @@ class Default_Check_Repository extends Empty_Check_Repository {
 				'plugin_header_fields'       => new Checks\Plugin_Repo\Plugin_Header_Fields_Check(),
 				'late_escaping'              => new Checks\Security\Late_Escaping_Check(),
 				'plugin_updater'             => new Checks\Plugin_Repo\Plugin_Updater_Check(),
+				'plugin_uninstall'           => new Checks\Plugin_Repo\Plugin_Uninstall_Check(),
 				'plugin_review_phpcs'        => new Checks\Plugin_Repo\Plugin_Review_PHPCS_Check(),
 				'direct_db_queries'          => new Checks\Security\Direct_DB_Queries_Check(),
 				'performant_wp_query_params' => new Checks\Performance\Performant_WP_Query_Params_Check(),
@@ -92,7 +93,6 @@ class Default_Check_Repository extends Empty_Check_Repository {
 				'trademarks'                 => new Checks\Plugin_Repo\Trademarks_Check(),
 				'non_blocking_scripts'       => new Checks\Performance\Non_Blocking_Scripts_Check(),
 				'offloading_files'           => new Checks\Plugin_Repo\Offloading_Files_Check(),
-				'image_functions'            => new Checks\Performance\Image_Functions_Check(),
 				'setting_sanitization'       => new Checks\Plugin_Repo\Setting_Sanitization_Check(),
 			)
 		);

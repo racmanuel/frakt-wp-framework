@@ -48,15 +48,15 @@ if ( ! class_exists( 'acf_field_text' ) ) :
 			$html = '';
 
 			// Prepend text.
-			if ( $field['prepend'] !== '' ) {
-				$field['class'] .= ' acf-is-prepended';
-				$html           .= '<div class="acf-input-prepend">' . acf_esc_html( $field['prepend'] ) . '</div>';
+			if ( isset( $field['prepend'] ) && '' !== $field['prepend'] ) {
+				$field['class'] = isset( $field['class'] ) ? $field['class'] . ' acf-is-prepended' : 'acf-is-prepended';
+				$html          .= '<div class="acf-input-prepend">' . acf_esc_html( $field['prepend'] ) . '</div>';
 			}
 
 			// Append text.
-			if ( $field['append'] !== '' ) {
-				$field['class'] .= ' acf-is-appended';
-				$html           .= '<div class="acf-input-append">' . acf_esc_html( $field['append'] ) . '</div>';
+			if ( isset( $field['append'] ) && '' !== $field['append'] ) {
+				$field['class'] = isset( $field['class'] ) ? $field['class'] . ' acf-is-appended' : 'acf-is-appended';
+				$html          .= '<div class="acf-input-append">' . acf_esc_html( $field['append'] ) . '</div>';
 			}
 
 			// Input.
@@ -170,16 +170,16 @@ if ( ! class_exists( 'acf_field_text' ) ) :
 		 * @date    29/1/19
 		 * @since   ACF 5.7.117.11
 		 *
-		 * @param   (bool|string) Whether the value is vaid or not.
-		 * @param   mixed                                          $value The field value.
-		 * @param   array                                          $field The field array.
-		 * @param   string                                         $input The HTML input name.
+		 * @param   mixed  $valid Whether the value is valid or not.
+		 * @param   mixed  $value The field value.
+		 * @param   array  $field The field array.
+		 * @param   string $input The HTML input name.
 		 * @return  (bool|string)
 		 */
 		function validate_value( $valid, $value, $field, $input ) {
 
 			// Check maxlength
-			if ( $field['maxlength'] && ( acf_strlen( $value ) > $field['maxlength'] ) ) {
+			if ( isset( $field['maxlength'] ) && $field['maxlength'] && ( acf_strlen( $value ) > $field['maxlength'] ) ) {
 				/* translators: %d: the maximum number of characters */
 				return sprintf( __( 'Value must not exceed %d characters', 'secure-custom-fields' ), $field['maxlength'] );
 			}

@@ -222,9 +222,9 @@ if ( ! class_exists( 'acf_field' ) ) :
 		/**
 		 * Add additional validation for fields being updated via the REST API.
 		 *
-		 * @param  boolean $valid The current validity booleean
-		 * @param  integer $value The value of the field
-		 * @param  array   $field The field array
+		 * @param  boolean $valid The current validity boolean.
+		 * @param  integer $value The value of the field.
+		 * @param  array   $field The field array.
 		 * @return boolean|WP_Error
 		 */
 		public function validate_rest_value( $valid, $value, $field ) {
@@ -347,7 +347,7 @@ if ( ! class_exists( 'acf_field' ) ) :
 
 			// This field setting has a unique behaviour. If the value isn't defined on the field object, it defaults to true, but for new fields, it defaults to off.
 			if ( ! isset( $field['allow_in_bindings'] ) ) {
-				if ( empty( $field['ID'] ) ) {
+				if ( empty( $field['ID'] ) || doing_action( 'wp_ajax_acf/field_group/render_field_settings' ) ) {
 					$field['allow_in_bindings'] = false;
 				} else {
 					$field['allow_in_bindings'] = true;

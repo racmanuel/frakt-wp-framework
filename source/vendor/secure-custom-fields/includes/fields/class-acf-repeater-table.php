@@ -163,13 +163,14 @@ class ACF_Repeater_Table {
 			'data-min'        => $this->field['min'],
 			'data-max'        => $this->field['max'],
 			'data-pagination' => ! empty( $this->field['pagination'] ),
+			'data-prefix'     => $this->field['prefix'],
 		);
 
 		if ( $this->field['pagination'] ) {
 			$div['data-per_page']   = $this->field['rows_per_page'];
 			$div['data-total_rows'] = $this->field['total_rows'];
 			$div['data-orig_name']  = $this->field['orig_name'];
-			$div['data-nonce']      = wp_create_nonce( $this->field['key'] );
+			$div['data-nonce']      = wp_create_nonce( 'acf_field_' . $this->field['type'] . '_' . $this->field['key'] );
 		}
 
 		if ( empty( $this->value ) ) {
@@ -325,7 +326,7 @@ class ACF_Repeater_Table {
 
 		$this->row_handle( $i );
 
-		echo $before_fields; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- string only contains guarenteed safe HTML.
+		echo $before_fields; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- string only contains guaranteed safe HTML.
 
 		foreach ( $this->sub_fields as $sub_field ) {
 			if ( isset( $row[ $sub_field['key'] ] ) ) {
@@ -340,7 +341,7 @@ class ACF_Repeater_Table {
 			acf_render_field_wrap( $sub_field, $el );
 		}
 
-		echo $after_fields; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- string only contains guarenteed safe HTML.
+		echo $after_fields; //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- string only contains guaranteed safe HTML.
 
 		$this->row_actions();
 

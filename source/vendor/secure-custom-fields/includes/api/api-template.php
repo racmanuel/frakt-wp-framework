@@ -2,7 +2,7 @@
 
 /**
  * This function will return a custom field value for a specific field name/key + post_id.
- * There is a 3rd parameter to turn on/off formating. This means that an image field will not use
+ * There is a 3rd parameter to turn on/off formatting. This means that an image field will not use
  * its 'return option' to format the value but return only what was saved in the database
  *
  * @since   ACF 3.6
@@ -142,7 +142,7 @@ function the_field( $selector, $post_id = false, $format_value = true ) {
  */
 function _acf_log_escaped_html( $function, $selector, $field, $post_id ) {
 	// If the notice isn't shown, no use in logging the errors.
-	if ( apply_filters( 'acf/admin/prevent_escaped_html_notice', false ) ) {
+	if ( apply_filters( 'acf/admin/prevent_escaped_html_notice', true ) ) {
 		return;
 	}
 
@@ -205,7 +205,7 @@ function _acf_update_escaped_html_log( $escaped = array() ) {
 
 /**
  * Deletes the array of instances where HTML was altered due to escaping in the_field or a shortcode.
- * Since 6.2.7, also clears the legacy `acf_will_escape_html_log` option to clean up.
+ * Since ACF 6.2.7, also clears the legacy `acf_will_escape_html_log` option to clean up.
  *
  * @since ACF 6.2.5
  *
@@ -1072,8 +1072,11 @@ function acf_shortcode( $atts ) {
 
 	$field_type = is_array( $field ) && isset( $field['type'] ) ? $field['type'] : 'text';
 
+	// Allow config errors to show for appropriate caps checked users.
+	$display_errors_to_user = apply_filters( 'acf/shortcode/display_admin_errors', 'manage_options' );
+
 	if ( ! acf_field_type_supports( $field_type, 'bindings', true ) ) {
-		if ( is_preview() ) {
+		if ( is_preview() || current_user_can( $display_errors_to_user ) ) {
 			return apply_filters( 'acf/shortcode/field_not_supported_message', '[' . esc_html__( 'The requested ACF field type does not support output in bindings or the ACF Shortcode.', 'secure-custom-fields' ) . ']' );
 		} else {
 			return;
@@ -1081,7 +1084,7 @@ function acf_shortcode( $atts ) {
 	}
 
 	if ( isset( $field['allow_in_bindings'] ) && ! $field['allow_in_bindings'] ) {
-		if ( is_preview() ) {
+		if ( is_preview() || current_user_can( $display_errors_to_user ) ) {
 			return apply_filters( 'acf/shortcode/field_not_allowed_message', '[' . esc_html__( 'The requested ACF field is not allowed to be output in bindings or the ACF Shortcode.', 'secure-custom-fields' ) . ']' );
 		} else {
 			return;
@@ -1517,7 +1520,7 @@ function delete_sub_row( $selector, $i = 1, $post_id = false ) {
 
 
 /**
- * Depreceated Functions
+ * Deprecated Functions
  *
  * These functions are outdated
  *

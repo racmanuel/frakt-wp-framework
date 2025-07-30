@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit6a528fe45d6befae68c21eb4b9e43f15
+class ComposerStaticInit6a37ae8d9c7ce2f2111461a1d3fb5ed9
 {
     public static $prefixLengthsPsr4 = array (
         'W' => 
@@ -41,16 +41,6 @@ class ComposerStaticInit6a528fe45d6befae68c21eb4b9e43f15
         'Composer\\Installers\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers',
-        ),
-    );
-
-    public static $prefixesPsr0 = array (
-        'P' => 
-        array (
-            'Parsedown' => 
-            array (
-                0 => __DIR__ . '/..' . '/erusev/parsedown',
-            ),
         ),
     );
 
@@ -93,16 +83,14 @@ class ComposerStaticInit6a528fe45d6befae68c21eb4b9e43f15
         'PHPCSUtils\\Utils\\TextStrings' => __DIR__ . '/..' . '/phpcsstandards/phpcsutils/PHPCSUtils/Utils/TextStrings.php',
         'PHPCSUtils\\Utils\\UseStatements' => __DIR__ . '/..' . '/phpcsstandards/phpcsutils/PHPCSUtils/Utils/UseStatements.php',
         'PHPCSUtils\\Utils\\Variables' => __DIR__ . '/..' . '/phpcsstandards/phpcsutils/PHPCSUtils/Utils/Variables.php',
-        'WordPressdotorg\\Plugin_Directory\\Readme\\Parser' => __DIR__ . '/..' . '/afragen/wordpress-plugin-readme-parser/class-parser.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit6a528fe45d6befae68c21eb4b9e43f15::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit6a528fe45d6befae68c21eb4b9e43f15::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInit6a528fe45d6befae68c21eb4b9e43f15::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit6a528fe45d6befae68c21eb4b9e43f15::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit6a37ae8d9c7ce2f2111461a1d3fb5ed9::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit6a37ae8d9c7ce2f2111461a1d3fb5ed9::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit6a37ae8d9c7ce2f2111461a1d3fb5ed9::$classMap;
 
         }, null, ClassLoader::class);
     }

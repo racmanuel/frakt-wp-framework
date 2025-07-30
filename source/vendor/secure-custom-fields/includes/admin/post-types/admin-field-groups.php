@@ -40,7 +40,7 @@ if ( ! class_exists( 'ACF_Admin_Field_Groups' ) ) :
 		public function __construct() {
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 7 );
 			add_action( 'load-edit.php', array( $this, 'handle_redirection' ) );
-			add_action( 'post_class', array( $this, 'get_admin_table_post_classes' ), 10, 3 );
+			add_filter( 'post_class', array( $this, 'get_admin_table_post_classes' ), 10, 3 );
 
 			parent::__construct();
 		}
@@ -178,7 +178,7 @@ if ( ! class_exists( 'ACF_Admin_Field_Groups' ) ) :
 						$rules[ $j ]['object_subtype'] = $location_object_subtype;
 					}
 
-					// Now that each $rule conains object type data...
+					// Now that each $rule contains object type data...
 					$object_types = array_column( $rules, 'object_type' );
 					$object_types = array_filter( $object_types );
 					$object_types = array_values( $object_types );

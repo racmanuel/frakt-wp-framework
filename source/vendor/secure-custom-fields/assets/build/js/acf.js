@@ -414,7 +414,7 @@
   /**
    *  Model
    *
-   *  Base class for all inheritence
+   *  Base class for all inheritance
    *
    *  @date	14/12/17
    *  @since	ACF 5.6.5
@@ -424,7 +424,7 @@
    */
 
   var Model = acf.Model = function () {
-    // generate uique client id
+    // generate unique client id
     this.cid = acf.uniqueId('acf');
 
     // set vars to avoid modifying prototype
@@ -1072,7 +1072,7 @@
     /**
      *  remove
      *
-     *  Removes the element and listenters
+     *  Removes the element and listeners
      *
      *  @date	19/12/17
      *  @since	ACF 5.6.5
@@ -1645,7 +1645,7 @@
         left: 0
       });
 
-      // Declare tollerance to edge of screen.
+      // Declare tolerance to edge of screen.
       var tolerance = 10;
 
       // Find target position.
@@ -1680,7 +1680,7 @@
         $tooltip.addClass('bottom');
         top = targetTop + targetHeight - tooltipTop;
 
-        // No colision with edges.
+        // No collision with edges.
       } else {
         $tooltip.addClass('top');
       }
@@ -2523,9 +2523,8 @@
    *  @return	string Translated text.
    */
 
-  if (window.acfL10n == undefined) {
-    acfL10n = {};
-  }
+  // Make sure a global acfL10n object exists to prevent errors in other scopes
+  window.acfL10n = window.acfL10n || {};
   acf.__ = function (text) {
     return acfL10n[text] || text;
   };
@@ -2682,7 +2681,7 @@
    *  @date	17/12/18
    *  @since	ACF 5.8.0
    *
-   *  @param	jQUery $el The element or form to serialize.
+   *  @param	jQuery $el The element or form to serialize.
    *  @return	object
    */
   acf.serializeForAjax = function ($el) {
@@ -3840,7 +3839,7 @@
   /**
    *  acf.renderSelect
    *
-   *  Renders the innter html for a select field.
+   *  Renders the inner html for a select field.
    *
    *  @date	19/2/18
    *  @since	ACF 5.6.9
@@ -4078,7 +4077,7 @@
   /**
    * acf.onceInView
    *
-   * Watches for a dom element to become visible in the browser and then excecutes the passed callback.
+   * Watches for a dom element to become visible in the browser and then executes the passed callback.
    *
    * @date	28/8/19
    * @since	ACF 5.8.1
@@ -4461,7 +4460,7 @@
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
 /*!******************************!*\

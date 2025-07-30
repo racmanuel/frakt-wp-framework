@@ -165,7 +165,7 @@
       }
 
       // Select first tab with selected field type
-      // If type selected is wthin Popular, select Popular Tab
+      // If type selected is within Popular, select Popular Tab
       // Else select first tab the type belongs
       const fieldTypes = this.getFieldTypes();
       const isFieldTypePopular = this.get('popularFieldTypes').includes(fieldType);
@@ -631,7 +631,7 @@
           choice.disabled = true;
         }
 
-        // calulate indents
+        // calculate indents
         var indents = fieldObject.getParents().length;
         choice.text = '- '.repeat(indents) + choice.text;
 
@@ -808,7 +808,7 @@
       this.renderValue();
     },
     onClickAdd: function (e, $el) {
-      // duplciate
+      // duplicate
       var $rule = acf.duplicate($el.closest('.rule'));
 
       // render
@@ -918,8 +918,8 @@
     },
     // data
     data: {
-      // Similar to ID, but used for HTML puposes.
-      // It is possbile for a new field to have an ID of 0, but an id of 'field_123' */
+      // Similar to ID, but used for HTML purposes.
+      // It is possible for a new field to have an ID of 0, but an id of 'field_123' */
       id: 0,
       // The field key ('field_123')
       key: '',
@@ -3078,7 +3078,7 @@
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
 /*!******************************************!*\

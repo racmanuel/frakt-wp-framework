@@ -180,7 +180,7 @@ function acf_validate_location_rule( $rule = array() ) {
 function acf_get_location_rule_operators( $rule ) {
 	$operators = ACF_Location::get_operators( $rule );
 
-	// Get operators from location type since 5.9.
+	// Get operators from location type since ACF 5.9.
 	$location_type = acf_get_location_type( $rule['param'] );
 	if ( $location_type ) {
 		$operators = $location_type->get_operators( $rule );
@@ -192,7 +192,8 @@ function acf_get_location_rule_operators( $rule ) {
 	 * @date    30/5/17
 	 * @since   ACF 5.6.0
 	 *
-	 * @param   array $types The location rule operators.
+	 * @param   array $operators The location rule operators.
+	 * @param   array $rule The location rule.
 	 */
 	$operators = apply_filters( "acf/location/rule_operators/type={$rule['param']}", $operators, $rule );
 	$operators = apply_filters( "acf/location/rule_operators/{$rule['param']}", $operators, $rule );
@@ -212,7 +213,7 @@ function acf_get_location_rule_operators( $rule ) {
 function acf_get_location_rule_values( $rule ) {
 	$values = array();
 
-	// Get values from location type since 5.9.
+	// Get values from location type since ACF 5.9.
 	$location_type = acf_get_location_type( $rule['param'] );
 	if ( $location_type ) {
 		$values = $location_type->get_values( $rule );
@@ -224,7 +225,8 @@ function acf_get_location_rule_values( $rule ) {
 	 * @date    30/5/17
 	 * @since   ACF 5.6.0
 	 *
-	 * @param   array $types The location rule values.
+	 * @param   array $values The location rule values.
+	 * @param   array $rule The location rule.
 	 */
 	$values = apply_filters( "acf/location/rule_values/type={$rule['param']}", $values, $rule );
 	$values = apply_filters( "acf/location/rule_values/{$rule['param']}", $values, $rule );
@@ -240,13 +242,13 @@ function acf_get_location_rule_values( $rule ) {
  *
  * @param   array $rule   The location rule.
  * @param   array $screen The screen args.
- * @param   array $field  The field group array.
+ * @param   array $field_group  The field group array.
  * @return  boolean
  */
 function acf_match_location_rule( $rule, $screen, $field_group ) {
 	$result = false;
 
-	// Get result from location type since 5.9.
+	// Get result from location type since ACF 5.9.
 	$location_type = acf_get_location_type( $rule['param'] );
 	if ( $location_type ) {
 		$result = $location_type->match( $rule, $screen, $field_group );
@@ -277,7 +279,7 @@ function acf_match_location_rule( $rule, $screen, $field_group ) {
  * @since   ACF 5.9.0
  *
  * @param   array $screen     The screen args.
- * @param   array $deprecated The field group array.
+ * @param   array $deprecated Deprecated.
  * @return  array
  */
 function acf_get_location_screen( $screen = array(), $deprecated = false ) {

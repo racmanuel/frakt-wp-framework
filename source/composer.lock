@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "59dd1d7dfd7a97aff230ed33b7b2530f",
+    "content-hash": "ab0e0ef2b9babdea97115d899b53e04b",
     "packages": [
         {
             "name": "composer/installers",
@@ -154,15 +154,15 @@
         },
         {
             "name": "wpackagist-plugin/jwt-authentication-for-wp-rest-api",
-            "version": "1.3.8",
+            "version": "1.4.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/jwt-authentication-for-wp-rest-api/",
-                "reference": "tags/1.3.8"
+                "reference": "tags/1.4.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/jwt-authentication-for-wp-rest-api.1.3.8.zip"
+                "url": "https://downloads.wordpress.org/plugin/jwt-authentication-for-wp-rest-api.1.4.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -172,15 +172,15 @@
         },
         {
             "name": "wpackagist-plugin/plugin-check",
-            "version": "1.5.0",
+            "version": "1.6.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/plugin-check/",
-                "reference": "tags/1.5.0"
+                "reference": "tags/1.6.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/plugin-check.1.5.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/plugin-check.1.6.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -190,15 +190,15 @@
         },
         {
             "name": "wpackagist-plugin/query-monitor",
-            "version": "3.17.2",
+            "version": "3.19.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/query-monitor/",
-                "reference": "tags/3.17.2"
+                "reference": "tags/3.19.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/query-monitor.3.17.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/query-monitor.3.19.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -208,15 +208,15 @@
         },
         {
             "name": "wpackagist-plugin/secure-custom-fields",
-            "version": "6.4.2",
+            "version": "6.5.2",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/secure-custom-fields/",
-                "reference": "tags/6.4.2"
+                "reference": "tags/6.5.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/secure-custom-fields.6.4.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/secure-custom-fields.6.5.2.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -225,16 +225,34 @@
             "homepage": "https://wordpress.org/plugins/secure-custom-fields/"
         },
         {
-            "name": "wpackagist-plugin/user-switching",
-            "version": "1.9.2",
+            "name": "wpackagist-plugin/transients-manager",
+            "version": "2.0.7",
             "source": {
                 "type": "svn",
-                "url": "https://plugins.svn.wordpress.org/user-switching/",
-                "reference": "tags/1.9.2"
+                "url": "https://plugins.svn.wordpress.org/transients-manager/",
+                "reference": "tags/2.0.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/user-switching.1.9.2.zip"
+                "url": "https://downloads.wordpress.org/plugin/transients-manager.2.0.7.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/transients-manager/"
+        },
+        {
+            "name": "wpackagist-plugin/user-switching",
+            "version": "1.10.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/user-switching/",
+                "reference": "tags/1.10.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/user-switching.1.10.0.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"
@@ -244,15 +262,15 @@
         },
         {
             "name": "wpackagist-plugin/wp-crontrol",
-            "version": "1.19.0",
+            "version": "1.19.1",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-crontrol/",
-                "reference": "tags/1.19.0"
+                "reference": "tags/1.19.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-crontrol.1.19.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-crontrol.1.19.1.zip"
             },
             "require": {
                 "composer/installers": "^1.0 || ^2.0"

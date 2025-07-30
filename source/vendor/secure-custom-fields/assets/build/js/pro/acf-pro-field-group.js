@@ -96,7 +96,7 @@
   /**
    *  cloneFieldSelectHelper
    *
-   *  Customizes the clone field setting Select2 isntance
+   *  Customizes the clone field setting Select2 instance
    *
    *  @date	18/4/18
    *  @since	ACF 5.6.9
@@ -656,7 +656,7 @@
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
 /*!**************************************************!*\

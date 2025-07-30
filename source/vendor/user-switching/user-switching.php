@@ -10,7 +10,7 @@
  *
  * Plugin Name:       User Switching
  * Description:       Instant switching between user accounts in WordPress
- * Version:           1.9.2
+ * Version:           1.10.0
  * Plugin URI:        https://wordpress.org/plugins/user-switching/
  * Author:            John Blackbourn
  * Author URI:        https://johnblackbourn.com
@@ -392,7 +392,7 @@ final class user_switching {
 
 		if ( ! empty( $_REQUEST['redirect_to'] ) ) {
 			// URL
-			$redirect_to = self::remove_query_args( wp_unslash( $_REQUEST['redirect_to'] ) );
+			$redirect_to = self::remove_query_args( wp_unslash( (string) $_REQUEST['redirect_to'] ) );
 			$requested_redirect_to = wp_unslash( $_REQUEST['redirect_to'] );
 			$redirect_type = self::REDIRECT_TYPE_URL;
 		} elseif ( ! empty( $_GET['redirect_to_post'] ) ) {
@@ -402,11 +402,8 @@ final class user_switching {
 
 			if ( is_post_publicly_viewable( $post_id ) ) {
 				$link = get_permalink( $post_id );
-
-				if ( is_string( $link ) ) {
-					$redirect_to = $link;
-					$requested_redirect_to = $link;
-				}
+				$redirect_to = $link;
+				$requested_redirect_to = $link;
 			}
 		} elseif ( ! empty( $_GET['redirect_to_term'] ) ) {
 			// Term
@@ -415,11 +412,8 @@ final class user_switching {
 
 			if ( ( $term instanceof WP_Term ) && is_taxonomy_viewable( $term->taxonomy ) ) {
 				$link = get_term_link( $term );
-
-				if ( is_string( $link ) ) {
-					$redirect_to = $link;
-					$requested_redirect_to = $link;
-				}
+				$redirect_to = $link;
+				$requested_redirect_to = $link;
 			}
 		} elseif ( ! empty( $_GET['redirect_to_user'] ) ) {
 			// User
@@ -428,11 +422,8 @@ final class user_switching {
 
 			if ( $user instanceof WP_User ) {
 				$link = get_author_posts_url( $user->ID );
-
-				if ( is_string( $link ) ) {
-					$redirect_to = $link;
-					$requested_redirect_to = $link;
-				}
+				$redirect_to = $link;
+				$requested_redirect_to = $link;
 			}
 		} elseif ( ! empty( $_GET['redirect_to_comment'] ) ) {
 			// Comment
@@ -442,18 +433,12 @@ final class user_switching {
 			if ( $comment instanceof WP_Comment ) {
 				if ( 'approved' === wp_get_comment_status( $comment ) ) {
 					$link = get_comment_link( $comment );
-
-					if ( is_string( $link ) ) {
-						$redirect_to = $link;
-						$requested_redirect_to = $link;
-					}
+					$redirect_to = $link;
+					$requested_redirect_to = $link;
 				} elseif ( is_post_publicly_viewable( (int) $comment->comment_post_ID ) ) {
 					$link = get_permalink( (int) $comment->comment_post_ID );
-
-					if ( is_string( $link ) ) {
-						$redirect_to = $link;
-						$requested_redirect_to = $link;
-					}
+					$redirect_to = $link;
+					$requested_redirect_to = $link;
 				}
 			}
 		}
@@ -487,8 +472,6 @@ final class user_switching {
 		$old_user = self::get_old_user();
 
 		if ( $old_user ) {
-			$switched_locale = false;
-			$lang_attr = '';
 			$locale = get_user_locale( $old_user );
 			$switched_locale = switch_to_locale( $locale );
 			$lang_attr = str_replace( '_', '-', $locale );
@@ -727,22 +710,22 @@ final class user_switching {
 		if ( ! empty( $_GET['post'] ) ) {
 			// Post
 			return [
-				'redirect_to_post' => intval( $_GET['post'] ),
+				'redirect_to_post' => absint( $_GET['post'] ),
 			];
 		} elseif ( ! empty( $_GET['tag_ID'] ) ) {
 			// Term
 			return [
-				'redirect_to_term' => intval( $_GET['tag_ID'] ),
+				'redirect_to_term' => absint( $_GET['tag_ID'] ),
 			];
 		} elseif ( ! empty( $_GET['user_id'] ) ) {
 			// User
 			return [
-				'redirect_to_user' => intval( $_GET['user_id'] ),
+				'redirect_to_user' => absint( $_GET['user_id'] ),
 			];
 		} elseif ( ! empty( $_GET['c'] ) ) {
 			// Comment
 			return [
-				'redirect_to_comment' => intval( $_GET['c'] ),
+				'redirect_to_comment' => absint( $_GET['c'] ),
 			];
 		}
 
@@ -820,7 +803,7 @@ final class user_switching {
 				], $url );
 			} elseif ( ! empty( $_REQUEST['redirect_to'] ) ) {
 				$url = add_query_arg( [
-					'redirect_to' => rawurlencode( wp_unslash( $_REQUEST['redirect_to'] ) ),
+					'redirect_to' => rawurlencode( wp_unslash( (string) $_REQUEST['redirect_to'] ) ),
 				], $url );
 			}
 
@@ -958,8 +941,6 @@ final class user_switching {
 	/**
 	 * Filters the list of query arguments which get removed from admin area URLs in WordPress.
 	 *
-	 * @link https://core.trac.wordpress.org/ticket/23367
-	 *
 	 * @param array<int,string> $args Array of removable query arguments.
 	 * @return array<int,string> Updated array of removable query arguments.
 	 */
@@ -1058,12 +1039,18 @@ final class user_switching {
 	 * @return string The message.
 	 */
 	public static function switch_back_message( WP_User $user ): string {
+		$switched_locale = switch_to_locale( get_user_locale( $user ) );
+
 		$message = sprintf(
 			/* Translators: 1: user display name; 2: username; */
 			__( 'Switch back to %1$s (%2$s)', 'user-switching' ),
 			$user->display_name,
 			$user->user_login
 		);
+
+		if ( $switched_locale ) {
+			restore_previous_locale();
+		}
 
 		// Removes the user login from this message without invalidating existing translations
 		return str_replace( sprintf(
@@ -1099,7 +1086,8 @@ final class user_switching {
 	 * @return string The current URL.
 	 */
 	public static function current_url(): string {
-		return ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$scheme = is_ssl() ? 'https' : 'http';
+		return "{$scheme}://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 	}
 
 	/**
@@ -1116,8 +1104,6 @@ final class user_switching {
 	 * Returns whether User Switching's equivalent of the 'logged_in' cookie should be secure.
 	 *
 	 * This is used to set the 'secure' flag on the old user cookie, for enhanced security.
-	 *
-	 * @link https://core.trac.wordpress.org/ticket/15330
 	 *
 	 * @return bool Should the old user cookie be secure?
 	 */
@@ -1463,10 +1449,10 @@ if ( ! function_exists( 'user_switching_get_olduser_cookie' ) ) {
 	 */
 	function user_switching_get_olduser_cookie() {
 		if ( isset( $_COOKIE[ USER_SWITCHING_OLDUSER_COOKIE ] ) ) {
-			return wp_unslash( $_COOKIE[ USER_SWITCHING_OLDUSER_COOKIE ] );
-		} else {
-			return false;
+			return wp_unslash( (string) $_COOKIE[ USER_SWITCHING_OLDUSER_COOKIE ] );
 		}
+
+		return false;
 	}
 }
 
@@ -1474,7 +1460,7 @@ if ( ! function_exists( 'user_switching_get_auth_cookie' ) ) {
 	/**
 	 * Gets the value of the auth cookie containing the list of originating users.
 	 *
-	 * @return array<int,string> Array of originating user authentication cookie values. Empty array if there are none.
+	 * @return list<string> Array of originating user authentication cookie values. Empty array if there are none.
 	 */
 	function user_switching_get_auth_cookie(): array {
 		if ( user_switching::secure_auth_cookie() ) {
@@ -1489,7 +1475,8 @@ if ( ! function_exists( 'user_switching_get_auth_cookie' ) ) {
 		if ( ! isset( $cookie ) || ! is_array( $cookie ) ) {
 			$cookie = [];
 		}
-		return $cookie;
+
+		return array_values( array_filter( $cookie, 'is_string' ) );
 	}
 }
 

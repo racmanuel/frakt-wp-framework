@@ -2,7 +2,10 @@
 
 if ( ! class_exists( 'ACF_Field_User' ) ) :
 
-	class ACF_Field_User extends ACF_Field {
+	/**
+	 * ACF_Field_User Class
+	 */
+	class ACF_Field_User extends acf_field {
 
 
 		/**
@@ -218,7 +221,8 @@ if ( ! class_exists( 'ACF_Field_User' ) ) :
 			 * @date    21/5/19
 			 * @since   ACF 5.8.1
 			 *
-			 * @param   array $args The query args.
+			 * @param   string  $item['text'] The user text.
+			 * @param   WP_User $user The user object.
 			 * @param   array $field The ACF field related to this query.
 			 * @param   (int|string) $post_id The post_id being edited.
 			 */
@@ -487,7 +491,7 @@ if ( ! class_exists( 'ACF_Field_User' ) ) :
 			 * @date    21/5/19
 			 * @since   ACF 5.8.1
 			 *
-			 * @param   string The result text.
+			 * @param   string $item['text'] The result text.
 			 * @param   WP_User $user The user object.
 			 * @param   array $field The ACF field related to this query.
 			 * @param   (int|string) $post_id The post_id being edited.
@@ -531,9 +535,9 @@ if ( ! class_exists( 'ACF_Field_User' ) ) :
 		/**
 		 * Validates user fields updated via the REST API.
 		 *
-		 * @param  boolean $valid The current validity booleean
-		 * @param  integer $value The value of the field
-		 * @param  array   $field The field array
+		 * @param  boolean $valid The current validity boolean.
+		 * @param  integer $value The value of the field.
+		 * @param  array   $field The field array.
 		 * @return boolean|WP_Error
 		 */
 		public function validate_rest_value( $valid, $value, $field ) {

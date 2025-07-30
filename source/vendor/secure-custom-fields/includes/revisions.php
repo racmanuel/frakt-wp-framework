@@ -16,7 +16,7 @@ if ( ! class_exists( 'acf_revisions' ) ) :
 		 */
 		public function __construct() {
 			add_action( 'wp_restore_post_revision', array( $this, 'wp_restore_post_revision' ), 10, 2 );
-			add_filter( '_wp_post_revision_fields', array( $this, 'wp_preview_post_fields' ), 10, 2 );
+			add_filter( '_wp_post_revision_fields', array( $this, 'wp_preview_post_fields' ), 10 );
 			add_filter( '_wp_post_revision_fields', array( $this, 'wp_post_revision_fields' ), 10, 2 );
 			add_filter( 'acf/validate_post_id', array( $this, 'acf_validate_post_id' ), 10, 2 );
 
@@ -344,7 +344,7 @@ if ( ! class_exists( 'acf_revisions' ) ) :
 			// save
 			if ( $revision ) {
 
-				// copy postmeta from revision to latest revision (potentialy may be the same, but most likely are different)
+				// copy postmeta from revision to latest revision (potentially may be the same, but most likely are different)
 				acf_copy_postmeta( $revision_id, $revision->ID );
 			}
 		}

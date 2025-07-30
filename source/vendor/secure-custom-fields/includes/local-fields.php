@@ -391,7 +391,7 @@ function acf_get_local_internal_post_type( $key = '', $post_type = 'acf-field-gr
  * @since   ACF 5.7.10
  *
  * @param   array $fields An array of un prepared fields.
- * @return  array
+ * @return  void|array
  */
 function acf_add_local_fields( $fields = array() ) {
 
@@ -500,7 +500,7 @@ function acf_add_local_field( $field, $prepared = false ) {
 	$key  = $field['key'];
 	$name = $field['name'];
 
-	// Allow sub field to be added multipel times to different parents.
+	// Allow sub field to be added multiple times to different parents.
 	$store = acf_get_local_store( 'fields' );
 	if ( $store->is( $key ) ) {
 		$old_key = _acf_generate_local_key( $store->get( $key ) );

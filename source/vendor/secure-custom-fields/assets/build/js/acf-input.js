@@ -17,7 +17,7 @@
    *  @since	ACF 5.6.9
    *
    *  @param	object instance The object to modify.
-   *  @param	object compatibilty Optional. The compatibilty layer.
+   *  @param	object compatibilty Optional. The compatibility layer.
    *  @return	object compatibilty
    */
 
@@ -101,7 +101,7 @@
     k1 = k1 || '';
     k2 = k2 || '';
 
-    // compability
+    // compatibility
     var compatKey = k2 ? k1 + '.' + k2 : k1;
     var compats = {
       'image.select': 'Select Image',
@@ -275,7 +275,7 @@
   /*
    *  acf.model
    *
-   *  This model acts as a scafold for action.event driven modules
+   *  This model acts as a scaffold for action.event driven modules
    *
    *  @type	object
    *  @date	8/09/2014
@@ -1925,7 +1925,7 @@
     var fieldType = field.get('type');
     var operator = rule.operator;
 
-    // get avaibale conditions
+    // get available conditions
     var conditionTypes = acf.getConditionTypes({
       fieldType: fieldType,
       operator: operator
@@ -2040,7 +2040,7 @@
       operator: ''
     });
 
-    // clonse available types
+    // clone available types
     var types = [];
 
     // loop
@@ -2383,7 +2383,7 @@
       // bail early if is cell
       if (this.$el.is('td')) return;
 
-      // enpoint
+      // endpoint
       if (this.get('endpoint')) {
         return this.remove();
       }
@@ -2550,7 +2550,7 @@
       acf.doAction('hide', $el);
     },
     onClick: function (e, $el) {
-      // prevent Defailt
+      // prevent Default
       e.preventDefault();
 
       // open close
@@ -3251,7 +3251,7 @@
        * @since	ACF 5.0.0
        *
        * @param	object|string val The new value.
-       * @param	object map The Google Map isntance.
+       * @param	object map The Google Map instance.
        * @param	object field The field instance.
        */
       acf.doAction('google_map_change', val, this.map, this);
@@ -3376,7 +3376,7 @@
        * @date	12/02/2014
        * @since	ACF 5.0.0
        *
-       * @param	object map The Google Map isntance.
+       * @param	object map The Google Map instance.
        * @param	object marker The Google Map marker isntance.
        * @param	object field The field instance.
        */
@@ -3675,12 +3675,12 @@
   /**
    * withAPI
    *
-   * Loads the Google Maps API library and troggers callback.
+   * Loads the Google Maps API library and triggers callback.
    *
    * @date	28/3/19
    * @since	ACF 5.7.14
    *
-   * @param	function callback The callback to excecute.
+   * @param	function callback The callback to execute.
    * @return	void
    */
 
@@ -3737,14 +3737,14 @@
     type: 'icon_picker',
     wait: 'load',
     events: {
-      showField: 'scrollToSelectedDashicon',
+      showField: 'scrollToSelectedIcon',
       'input .acf-icon_url': 'onUrlChange',
-      'click .acf-icon-picker-dashicon': 'onDashiconClick',
-      'focus .acf-icon-picker-dashicon-radio': 'onDashiconRadioFocus',
-      'blur .acf-icon-picker-dashicon-radio': 'onDashiconRadioBlur',
-      'keydown .acf-icon-picker-dashicon-radio': 'onDashiconKeyDown',
-      'input .acf-dashicons-search-input': 'onDashiconSearch',
-      'keydown .acf-dashicons-search-input': 'onDashiconSearchKeyDown',
+      'click .acf-icon-picker-list-icon': 'onIconClick',
+      'focus .acf-icon-picker-list-icon-radio': 'onIconRadioFocus',
+      'blur .acf-icon-picker-list-icon-radio': 'onIconRadioBlur',
+      'keydown .acf-icon-picker-list-icon-radio': 'onIconKeyDown',
+      'input .acf-icon-list-search-input': 'onIconSearch',
+      'keydown .acf-icon-list-search-input': 'onIconSearchKeyDown',
       'click .acf-icon-picker-media-library-button': 'onMediaLibraryButtonClick',
       'click .acf-icon-picker-media-library-preview': 'onMediaLibraryButtonClick'
     },
@@ -3758,13 +3758,13 @@
       return this.$('.acf-tab-button');
     },
     $selectedIcon() {
-      return this.$('.acf-icon-picker-dashicon.active');
+      return this.$('.acf-icon-picker-list-icon.active');
     },
     $selectedRadio() {
-      return this.$('.acf-icon-picker-dashicon.active input');
+      return this.$('.acf-icon-picker-list-icon.active input');
     },
-    $dashiconsList() {
-      return this.$('.acf-dashicons-list');
+    $iconsList() {
+      return this.$('.acf-icon-list:visible');
     },
     $mediaLibraryButton() {
       return this.$('.acf-icon-picker-media-library-button');
@@ -3782,21 +3782,21 @@
       // Store the type and value object.
       this.set('typeAndValue', typeAndValue);
 
-      // Any time any acf tab is clicked, we will re-scroll to the selected dashicon.
+      // Any time any acf tab is clicked, we will re-scroll to the selected icon.
       $('.acf-tab-button').on('click', () => {
-        this.initializeDashiconsTab(this.get('typeAndValue'));
+        this.initializeIconLists(this.get('typeAndValue'));
       });
 
       // Fire the action which lets people know the state has been updated.
       acf.doAction(this.get('name') + '/type_and_value_change', typeAndValue);
-      this.initializeDashiconsTab(typeAndValue);
+      this.initializeIconLists(typeAndValue);
       this.alignMediaLibraryTabToCurrentValue(typeAndValue);
     },
     addActions() {
       // Set up an action listener for when the type and value changes.
       acf.addAction(this.get('name') + '/type_and_value_change', newTypeAndValue => {
         // Align the visual state of each tab to the current value.
-        this.alignDashiconsTabToCurrentValue(newTypeAndValue);
+        this.alignIconListTabsToCurrentValue(newTypeAndValue);
         this.alignMediaLibraryTabToCurrentValue(newTypeAndValue);
         this.alignUrlTabToCurrentValue(newTypeAndValue);
       });
@@ -3817,14 +3817,14 @@
       // Set the state.
       this.set('typeAndValue', typeAndValue);
     },
-    scrollToSelectedDashicon() {
+    scrollToSelectedIcon() {
       const innerElement = this.$selectedIcon();
 
       // If no icon is selected, do nothing.
       if (innerElement.length === 0) {
         return;
       }
-      const scrollingDiv = this.$dashiconsList();
+      const scrollingDiv = innerElement.closest('.acf-icon-list');
       scrollingDiv.scrollTop(0);
       const distance = innerElement.position().top - 50;
       if (distance === 0) {
@@ -3832,135 +3832,155 @@
       }
       scrollingDiv.scrollTop(distance);
     },
-    initializeDashiconsTab(typeAndValue) {
-      const dashicons = this.getDashiconsList() || [];
-      this.set('dashicons', dashicons);
-      this.renderDashiconList();
-      this.initializeSelectedDashicon(typeAndValue);
-    },
-    initializeSelectedDashicon(typeAndValue) {
-      if (typeAndValue.type !== 'dashicons') {
-        return;
-      }
-      // Select the correct dashicon.
-      this.selectDashicon(typeAndValue.value, false).then(() => {
-        // Scroll to the selected dashicon.
-        this.scrollToSelectedDashicon();
+    initializeIconLists(typeAndValue) {
+      const self = this;
+      this.$('.acf-icon-list').each(function (i) {
+        const tabName = $(this).data('parent-tab');
+        const icons = self.getIconsList(tabName) || [];
+        self.set(tabName, icons);
+        self.renderIconList($(this));
+        if (typeAndValue.type === tabName) {
+          // Select the correct icon.
+          self.selectIcon($(this), typeAndValue.value, false).then(() => {
+            // Scroll to the selected icon.
+            self.scrollToSelectedIcon();
+          });
+        }
       });
     },
-    alignDashiconsTabToCurrentValue(typeAndValue) {
-      if (typeAndValue.type !== 'dashicons') {
-        this.unselectDashicon();
-      }
+    alignIconListTabsToCurrentValue(typeAndValue) {
+      const icons = this.$('.acf-icon-list').filter(function () {
+        return $(this).data('parent-tab') !== typeAndValue.type;
+      });
+      const self = this;
+      icons.each(function () {
+        self.unselectIcon($(this));
+      });
     },
-    renderDashiconHTML(dashicon) {
-      const id = `${this.get('name')}-${dashicon.key}`;
-      return `<div class="dashicons ${acf.strEscape(dashicon.key)} acf-icon-picker-dashicon" data-icon="${acf.strEscape(dashicon.key)}">
-				<label for="${acf.strEscape(id)}">${acf.strEscape(dashicon.label)}</label>
-				<input id="${acf.strEscape(id)}" type="radio" class="acf-icon-picker-dashicon-radio" name="acf-icon-picker-dashicon-radio" value="${acf.strEscape(dashicon.key)}">
+    renderIconHTML(tabName, icon) {
+      const id = `${this.get('name')}-${icon.key}`;
+      let style = '';
+      if ('dashicons' !== tabName) {
+        style = `background: center / contain url( ${acf.strEscape(icon.url)} ) no-repeat;`;
+      }
+      return `<div class="${tabName} ${acf.strEscape(icon.key)} acf-icon-picker-list-icon" role="radio" data-icon="${acf.strEscape(icon.key)}" style="${style}" title="${acf.strEscape(icon.label)}">
+				<label for="${acf.strEscape(id)}">${acf.strEscape(icon.label)}</label>
+				<input id="${acf.strEscape(id)}" type="radio" class="acf-icon-picker-list-icon-radio" name="acf-icon-picker-list-icon-radio" value="${acf.strEscape(icon.key)}">
 			</div>`;
     },
-    renderDashiconList() {
-      const dashicons = this.get('dashicons');
-      this.$dashiconsList().empty();
-      dashicons.forEach(dashicon => {
-        this.$dashiconsList().append(this.renderDashiconHTML(dashicon));
-      });
+    renderIconList($el) {
+      const tabName = $el.data('parent-tab');
+      const icons = this.get(tabName);
+      $el.empty();
+      if (icons) {
+        icons.forEach(icon => {
+          const iconHTML = this.renderIconHTML(tabName, icon);
+          $el.append(iconHTML);
+        });
+      }
     },
-    getDashiconsList() {
-      const iconPickeri10n = acf.get('iconPickeri10n') || [];
-      const dashicons = Object.entries(iconPickeri10n).map(([key, value]) => {
-        return {
-          key,
-          label: value
-        };
-      });
-      return dashicons;
+    getIconsList(tabName) {
+      if ('dashicons' === tabName) {
+        const iconPickeri10n = acf.get('iconPickeri10n') || [];
+        return Object.entries(iconPickeri10n).map(([key, value]) => {
+          return {
+            key,
+            label: value
+          };
+        });
+      }
+      return acf.get(`iconPickerIcons_${tabName}`);
     },
-    getDashiconsBySearch(searchTerm) {
+    getIconsBySearch(searchTerm, tabName) {
       const lowercaseSearchTerm = searchTerm.toLowerCase();
-      const dashicons = this.getDashiconsList();
-      const filteredDashicons = dashicons.filter(function (icon) {
+      const icons = this.getIconsList(tabName);
+      const filteredIcons = icons.filter(function (icon) {
         const lowercaseIconLabel = icon.label.toLowerCase();
         return lowercaseIconLabel.indexOf(lowercaseSearchTerm) > -1;
       });
-      return filteredDashicons;
+      return filteredIcons;
     },
-    selectDashicon(dashicon, setFocus = true) {
-      this.set('selectedDashicon', dashicon);
+    selectIcon($el, icon, setFocus = true) {
+      this.set('selectedIcon', icon);
 
       // Select the new one.
-      const $newIcon = this.$dashiconsList().find('.acf-icon-picker-dashicon[data-icon="' + dashicon + '"]');
+      const $newIcon = $el.find('.acf-icon-picker-list-icon[data-icon="' + icon + '"]');
       $newIcon.addClass('active');
       const $input = $newIcon.find('input');
       const thePromise = $input.prop('checked', true).promise();
       if (setFocus) {
         $input.trigger('focus');
       }
-      this.updateTypeAndValue('dashicons', dashicon);
+      this.updateTypeAndValue($el.data('parent-tab'), icon);
       return thePromise;
     },
-    unselectDashicon() {
+    unselectIcon($el) {
       // Remove the currently active dashicon, if any.
-      this.$dashiconsList().find('.acf-icon-picker-dashicon').removeClass('active');
-      this.set('selectedDashicon', false);
+      $el.find('.acf-icon-picker-list-icon').removeClass('active');
+      this.set('selectedIcon', false);
     },
-    onDashiconRadioFocus(e) {
-      const dashicon = e.target.value;
-      const $newIcon = this.$dashiconsList().find('.acf-icon-picker-dashicon[data-icon="' + dashicon + '"]');
+    onIconRadioFocus(e) {
+      const icon = e.target.value;
+      const $tabs = this.$(e.target).closest('.acf-icon-picker-tabs');
+      const $iconsList = $tabs.find('.acf-icon-list');
+      const $newIcon = $iconsList.find('.acf-icon-picker-list-icon[data-icon="' + icon + '"]');
       $newIcon.addClass('focus');
 
       // If this is a different icon than previously selected, select it.
-      if (this.get('selectedDashicon') !== dashicon) {
-        this.unselectDashicon();
-        this.selectDashicon(dashicon);
+      if (this.get('selectedIcon') !== icon) {
+        this.unselectIcon($iconsList);
+        this.selectIcon($iconsList, icon);
       }
     },
-    onDashiconRadioBlur(e) {
+    onIconRadioBlur(e) {
       const icon = this.$(e.target);
       const iconParent = icon.parent();
       iconParent.removeClass('focus');
     },
-    onDashiconClick(e) {
+    onIconClick(e) {
       e.preventDefault();
-      const icon = this.$(e.target);
-      const dashicon = icon.find('input').val();
-      const $newIcon = this.$dashiconsList().find('.acf-icon-picker-dashicon[data-icon="' + dashicon + '"]');
+      const $iconList = this.$(e.target).closest('.acf-icon-list');
+      const $iconElement = this.$(e.target);
+      const icon = $iconElement.find('input').val();
+      const $newIconElement = $iconList.find('.acf-icon-picker-list-icon[data-icon="' + icon + '"]');
 
-      // By forcing focus on the input, we fire onDashiconRadioFocus.
-      $newIcon.find('input').prop('checked', true).trigger('focus');
+      // By forcing focus on the input, we fire onIconRadioFocus.
+      $newIconElement.find('input').prop('checked', true).trigger('focus');
     },
-    onDashiconSearch(e) {
+    onIconSearch(e) {
+      const $tabs = this.$(e.target).closest('.acf-icon-picker-tabs');
+      const $iconList = $tabs.find('.acf-icon-list');
+      const tabName = $tabs.data('tab');
       const searchTerm = e.target.value;
-      const filteredDashicons = this.getDashiconsBySearch(searchTerm);
-      if (filteredDashicons.length > 0 || !searchTerm) {
-        this.set('dashicons', filteredDashicons);
-        this.$('.acf-dashicons-list-empty').hide();
-        this.$('.acf-dashicons-list ').show();
-        this.renderDashiconList();
+      const filteredIcons = this.getIconsBySearch(searchTerm, tabName);
+      if (filteredIcons.length > 0 || !searchTerm) {
+        this.set(tabName, filteredIcons);
+        $tabs.find('.acf-icon-list-empty').hide();
+        $tabs.find('.acf-icon-list ').show();
+        this.renderIconList($iconList);
 
         // Announce change of data to screen readers.
         wp.a11y.speak(acf.get('iconPickerA11yStrings').newResultsFoundForSearchTerm, 'polite');
       } else {
         // Truncate the search term if it's too long.
         const visualSearchTerm = searchTerm.length > 30 ? searchTerm.substring(0, 30) + '&hellip;' : searchTerm;
-        this.$('.acf-dashicons-list ').hide();
-        this.$('.acf-dashicons-list-empty').find('.acf-invalid-dashicon-search-term').text(visualSearchTerm);
-        this.$('.acf-dashicons-list-empty').css('display', 'flex');
-        this.$('.acf-dashicons-list-empty').show();
+        $tabs.find('.acf-icon-list ').hide();
+        $tabs.find('.acf-icon-list-empty').find('.acf-invalid-icon-list-search-term').text(visualSearchTerm);
+        $tabs.find('.acf-icon-list-empty').css('display', 'flex');
+        $tabs.find('.acf-icon-list-empty').show();
 
         // Announce change of data to screen readers.
         wp.a11y.speak(acf.get('iconPickerA11yStrings').noResultsForSearchTerm, 'polite');
       }
     },
-    onDashiconSearchKeyDown(e) {
+    onIconSearchKeyDown(e) {
       // Check if the pressed key is Enter (key code 13)
       if (e.which === 13) {
         // Prevent submitting the entire form if someone presses enter after searching.
         e.preventDefault();
       }
     },
-    onDashiconKeyDown(e) {
+    onIconKeyDown(e) {
       if (e.which === 13) {
         // If someone presses enter while an icon is focused, prevent the form from submitting.
         e.preventDefault();
@@ -5069,6 +5089,7 @@
           multiple: this.get('multiple'),
           placeholder: this.get('placeholder'),
           allowNull: this.get('allow_null'),
+          tags: this.get('create_options'),
           ajaxAction: ajaxAction
         });
       }
@@ -6260,7 +6281,7 @@
       // inherit $field data
       this.inherit($field);
 
-      // inherit controll data
+      // inherit control data
       this.inherit(this.$control());
     },
     /**
@@ -6695,7 +6716,7 @@
       // hasValue: true
     });
 
-    // clonse available types
+    // clone available types
     var types = [];
 
     // loop
@@ -7168,7 +7189,7 @@
   /**
    * mountHelper
    *
-   * Adds compatiblity for the 'unmount' and 'remount' actions added in 5.8.0
+   * Adds compatibility for the 'unmount' and 'remount' actions added in 5.8.0
    *
    * @date	7/3/19
    * @since	ACF 5.7.14
@@ -7295,7 +7316,7 @@
         return false;
       }
 
-      // visiblity
+      // visibility
       $ths.each(function (i) {
         // vars
         var $th = $(this);
@@ -7664,7 +7685,7 @@
       // add events
       this.addFrameEvents(frame, options);
 
-      // strore frame
+      // store frame
       this.frame = frame;
     },
     open: function () {
@@ -7718,8 +7739,8 @@
       // add _acfuploader
       // this is super wack!
       // if you add _acfuploader to the options.library args, new uploads will not be added to the library view.
-      // this has been traced back to the wp.media.model.Query initialize function (which can't be overriden)
-      // Adding any custom args will cause the Attahcments to not observe the uploader queue
+      // this has been traced back to the wp.media.model.Query initialize function (which can't be overridden)
+      // Adding any custom args will cause the Attachments to not observe the uploader queue
       // To bypass this security issue, we add in the args AFTER the Query has been initialized
       // options.library._acfuploader = settings.field;
       if (this.get('field') && acf.isset(Query, 'mirroring', 'args')) {
@@ -7932,7 +7953,7 @@
         filter.props._acfuploader = field;
       });
 
-      // add _acfuplaoder to search
+      // add _acfuploader to search
       var search = toolbar.get('search');
       search.model.attributes._acfuploader = field;
 
@@ -8156,7 +8177,7 @@
           //	data[ pair.name ] = pair.value;
           //});
 
-          // Serialize data more thoroughly to allow chckbox inputs to save.
+          // Serialize data more thoroughly to allow checkbox inputs to save.
           data = acf.serializeForAjax(this.$el);
           this.controller.trigger('attachment:compat:waiting', ['waiting']);
           this.model.saveCompat(data).always(_.bind(this.postSave, this));
@@ -8358,7 +8379,7 @@
       edit: ''
     },
     setup: function (props) {
-      // compatibilty
+      // compatibility
       if (props.editLink) {
         props.edit = props.editLink;
       }
@@ -9053,6 +9074,7 @@
       multiple: false,
       field: false,
       ajax: false,
+      tags: false,
       ajaxAction: '',
       ajaxData: function (data) {
         return data;
@@ -9298,7 +9320,7 @@
         this.$el.select2('destroy');
       }
 
-      // destory via HTML (duplicating HTML does not contain data)
+      // destroy via HTML (duplicating HTML does not contain data)
       this.$el.siblings('.select2-container').remove();
     }
   });
@@ -9331,6 +9353,10 @@
         suppressFilters: this.get('suppressFilters'),
         data: []
       };
+      if (this.get('tags')) {
+        options.tags = true;
+        options.tokenSeparators = [','];
+      }
 
       // Clear empty templateSelections, templateResults, or dropdownCssClass.
       if (!options.templateSelection) {
@@ -10421,7 +10447,7 @@
      *
      *  @since	ACF 5.7.5
      *
-     *  @param	{string} [location=before] - The location to add the error, before or after the input. Default before. Since 6.3.
+     *  @param	{string} [location=before] - The location to add the error, before or after the input. Default before. Since ACF 6.3.
      *  @return	void
      */
     showErrors: function (location = 'before') {
@@ -10534,7 +10560,7 @@
     /**
      *  validate
      *
-     *  Vaildates the form via AJAX.
+     *  Validates the form via AJAX.
      *
      *  @date	4/9/18
      *  @since	ACF 5.7.5
@@ -10837,7 +10863,7 @@
   /**
    *  acf.lockForm
    *
-   *  Locks a form by disabeling its primary inputs and showing a spinner.
+   *  Locks a form by disabling its primary inputs and showing a spinner.
    *
    *  @date	4/9/18
    *  @since	ACF 5.7.5
@@ -10863,7 +10889,7 @@
   /**
    *  acf.unlockForm
    *
-   *  Unlocks a form by enabeling its primary inputs and hiding all spinners.
+   *  Unlocks a form by enabling its primary inputs and hiding all spinners.
    *
    *  @date	4/9/18
    *  @since	ACF 5.7.5
@@ -11258,7 +11284,7 @@
         return;
       }
 
-      // Custommize the editor.
+      // Customize the editor.
       this.customizeEditor();
     },
     customizeEditor: function () {
@@ -11344,7 +11370,7 @@
                 });
               }
 
-              // Rejext promise and prevent savePost().
+              // Reject promise and prevent savePost().
               reject('Validation failed.');
             },
             success: function () {
@@ -11444,7 +11470,7 @@
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
 /*!************************************!*\

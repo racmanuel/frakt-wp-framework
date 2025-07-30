@@ -414,6 +414,16 @@ function acf_validate_block_type( $block ) {
 		$block['supports']['jsx'] = $block['supports']['__experimental_jsx'];
 	}
 
+	// Normalize block 'parent' setting.
+	if ( array_key_exists( 'parent', $block ) ) {
+		// As of WP 6.8, parent must be an array.
+		if ( null === $block['parent'] ) {
+			unset( $block['parent'] );
+		} elseif ( is_string( $block['parent'] ) ) {
+			$block['parent'] = array( $block['parent'] );
+		}
+	}
+
 	// Return block.
 	return $block;
 }
@@ -973,7 +983,7 @@ function acf_ajax_fetch_block() {
 	// Vars.
 	$response = array( 'clientId' => $client_id );
 
-	// Check if we've recieved serialised form data
+	// Check if we've received serialised form data
 	$use_post_data = false;
 	if ( ! empty( $block['data'] ) && is_array( $block['data'] ) ) {
 		// Ensure we've got field keys posted.

@@ -199,7 +199,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 			if ( $field['layouts'] ) {
 				foreach ( $field['layouts'] as $layout ) {
 
-					// Restict to active layout if within a have_rows() loop.
+					// Restrict to active layout if within a have_rows() loop.
 					if ( $active && $active !== $layout['name'] ) {
 						continue;
 					}
@@ -731,7 +731,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 				$rows[ $i ]                  = array();
 				$rows[ $i ]['acf_fc_layout'] = $l;
 
-				// bail early if layout deosnt contain sub fields
+				// bail early if layout doesn't contain sub fields
 				if ( empty( $layouts[ $l ] ) ) {
 					continue;
 				}
@@ -766,7 +766,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 
 
 		/**
-		 * This filter is appied to the $value after it is loaded from the db and before it is returned to the template
+		 * This filter is applied to the $value after it is loaded from the db and before it is returned to the template
 		 *
 		 * @type  filter
 		 * @since ACF 3.6
@@ -796,7 +796,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 				// get layout name
 				$l = $value[ $i ]['acf_fc_layout'];
 
-				// bail early if layout deosnt exist
+				// bail early if layout doesn't exist
 				if ( empty( $layouts[ $l ] ) ) {
 					continue;
 				}
@@ -1017,7 +1017,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 		public function delete_row( $i, $field, $post_id ) {
 
 			// vars
-			$value = acf_get_metadata( $post_id, $field['name'] );
+			$value = acf_get_metadata_by_field( $post_id, $field );
 
 			// bail early if no value
 			if ( ! is_array( $value ) || ! isset( $value[ $i ] ) ) {
@@ -1094,7 +1094,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 		}
 
 		/**
-		 * This filter is appied to the $value before it is updated in the db
+		 * This filter is applied to the $value before it is updated in the db
 		 *
 		 * @type    filter
 		 * @since   ACF 3.6
@@ -1113,7 +1113,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 
 			// vars
 			$new_value = array();
-			$old_value = acf_get_metadata( $post_id, $field['name'] );
+			$old_value = acf_get_metadata_by_field( $post_id, $field );
 			$old_value = is_array( $old_value ) ? $old_value : array();
 
 			// update
@@ -1185,7 +1185,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 		public function delete_value( $post_id, $key, $field ) {
 
 			// vars
-			$old_value = acf_get_metadata( $post_id, $field['name'] );
+			$old_value = acf_get_metadata_by_field( $post_id, $field['name'] );
 			$old_value = is_array( $old_value ) ? $old_value : array();
 
 			// bail early if no rows or no sub fields
@@ -1201,7 +1201,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 
 
 		/**
-		 * This filter is appied to the $field before it is saved to the database
+		 * This filter is applied to the $field before it is saved to the database
 		 *
 		 * @type    filter
 		 * @since   ACF 3.6
@@ -1256,7 +1256,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 
 
 		/**
-		 * This filter is appied to the $field before it is duplicated and saved to the database
+		 * This filter is applied to the $field before it is duplicated and saved to the database
 		 *
 		 * @type    filter
 		 * @date    23/01/13
@@ -1481,7 +1481,7 @@ if ( ! class_exists( 'acf_field_flexible_content' ) ) :
 				if ( $sub_fields ) {
 					foreach ( $sub_fields as $i => $sub_field ) {
 
-						// Update atttibutes
+						// Update attributes
 						$sub_field['parent']        = $field['key'];
 						$sub_field['parent_layout'] = $layout['key'];
 						$sub_field['menu_order']    = $i;

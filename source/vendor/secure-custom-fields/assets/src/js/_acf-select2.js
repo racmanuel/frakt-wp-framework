@@ -19,6 +19,7 @@
 			multiple: false,
 			field: false,
 			ajax: false,
+			tags: false,
 			ajaxAction: '',
 			ajaxData: function ( data ) {
 				return data;
@@ -220,7 +221,6 @@
 				if ( field.get( 'nonce' ) ) {
 					ajaxData.nonce = field.get( 'nonce' );
 				}
-
 			}
 
 			// callback
@@ -290,7 +290,7 @@
 				this.$el.select2( 'destroy' );
 			}
 
-			// destory via HTML (duplicating HTML does not contain data)
+			// destroy via HTML (duplicating HTML does not contain data)
 			this.$el.siblings( '.select2-container' ).remove();
 		},
 	} );
@@ -323,6 +323,11 @@
 				suppressFilters: this.get( 'suppressFilters' ),
 				data: [],
 			};
+
+			if ( this.get( 'tags' ) ) {
+				options.tags = true;
+				options.tokenSeparators = [ ',' ];
+			}
 
 			// Clear empty templateSelections, templateResults, or dropdownCssClass.
 			if ( ! options.templateSelection ) {
