@@ -18,7 +18,8 @@
     "wpackagist-plugin/user-switching":"*",
     "wpackagist-plugin/wp-crontrol":"*",
     "wpackagist-plugin/plugin-check":"*",
-    "wpackagist-plugin/jwt-authentication-for-wp-rest-api":"*"
+    "wpackagist-plugin/jwt-authentication-for-wp-rest-api":"*",
+    "wpackagist-plugin/transients-manager":"*"
   },
   "config": {
     "allow-plugins": {
