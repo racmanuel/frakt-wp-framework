@@ -194,6 +194,14 @@ class Plugin_Name
             if (! defined('WP_PLUGIN_CHECK_VERSION')) {
                 require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/plugin-check/plugin.php';
             }
+
+            /**
+             * Load Transients Manager if the class is not already loaded.
+             * Provides tools to manage transient options in WordPress.
+             */
+            if (! class_exists('Transients_Manager')) {
+                require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/transients-manager/transients-manager.php';
+            }
         }
 
         /**
