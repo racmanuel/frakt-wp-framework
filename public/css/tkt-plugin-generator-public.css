@@ -21,6 +21,12 @@ div.form-input-container{
     width: 100%;
 }
 
+.tkt-generator-autofill-hint {
+    display: block;
+    margin-top: 6px;
+    color: #646970;
+}
+
 /* =============================================
    Loading Overlay
    ============================================= */
@@ -94,4 +100,60 @@ div.form-input-container{
     background: #f0fef0;
     border: 1px solid #c6f5c6;
     color: #1c7224;
+}
+
+.tkt-generator-composer-notice {
+    padding: 12px;
+    border-left: 4px solid #dba617;
+    background: #fff8e5;
+}
+
+.tkt-generator-result {
+    width: 100%;
+    margin-top: 20px;
+    padding: 18px 20px;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.tkt-generator-result.success {
+    color: #1c7224;
+    border: 1px solid #c6f5c6;
+    background: #f0fef0;
+}
+
+.tkt-generator-result.error {
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    background: #fef0f0;
+}
+
+.tkt-generator-command {
+    display: block;
+    margin: 12px 0;
+    padding: 12px;
+    overflow-wrap: anywhere;
+    color: #f8f8f2;
+    background: #272822;
+}
+
+.tkt-generator-copy,
+.tkt-generator-download {
+    display: inline-block;
+    margin: 8px 12px 0 0;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.tkt-generator-copy {
+    color: #1d2327;
+    background: #e2e4e7;
+}
+
+.tkt-generator-download {
+    color: #fff;
+    background: #2271b1;
 }

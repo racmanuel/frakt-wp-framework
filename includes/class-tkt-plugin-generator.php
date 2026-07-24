@@ -124,8 +124,12 @@ class Tkt_Plugin_Generator {
 		$plugin_public = new Tkt_Plugin_Generator_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'template_redirect', $plugin_public, 'add_shortcode' );
-		$this->loader->add_action( 'template_redirect', $plugin_public, 'replace_zip_and_download' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'init', $plugin_public, 'add_shortcode' );
+		$this->loader->add_action( 'wp_ajax_tkt_generate_plugin', $plugin_public, 'ajax_generate_plugin' );
+		$this->loader->add_action( 'wp_ajax_nopriv_tkt_generate_plugin', $plugin_public, 'ajax_generate_plugin' );
+		$this->loader->add_action( 'wp_ajax_tkt_download_plugin', $plugin_public, 'download_generated_plugin' );
+		$this->loader->add_action( 'wp_ajax_nopriv_tkt_download_plugin', $plugin_public, 'download_generated_plugin' );
 
 	}
 

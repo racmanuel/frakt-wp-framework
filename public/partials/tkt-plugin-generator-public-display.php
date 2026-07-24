@@ -15,34 +15,6 @@
 
 ?>
 
-<?php
-/**
- * Display feedback messages stored in transient by replace_zip_and_download().
- */
-$tkt_feedback_message = get_transient( 'tkt_gen_feedback' );
-$tkt_feedback_type    = 'success';
-
-if ( ! empty( $tkt_feedback_message ) ) {
-
-	/**
-	 * Determine message type based on content.
-	 * Messages starting with 'Error:' are styled as errors.
-	 */
-	if ( 0 === strpos( $tkt_feedback_message, 'Error:' ) ) {
-		$tkt_feedback_type = 'error';
-	}
-
-	printf(
-		'<div class="tkt-generator-message %s">%s</div>',
-		esc_attr( $tkt_feedback_type ),
-		esc_html( $tkt_feedback_message )
-	);
-
-	// Delete the transient so the message doesn't persist on refresh.
-	delete_transient( 'tkt_gen_feedback' );
-}
-?>
-
 <!-- Loading Overlay -->
 <div id="tkt-plugin-generator-overlay" aria-hidden="true">
 	<div class="tkt-generator-spinner"></div>
@@ -63,6 +35,9 @@ if ( ! empty( $tkt_feedback_message ) ) {
 			</svg>
 		</label>
 		<input type="text" id="plugin_human" name="plugin_human" placeholder="Plugin Human Name" required>
+		<small class="tkt-generator-autofill-hint">
+			<?php esc_html_e( 'El nombre, slug, prefijo y metadatos relacionados se completarán automáticamente mientras escribes.', 'tkt-plugin-generator' ); ?>
+		</small>
 	</div>
 	<div class="form-input-container">
 		<label for="plugin_name"> 
@@ -201,6 +176,14 @@ if ( ! empty( $tkt_feedback_message ) ) {
 
     <div class="form-input-container">
         <p><strong><?php esc_html_e( 'Include Plugins', 'tkt-plugin-generator' ); ?></strong></p>
+        <p class="tkt-generator-composer-notice">
+            <?php
+            esc_html_e(
+                'Las dependencias seleccionadas se añadirán a composer.json, pero no se incluirán en el ZIP. Deberás ejecutar Composer antes de activar el plugin.',
+                'tkt-plugin-generator'
+            );
+            ?>
+        </p>
         
         <label for="include_acf">
             <input type="checkbox" id="include_acf" name="include_acf" value="1" checked>
@@ -243,38 +226,5 @@ if ( ! empty( $tkt_feedback_message ) ) {
 	<?php wp_nonce_field( 'generate_plugin_submit', 'generate_plugin_nonce' ); ?>
 </form>
 
-<script>
-(function() {
-	'use strict';
-
-	var form     = document.getElementById('tkt-plugin-generator-generator');
-	var overlay  = document.getElementById('tkt-plugin-generator-overlay');
-	var submitBtn = document.getElementById('tkt-plugin-generator-generator-submit');
-
-	if ( ! form || ! overlay ) {
-		return;
-	}
-
-	form.addEventListener('submit', function() {
-		// Show loading overlay
-		overlay.classList.add('show');
-
-		// Disable submit button to prevent double submission
-		if ( submitBtn ) {
-			submitBtn.disabled = true;
-		}
-
-		/**
-		 * Safety timeout: hide overlay after 60 seconds if something goes wrong
-		 * and no redirect occurred (e.g., browser stalls).
-		 */
-		setTimeout(function() {
-			overlay.classList.remove('show');
-			if ( submitBtn ) {
-				submitBtn.disabled = false;
-			}
-		}, 60000);
-	});
-})();
-</script>
+<div id="tkt-plugin-generator-result" class="tkt-generator-result" hidden aria-live="polite"></div>
 

@@ -117,6 +117,7 @@ class Plugin_Name
     private function load_dependencies()
     {
 
+        /* TKT_GEN_COMPOSER_START */
         /**
          * Load Composer's autoloader to register PSR-4 classes and any files defined in `composer.json`.
          *
@@ -124,6 +125,7 @@ class Plugin_Name
          * The path is relative to this file's directory.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/autoload.php';
+        /* TKT_GEN_COMPOSER_END */
 
         /* TKT_GEN_ACF_START */
         /**
@@ -154,6 +156,15 @@ class Plugin_Name
             require_once MY_SCF_PATH . 'secure-custom-fields.php';
         }
         /* TKT_GEN_ACF_END */
+
+        /* TKT_GEN_JWT_START */
+        /**
+         * Load JWT Authentication for WP REST API if it is not already loaded.
+         */
+        if (! class_exists('Jwt_Auth')) {
+            require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/jwt-authentication-for-wp-rest-api/jwt-auth.php';
+        }
+        /* TKT_GEN_JWT_END */
 
         /**
          * Load development-only plugins when debugging is enabled.

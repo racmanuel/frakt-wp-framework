@@ -73,6 +73,34 @@ register_deactivation_hook( __FILE__, 'pfx_deactivate' );
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
+/* TKT_GEN_COMPOSER_START */
+$plugin_name_autoload = plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
+
+if ( ! file_exists( $plugin_name_autoload ) ) {
+	add_action(
+		'admin_notices',
+		function () {
+			?>
+			<div class="notice notice-error">
+				<p>
+					<?php
+					echo wp_kses_post(
+						__(
+							'Faltan las dependencias de Composer. Ejecuta <code>composer install --no-dev --prefer-dist --optimize-autoloader</code> en el directorio del plugin antes de utilizarlo.',
+							'plugin-name'
+						)
+					);
+					?>
+				</p>
+			</div>
+			<?php
+		}
+	);
+
+	return;
+}
+/* TKT_GEN_COMPOSER_END */
+
 require plugin_dir_path( __FILE__ ) . 'includes/class-plugin-name.php';
 
 /**

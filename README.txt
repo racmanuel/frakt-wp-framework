@@ -4,7 +4,7 @@ Donate link: https://www.tukutoi.com/
 Tags: plugin, generator, boilerplate
 Requires at least: 4.9
 Tested up to: 6.0
-Stable tag: 2.0.0
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,4 +47,4 @@ So you could for example upload a folder full of text files and replace any stri
 
 Of course, you would have to alter the replacement rules in the Plugin.
 
-Enjoy! 
+Enjoy!

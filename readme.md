@@ -22,9 +22,17 @@ Frakt Plugin Generator is a development tool built on top of the [Frakt WP Frame
 3. Visit that page in the browser.
 4. Fill out the plugin generation form and submit.
 5. The new plugin will:
-   - Be generated inside `/builds/`
-   - Be downloaded automatically as a ZIP
-   - Be removed from the server afterwards for cleanliness
+   - Be generated through AJAX.
+   - Be prepared as a temporary ZIP download.
+   - Include only the dependencies selected in `composer.json`.
+   - Exclude `vendor/` and never execute Composer on the server.
+6. If dependencies were selected, extract the ZIP and run:
+
+   ```bash
+   composer install --no-dev --prefer-dist --optimize-autoloader
+   ```
+
+   Run this command before activating the generated plugin.
 
 ---
 ## 🚀 About Frakt WP Framework
