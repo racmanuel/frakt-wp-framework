@@ -5,6 +5,22 @@
 	var overlay = document.getElementById('tkt-plugin-generator-overlay');
 	var submitButton = document.getElementById('tkt-plugin-generator-generator-submit');
 	var result = document.getElementById('tkt-plugin-generator-result');
+	var overlayText = document.getElementById('tkt-generator-overlay-text');
+	var overlayHint = document.getElementById('tkt-generator-overlay-hint');
+	var loaderTimer = null;
+	var loaderMessages = (typeof tktPluginGenerator !== 'undefined' && tktPluginGenerator.messages && tktPluginGenerator.messages.loader) || [
+		{title: 'Generating %s for WordPress', hint: 'Checking the details required by WordPress.'},
+		{title: 'Preparing your WordPress plugin', hint: 'Applying your plugin name, slug, prefix, and metadata.'},
+		{title: 'Assembling WordPress modules', hint: 'Organizing the selected administration, public, and lifecycle files.'},
+		{title: 'Checking Composer dependencies', hint: 'Preparing composer.json without bundling the vendor directory.'},
+		{title: 'Creating your ZIP archive', hint: 'Packaging the generated WordPress plugin for download.'},
+		{title: 'Almost ready', hint: 'Your WordPress plugin download will be available shortly.'}
+	];
+
+	function personalizeLoaderText(text) {
+		var name = humanName ? humanName.value.trim() : '';
+		return text.replace(/%s/g, name || 'your plugin');
+	}
 
 	if (!form || !overlay || !result || typeof tktPluginGenerator === 'undefined') {
 		return;
@@ -134,9 +150,49 @@
 	function setLoading(isLoading) {
 		overlay.classList.toggle('show', isLoading);
 		overlay.setAttribute('aria-hidden', isLoading ? 'false' : 'true');
+		form.setAttribute('aria-busy', isLoading ? 'true' : 'false');
 
 		if (submitButton) {
 			submitButton.disabled = isLoading;
+		}
+
+		if (loaderTimer) {
+			window.clearInterval(loaderTimer);
+			loaderTimer = null;
+		}
+
+		if (isLoading) {
+			var messageIndex = 0;
+
+			function updateLoaderMessage() {
+				var message = loaderMessages[messageIndex] || {};
+
+				if (overlayText && message.title) {
+					overlayText.textContent = personalizeLoaderText(message.title);
+				}
+
+				if (overlayHint && message.hint) {
+					overlayHint.textContent = message.hint;
+				}
+			}
+
+			updateLoaderMessage();
+			loaderTimer = window.setInterval(function () {
+				messageIndex = Math.min(messageIndex + 1, loaderMessages.length - 1);
+				updateLoaderMessage();
+			}, 1800);
+		}
+	}
+
+	function setLoaderMessage(index) {
+		var message = loaderMessages[index] || {};
+
+		if (overlayText && message.title) {
+			overlayText.textContent = personalizeLoaderText(message.title);
+		}
+
+		if (overlayHint && message.hint) {
+			overlayHint.textContent = message.hint;
 		}
 	}
 
@@ -166,6 +222,7 @@
 		result.replaceChildren();
 
 		var title = document.createElement('p');
+		title.className = 'tkt-generator-result-title';
 		var strong = document.createElement('strong');
 		strong.textContent = data.message;
 		title.appendChild(strong);
@@ -193,6 +250,12 @@
 			command.textContent = data.command;
 			result.appendChild(command);
 
+			var download = document.createElement('a');
+			download.className = 'tkt-generator-download';
+			download.href = data.download_url;
+			download.textContent = tktPluginGenerator.messages.downloadZip || 'Download ZIP';
+			result.appendChild(download);
+
 			var copyButton = document.createElement('button');
 			copyButton.type = 'button';
 			copyButton.className = 'tkt-generator-copy';
@@ -201,13 +264,13 @@
 				copyCommand(data.command, copyButton);
 			});
 			result.appendChild(copyButton);
+		} else {
+			var download = document.createElement('a');
+			download.className = 'tkt-generator-download';
+			download.href = data.download_url;
+			download.textContent = tktPluginGenerator.messages.downloadZip || 'Download ZIP';
+			result.appendChild(download);
 		}
-
-		var download = document.createElement('a');
-		download.className = 'tkt-generator-download';
-		download.href = data.download_url;
-		download.textContent = tktPluginGenerator.messages.downloadZip || 'Download ZIP';
-		result.appendChild(download);
 		result.scrollIntoView({behavior: 'smooth', block: 'nearest'});
 
 		try {
@@ -227,6 +290,9 @@
 	];
 	var stepper = document.getElementById('tkt-plugin-generator-steps');
 	var review = document.getElementById('tkt-plugin-generator-review');
+	var previewTree = document.getElementById('tkt-generator-preview-tree');
+	var previewCount = document.getElementById('tkt-generator-preview-count');
+	var previewNote = document.getElementById('tkt-generator-preview-note');
 	var fieldsets = [];
 	var stepButtons = [];
 	var currentStep = 1;
@@ -256,6 +322,147 @@
 	function checkboxValue(fieldId) {
 		var field = document.getElementById(fieldId);
 		return Boolean(field && field.checked);
+	}
+
+	function previewFile(label) {
+		return {type: 'file', label: label};
+	}
+
+	function previewDirectory(label, children) {
+		return {type: 'directory', label: label, children: children || []};
+	}
+
+	function getPreviewTree() {
+		var slug = fieldValue('plugin_slug') || 'plugin-slug';
+		var dependencies = [
+			'include_acf',
+			'include_qm',
+			'include_wpc',
+			'include_us',
+			'include_pc',
+			'include_tm',
+			'include_jwt'
+		].some(checkboxValue);
+		var includeI18n = checkboxValue('include_i18n');
+		var includeLifecycle = checkboxValue('include_lifecycle');
+		var includeUninstall = checkboxValue('include_uninstall');
+		var includeAdmin = checkboxValue('include_admin');
+		var includePublic = checkboxValue('include_public');
+		var includesFiles = [
+			previewFile('class-' + slug + '.php'),
+			previewFile('class-' + slug + '-loader.php'),
+			previewFile('index.php')
+		];
+
+		if (includeI18n) {
+			includesFiles.splice(2, 0, previewFile('class-' + slug + '-i18n.php'));
+		}
+
+		if (includeLifecycle) {
+			includesFiles.splice(2, 0,
+				previewFile('class-' + slug + '-activator.php'),
+				previewFile('class-' + slug + '-deactivator.php')
+			);
+		}
+
+		var root = [
+			previewFile(slug + '.php'),
+			previewFile('index.php'),
+			previewFile('README.txt'),
+			previewFile('LICENSE.txt'),
+			previewFile('.gitignore'),
+			previewDirectory('scf-json/', [previewFile('index.php')]),
+			previewDirectory('includes/', includesFiles)
+		];
+
+		if (includeAdmin) {
+			root.push(previewDirectory('admin/', [
+				previewFile('class-' + slug + '-admin.php'),
+				previewFile('index.php'),
+				previewDirectory('css/', [previewFile(slug + '-admin.css')]),
+				previewDirectory('js/', [previewFile(slug + '-admin.js')]),
+				previewDirectory('partials/', [previewFile(slug + '-admin-display.php')])
+			]));
+		}
+
+		if (includePublic) {
+			root.push(previewDirectory('public/', [
+				previewFile('class-' + slug + '-public.php'),
+				previewFile('index.php'),
+				previewDirectory('css/', [previewFile(slug + '-public.css')]),
+				previewDirectory('js/', [previewFile(slug + '-public.js')]),
+				previewDirectory('partials/', [previewFile(slug + '-public-display.php')])
+			]));
+		}
+
+		if (includeI18n) {
+			root.push(previewDirectory('languages/', [previewFile(slug + '.pot')]));
+		}
+
+		if (includeUninstall) {
+			root.push(previewFile('uninstall.php'));
+		}
+
+		if (dependencies) {
+			root.push(previewFile('composer.json'), previewFile('COMPOSER-INSTALL.md'));
+		}
+
+		return previewDirectory(slug + '/', root);
+	}
+
+	function countPreviewItems(node, counts) {
+		if (node.type === 'directory') {
+			counts.directories += 1;
+			node.children.forEach(function (child) {
+				countPreviewItems(child, counts);
+			});
+		} else {
+			counts.files += 1;
+		}
+	}
+
+	function createPreviewList(nodes) {
+		var list = document.createElement('ul');
+		list.className = 'tkt-generator-preview-list';
+
+		nodes.forEach(function (node) {
+			var item = document.createElement('li');
+			item.className = 'tkt-generator-preview-item ' + node.type;
+
+			var label = document.createElement('span');
+			label.className = 'tkt-generator-preview-label';
+			label.textContent = node.type === 'directory' ? '▾ ' + node.label : '· ' + node.label;
+			item.appendChild(label);
+
+			if (node.type === 'directory' && node.children.length) {
+				item.appendChild(createPreviewList(node.children));
+			}
+
+			list.appendChild(item);
+		});
+
+		return list;
+	}
+
+	function renderPreview() {
+		if (!previewTree) {
+			return;
+		}
+
+		var tree = getPreviewTree();
+		var counts = {files: 0, directories: 0};
+		countPreviewItems(tree, counts);
+		previewTree.replaceChildren(createPreviewList([tree]));
+
+		if (previewCount) {
+			previewCount.textContent = counts.files + ' files · ' + counts.directories + ' folders';
+		}
+
+		if (previewNote) {
+			previewNote.textContent = checkboxValue('include_acf') || checkboxValue('include_qm') || checkboxValue('include_wpc') || checkboxValue('include_us') || checkboxValue('include_pc') || checkboxValue('include_tm') || checkboxValue('include_jwt')
+				? 'Composer dependencies are listed, but vendor/ is never included. Run Composer after extracting the ZIP.'
+				: 'This is an estimate based on your selections. The vendor directory is never included in the generated ZIP.';
+		}
 	}
 
 	function createButton(label, className, handler) {
@@ -303,6 +510,7 @@
 		}
 
 		review.replaceChildren();
+		renderPreview();
 
 		var reviewTitles = wizardConfig.reviewTitles || {};
 		appendReviewSection(
@@ -547,6 +755,7 @@
 
 		form.addEventListener('input', saveDraft);
 		form.addEventListener('change', saveDraft);
+		form.addEventListener('change', renderPreview);
 		if (publicModule) {
 			publicModule.addEventListener('change', syncArchitectureControls);
 		}
@@ -600,6 +809,7 @@
 					);
 				}
 
+				setLoaderMessage(loaderMessages.length - 1);
 				showSuccess(response.data);
 			})
 			.catch(function (error) {

@@ -4,7 +4,7 @@ Donate link: https://www.tukutoi.com/
 Tags: plugin, generator, boilerplate
 Requires at least: 4.9
 Tested up to: 6.0
-Stable tag: 2.3.0
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,8 @@ By default the generator operates on the Better WordPress Plugin Boilerplate](ht
 The generator interface uses Tailwind CSS compiled locally and distributed with the plugin. It does not load Tailwind from a CDN and Node.js is not required on the production WordPress site.
 
 For development, run `npm install` and then `npm run build` after changing the styles in `assets/css/tkt-plugin-generator-tailwind.css`.
+
+The generated plugin includes a `.gitignore` with rules for dependencies, local configuration, logs and build artifacts. The review step also shows an estimated file tree before the ZIP is created.
 
 If you replace the Source with your own custom data, you must ensure that the strings inside the source match the strings that will be replaced.
 

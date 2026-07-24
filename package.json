@@ -1,7 +1,7 @@
 {
   "name": "frakt-wp-generator-assets",
   "private": true,
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Herramientas de desarrollo para los estilos del Frakt WP Generator.",
   "scripts": {
     "build": "tailwindcss -i ./assets/css/tkt-plugin-generator-tailwind.css -o ./public/css/tkt-plugin-generator-tailwind.css --minify",

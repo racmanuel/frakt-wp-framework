@@ -116,6 +116,32 @@ class Tkt_Plugin_Generator_Public
       'composerInstruction'  => __('After extracting the ZIP, run this command before activating the plugin:', 'tkt-plugin-generator'),
       'copyCommand'          => __('Copy command', 'tkt-plugin-generator'),
       'downloadZip'          => __('Download ZIP', 'tkt-plugin-generator'),
+    'loader' => [
+        [
+          'title' => __('Generating %s for WordPress', 'tkt-plugin-generator'),
+          'hint'  => __('Checking the details required by WordPress.', 'tkt-plugin-generator'),
+        ],
+        [
+         'title' => __('Preparing your WordPress plugin', 'tkt-plugin-generator'),
+         'hint'  => __('Applying your plugin name, slug, prefix, and metadata.', 'tkt-plugin-generator'),
+        ],
+        [
+         'title' => __('Assembling WordPress modules', 'tkt-plugin-generator'),
+         'hint'  => __('Organizing the selected administration, public, and lifecycle files.', 'tkt-plugin-generator'),
+        ],
+        [
+         'title' => __('Checking Composer dependencies', 'tkt-plugin-generator'),
+         'hint'  => __('Preparing composer.json without bundling the vendor directory.', 'tkt-plugin-generator'),
+        ],
+        [
+         'title' => __('Creating your ZIP archive', 'tkt-plugin-generator'),
+         'hint'  => __('Packaging the generated WordPress plugin for download.', 'tkt-plugin-generator'),
+        ],
+        [
+         'title' => __('Almost ready', 'tkt-plugin-generator'),
+         'hint'  => __('Your WordPress plugin download will be available shortly.', 'tkt-plugin-generator'),
+        ],
+    ],
     ],
     'autoFill' => [
      'siteUrl'             => untrailingslashit(home_url('/')),
@@ -361,7 +387,7 @@ class Tkt_Plugin_Generator_Public
   );
 
   return [
-   'message'      => __('Plugin generado correctamente.', 'tkt-plugin-generator'),
+  'message'      => __('Plugin generated successfully.', 'tkt-plugin-generator'),
    'download_url' => add_query_arg(
     [
      'action' => 'tkt_download_plugin',
@@ -386,8 +412,8 @@ class Tkt_Plugin_Generator_Public
 
   if (empty($token) || ! is_array($data) || empty($data['path']) || ! is_file($data['path'])) {
    wp_die(
-    esc_html__('La descarga no existe o ha expirado. Genera nuevamente el plugin.', 'tkt-plugin-generator'),
-    esc_html__('Descarga no disponible', 'tkt-plugin-generator'),
+    esc_html__('The download does not exist or has expired. Generate the plugin again.', 'tkt-plugin-generator'),
+    esc_html__('Download unavailable', 'tkt-plugin-generator'),
     ['response' => 404]
    );
   }
@@ -402,7 +428,7 @@ class Tkt_Plugin_Generator_Public
   ) {
    wp_die(
     esc_html__('The download path is not valid.', 'tkt-plugin-generator'),
-    esc_html__('Descarga no disponible', 'tkt-plugin-generator'),
+    esc_html__('Download unavailable', 'tkt-plugin-generator'),
     ['response' => 403]
    );
   }

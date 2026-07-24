@@ -15,6 +15,8 @@ Frakt Plugin Generator is a development tool built on top of the [Frakt WP Frame
 - 📦 Supports custom plugin boilerplates.
 - 🧠 Clean, minimal structure ready for Git or deployment.
 - 🎨 Local Tailwind CSS build with no CDN dependency in production.
+- 🌳 File tree preview before generating the plugin ZIP.
+- ⏳ Accessible generation loader with live preparation states.
 
 ## 🎨 Local styles
 
@@ -28,6 +30,8 @@ npm run build
 ```
 
 The source stylesheet is `assets/css/tkt-plugin-generator-tailwind.css` and the generated distributable file is `public/css/tkt-plugin-generator-tailwind.css`. Do not include `node_modules` in plugin packages.
+
+Generated plugins include a `.gitignore` for dependencies, local configuration, logs and build artifacts. The final review step displays an estimated file tree based on the selected modules and dependencies; `vendor/` is intentionally excluded from generated ZIP files.
 
 ---
 

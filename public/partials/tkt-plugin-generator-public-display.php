@@ -17,12 +17,26 @@
 
 <!-- Loading Overlay -->
 <div id="tkt-plugin-generator-overlay" aria-hidden="true">
-	<div class="tkt-generator-spinner"></div>
-	<div class="tkt-generator-overlay-text">
-		<?php esc_html_e( 'Generating plugin...', 'tkt-plugin-generator' ); ?>
-	</div>
-	<div class="tkt-generator-overlay-hint">
-		<?php esc_html_e( 'This may take a few seconds. Please do not reload the page.', 'tkt-plugin-generator' ); ?>
+	<div class="tkt-generator-loader-card" role="status" aria-live="polite">
+		<div class="tkt-generator-loader-content">
+			<div id="tkt-generator-overlay-text" class="tkt-generator-overlay-text">
+				<?php esc_html_e( 'Generating plugin...', 'tkt-plugin-generator' ); ?>
+			</div>
+			<div id="tkt-generator-overlay-hint" class="tkt-generator-overlay-hint">
+				<?php esc_html_e( 'This may take a few seconds. Please do not reload the page.', 'tkt-plugin-generator' ); ?>
+			</div>
+			<div class="tkt-generator-loader-track" aria-hidden="true">
+				<span class="tkt-generator-loader-bar"></span>
+			</div>
+			<p class="tkt-generator-loader-credit">
+				<?php esc_html_e( 'Made with Code and', 'tkt-plugin-generator' ); ?>
+				<svg class="tkt-generator-heart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+					<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"></path>
+				</svg>
+				<?php esc_html_e( 'by', 'tkt-plugin-generator' ); ?>
+				<a href="https://racmanuel.dev/" target="_blank" rel="noopener noreferrer">racmanuel.dev</a>
+			</p>
+		</div>
 	</div>
 </div>
 
@@ -272,6 +286,19 @@
     </div>
 	<div class="form-input-container tkt-generator-review" data-wizard-step="5">
 		<div id="tkt-plugin-generator-review" aria-live="polite"></div>
+		<section class="tkt-generator-preview" aria-labelledby="tkt-generator-preview-title">
+			<div class="tkt-generator-preview-heading">
+				<div>
+					<p class="tkt-generator-preview-eyebrow"><?php esc_html_e( 'Before you build', 'tkt-plugin-generator' ); ?></p>
+					<h3 id="tkt-generator-preview-title"><?php esc_html_e( 'Generated plugin preview', 'tkt-plugin-generator' ); ?></h3>
+				</div>
+				<span id="tkt-generator-preview-count" class="tkt-generator-preview-count"></span>
+			</div>
+			<div id="tkt-generator-preview-tree" class="tkt-generator-preview-tree" aria-live="polite"></div>
+			<p id="tkt-generator-preview-note" class="tkt-generator-preview-note">
+				<?php esc_html_e( 'This is an estimate based on your selections. The vendor directory is never included in the generated ZIP.', 'tkt-plugin-generator' ); ?>
+			</p>
+		</section>
 	</div>
 	<div class="form-input-container" data-wizard-step="5">
 		<button id="tkt-plugin-generator-generator-submit" type="submit" value="tkt_plugin_generator_submit" name="tkt_plugin_generator_submit"> <?php esc_html_e( 'Generate', 'tkt-plugin-generator' ); ?> </button>
@@ -280,5 +307,14 @@
 	</form>
 
 	<div id="tkt-plugin-generator-result" class="tkt-generator-result" hidden aria-live="polite"></div>
+
+	<p class="tkt-generator-signature">
+		<?php esc_html_e( 'Made with Code and', 'tkt-plugin-generator' ); ?>
+		<svg class="tkt-generator-heart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+			<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"></path>
+		</svg>
+		<?php esc_html_e( 'by', 'tkt-plugin-generator' ); ?>
+		<a href="https://racmanuel.dev/" target="_blank" rel="noopener noreferrer">racmanuel.dev</a>
+	</p>
 </div>
 
