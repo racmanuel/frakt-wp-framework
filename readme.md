@@ -8,10 +8,26 @@ Frakt Plugin Generator is a development tool built on top of the [Frakt WP Frame
 - 🧱 Based on **Frakt WP Framework**, optimized for modern development.
 - 🗃️ Includes **Secure Custom Fields** by default.
 - 🧩 Automatically generates a `scf-json` folder inside the plugin with your field and CPT definitions.
+- 🧭 Five-step generator with validation, review, and resumable form state.
+- 🏗️ Optional administration, public, shortcode, i18n, lifecycle, and uninstall modules.
 - ♻️ Easily reusable across installations – copy/paste the generated plugin without losing your structure.
 - ⚙️ Loads development tools automatically when `WP_DEBUG` is enabled.
 - 📦 Supports custom plugin boilerplates.
 - 🧠 Clean, minimal structure ready for Git or deployment.
+- 🎨 Local Tailwind CSS build with no CDN dependency in production.
+
+## 🎨 Local styles
+
+The generator interface uses a locally compiled Tailwind CSS stylesheet. The compiled file is included in the plugin, so the production WordPress site does not need Node.js, npm, or a connection to a CSS CDN.
+
+For development, install the local tooling and compile the stylesheet:
+
+```bash
+npm install
+npm run build
+```
+
+The source stylesheet is `assets/css/tkt-plugin-generator-tailwind.css` and the generated distributable file is `public/css/tkt-plugin-generator-tailwind.css`. Do not include `node_modules` in plugin packages.
 
 ---
 

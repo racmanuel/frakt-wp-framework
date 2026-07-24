@@ -50,6 +50,7 @@ define( 'PLUGIN_NAME_BASE_NAME', plugin_basename( __FILE__ ) );
  * This action is documented in includes/class-plugin-name-activator.php
  * Full security checks are performed inside the class.
  */
+/* TKT_GEN_LIFECYCLE_START */
 function pfx_activate() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-plugin-name-activator.php';
 	Plugin_Name_Activator::activate();
@@ -68,6 +69,7 @@ function pfx_deactivate() {
 
 register_activation_hook( __FILE__, 'pfx_activate' );
 register_deactivation_hook( __FILE__, 'pfx_deactivate' );
+/* TKT_GEN_LIFECYCLE_END */
 
 /**
  * The core plugin class that is used to define internationalization,

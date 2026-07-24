@@ -1,159 +1,83 @@
 /**
- * All of the CSS for your public-facing functionality should be
- * included in this file.
+ * Runtime behaviour for the generator UI.
+ *
+ * The visual system is compiled locally from Tailwind in
+ * public/css/tkt-plugin-generator-tailwind.css. This file intentionally only
+ * contains states that are toggled by JavaScript or require browser defaults.
  */
 
 #tkt-plugin-generator-generator {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-#tkt-plugin-generator-generator input {
-    min-width: 300px;
-}
-#tkt-plugin-generator-generator div {
-    padding: 16px;
-}
-#tkt-plugin-generator-generator label {
-    padding: 16px;
-}
-div.form-input-container{
-    width: 100%;
+	width: 100%;
 }
 
-.tkt-generator-autofill-hint {
-    display: block;
-    margin-top: 6px;
-    color: #646970;
+#tkt-plugin-generator-generator .tkt-generator-step[hidden] {
+	display: none;
+}
+
+#tkt-plugin-generator-generator .tkt-generator-step {
+	min-width: 0;
+}
+
+#tkt-plugin-generator-generator .tkt-generator-navigation button,
+#tkt-plugin-generator-generator-submit,
+.tkt-generator-copy,
+.tkt-generator-download {
+	font-family: inherit;
+}
+
+#tkt-plugin-generator-result[hidden] {
+	display: none;
+}
+
+.tkt-generator-result p:first-child {
+	margin-top: 0;
+}
+
+.tkt-generator-result p:last-child {
+	margin-bottom: 0;
 }
 
 /* =============================================
-   Loading Overlay
+   Loading overlay
    ============================================= */
 #tkt-plugin-generator-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.75);
-    z-index: 999999;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 999999;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
 }
 
 #tkt-plugin-generator-overlay.show {
-    display: flex;
+	display: flex;
 }
 
 .tkt-generator-spinner {
-    width: 60px;
-    height: 60px;
-    border: 6px solid rgba(255, 255, 255, 0.2);
-    border-top-color: #ffffff;
-    border-radius: 50%;
-    animation: tkt-spin 0.8s linear infinite;
+	animation: tkt-spin 0.8s linear infinite;
 }
 
 @keyframes tkt-spin {
-    to {
-        transform: rotate(360deg);
-    }
+	to {
+		transform: rotate(360deg);
+	}
 }
 
-.tkt-generator-overlay-text {
-    color: #fff;
-    font-size: 1.5em;
-    margin-top: 24px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+@media (max-width: 639px) {
+	#tkt-plugin-generator-generator .tkt-generator-navigation button,
+	#tkt-plugin-generator-generator-submit,
+	.tkt-generator-copy,
+	.tkt-generator-download {
+		width: 100%;
+	}
 }
 
-.tkt-generator-overlay-hint {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9em;
-    margin-top: 8px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* =============================================
-   Feedback Messages
-   ============================================= */
-.tkt-generator-message {
-    padding: 16px 20px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 1em;
-    line-height: 1.5;
-    width: 100%;
-}
-
-.tkt-generator-message.error {
-    background: #fef0f0;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
-}
-
-.tkt-generator-message.success {
-    background: #f0fef0;
-    border: 1px solid #c6f5c6;
-    color: #1c7224;
-}
-
-.tkt-generator-composer-notice {
-    padding: 12px;
-    border-left: 4px solid #dba617;
-    background: #fff8e5;
-}
-
-.tkt-generator-result {
-    width: 100%;
-    margin-top: 20px;
-    padding: 18px 20px;
-    border-radius: 6px;
-    box-sizing: border-box;
-}
-
-.tkt-generator-result.success {
-    color: #1c7224;
-    border: 1px solid #c6f5c6;
-    background: #f0fef0;
-}
-
-.tkt-generator-result.error {
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    background: #fef0f0;
-}
-
-.tkt-generator-command {
-    display: block;
-    margin: 12px 0;
-    padding: 12px;
-    overflow-wrap: anywhere;
-    color: #f8f8f2;
-    background: #272822;
-}
-
-.tkt-generator-copy,
-.tkt-generator-download {
-    display: inline-block;
-    margin: 8px 12px 0 0;
-    padding: 10px 16px;
-    border: 0;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.tkt-generator-copy {
-    color: #1d2327;
-    background: #e2e4e7;
-}
-
-.tkt-generator-download {
-    color: #fff;
-    background: #2271b1;
+@media (prefers-reduced-motion: reduce) {
+	.tkt-generator-spinner {
+		animation-duration: 1.8s;
+	}
 }

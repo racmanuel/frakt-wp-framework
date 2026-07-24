@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .tkt-generator-shell {
+    @apply tkt-mx-auto tkt-max-w-5xl tkt-rounded-2xl tkt-border tkt-border-slate-200 tkt-bg-white tkt-p-4 tkt-shadow-panel sm:tkt-p-6 lg:tkt-p-8;
+  }
+
+  .tkt-generator-intro {
+    @apply tkt-mb-7 tkt-rounded-2xl tkt-border-0 tkt-bg-charcoal-500 tkt-p-5 sm:tkt-p-6;
+  }
+
+  .tkt-generator-eyebrow {
+    @apply tkt-mb-2 tkt-text-xs tkt-font-bold tkt-uppercase tkt-tracking-widest tkt-text-wordpress-500;
+  }
+
+  .tkt-generator-intro h2 {
+    @apply tkt-m-0 tkt-text-2xl tkt-font-bold tkt-tracking-tight tkt-text-white sm:tkt-text-3xl;
+  }
+
+  .tkt-generator-intro p:last-child {
+    @apply tkt-mb-0 tkt-mt-3 tkt-max-w-3xl tkt-text-sm tkt-leading-6 tkt-text-white/75 sm:tkt-text-base;
+  }
+
+  .tkt-generator-steps {
+    @apply tkt-mb-6 tkt-grid tkt-grid-cols-1 tkt-gap-2 sm:tkt-grid-cols-5;
+  }
+
+  .tkt-generator-step-button {
+    @apply tkt-flex tkt-min-h-12 tkt-items-center tkt-justify-center tkt-rounded-xl tkt-border tkt-border-slate-200 tkt-bg-slate-50 tkt-px-3 tkt-py-2 tkt-text-center tkt-text-xs tkt-font-semibold tkt-leading-5 tkt-text-slate-600 tkt-transition-colors hover:tkt-border-wordpress-200 hover:tkt-bg-wordpress-50 sm:tkt-text-sm;
+  }
+
+  .tkt-generator-step-button.is-active {
+    @apply tkt-border-wordpress-500 tkt-bg-wordpress-500 tkt-text-charcoal-700 tkt-shadow-sm hover:tkt-border-wordpress-500 hover:tkt-bg-wordpress-500;
+  }
+
+  .tkt-generator-step-button.is-complete {
+    @apply tkt-border-wordpress-200 tkt-bg-wordpress-50 tkt-text-charcoal-500;
+  }
+
+  .tkt-generator-step-button:disabled {
+    @apply tkt-cursor-not-allowed tkt-opacity-50 hover:tkt-border-slate-200 hover:tkt-bg-slate-50;
+  }
+
+  #tkt-plugin-generator-generator .tkt-generator-step {
+    @apply tkt-m-0 tkt-w-full tkt-rounded-2xl tkt-border tkt-border-slate-200 tkt-bg-white tkt-p-4 tkt-shadow-sm sm:tkt-p-7;
+  }
+
+  #tkt-plugin-generator-generator .tkt-generator-step > legend {
+    @apply tkt-mb-6 tkt-px-1 tkt-text-xl tkt-font-bold tkt-tracking-tight tkt-text-charcoal-500 sm:tkt-text-2xl;
+  }
+
+  #tkt-plugin-generator-generator .form-input-container {
+    @apply tkt-mb-5 tkt-w-full;
+  }
+
+  #tkt-plugin-generator-generator .form-input-container > label:not([for^='include_']) {
+    @apply tkt-mb-2 tkt-flex tkt-items-center tkt-gap-2 tkt-p-0 tkt-text-sm tkt-font-semibold tkt-text-charcoal-500;
+  }
+
+  #tkt-plugin-generator-generator .form-input-container > label:not([for^='include_']) svg {
+    @apply tkt-h-4 tkt-w-4 tkt-text-slate-400;
+  }
+
+  #tkt-plugin-generator-generator input:not([type='checkbox']):not([type='hidden']),
+  #tkt-plugin-generator-generator textarea,
+  #tkt-plugin-generator-generator select {
+    @apply tkt-m-0 tkt-min-h-12 tkt-w-full tkt-rounded-xl tkt-border tkt-border-slate-300 tkt-bg-white tkt-px-4 tkt-py-3 tkt-text-sm tkt-text-charcoal-500 tkt-shadow-sm tkt-transition placeholder:tkt-text-slate-400 hover:tkt-border-slate-400 focus:tkt-border-wordpress-500 focus:tkt-outline-none focus:tkt-ring-4 focus:tkt-ring-wordpress-100;
+  }
+
+  #tkt-plugin-generator-generator textarea {
+    @apply tkt-min-h-32 tkt-resize-y;
+  }
+
+  #tkt-plugin-generator-generator input:invalid:not(:focus),
+  #tkt-plugin-generator-generator textarea:invalid:not(:focus),
+  #tkt-plugin-generator-generator select:invalid:not(:focus) {
+    @apply tkt-border-red-300;
+  }
+
+  .tkt-generator-autofill-hint,
+  .tkt-generator-field-hint {
+    @apply tkt-mt-2 tkt-block tkt-text-xs tkt-leading-5 tkt-text-slate-500;
+  }
+
+  .tkt-generator-architecture,
+  .tkt-generator-dependencies {
+    @apply tkt-rounded-2xl tkt-border tkt-border-slate-200 tkt-bg-slate-50 tkt-p-4 sm:tkt-p-5;
+  }
+
+  .tkt-generator-architecture > p:first-child,
+  .tkt-generator-dependencies > p:first-child {
+    @apply tkt-mb-4 tkt-text-lg tkt-font-bold tkt-text-charcoal-500;
+  }
+
+  .tkt-generator-architecture > label[for^='include_'],
+  .tkt-generator-dependencies > label[for^='include_'] {
+    @apply tkt-mb-2 tkt-flex tkt-min-h-12 tkt-cursor-pointer tkt-items-center tkt-gap-3 tkt-rounded-xl tkt-border tkt-border-slate-200 tkt-bg-white tkt-px-4 tkt-py-3 tkt-text-sm tkt-font-medium tkt-text-charcoal-500 tkt-transition hover:tkt-border-wordpress-200 hover:tkt-bg-wordpress-50;
+  }
+
+  #tkt-plugin-generator-generator input[type='checkbox'] {
+    @apply tkt-m-0 tkt-h-5 tkt-w-5 tkt-shrink-0 tkt-rounded tkt-border-slate-300 tkt-text-wordpress-500 focus:tkt-ring-2 focus:tkt-ring-wordpress-200;
+  }
+
+  .tkt-generator-composer-notice {
+    @apply tkt-mb-5 tkt-rounded-xl tkt-border tkt-border-wordpress-200 tkt-bg-wordpress-50 tkt-p-4 tkt-text-sm tkt-leading-6 tkt-text-charcoal-500;
+  }
+
+  .tkt-generator-navigation {
+    @apply tkt-mt-7 tkt-flex tkt-w-full tkt-flex-col-reverse tkt-gap-3 tkt-border-t tkt-border-slate-100 tkt-pt-5 sm:tkt-flex-row sm:tkt-items-center sm:tkt-justify-between;
+  }
+
+  .tkt-generator-navigation button,
+  #tkt-plugin-generator-generator-submit,
+  .tkt-generator-copy,
+  .tkt-generator-download {
+    @apply tkt-inline-flex tkt-min-h-11 tkt-cursor-pointer tkt-items-center tkt-justify-center tkt-rounded-xl tkt-border-0 tkt-px-5 tkt-py-3 tkt-text-sm tkt-font-semibold tkt-no-underline tkt-transition hover:tkt--translate-y-0.5 focus:tkt-outline-none focus:tkt-ring-4 focus:tkt-ring-wordpress-100 disabled:tkt-cursor-not-allowed disabled:tkt-opacity-60;
+  }
+
+  .tkt-generator-next,
+  #tkt-plugin-generator-generator-submit,
+  .tkt-generator-download {
+    @apply tkt-bg-charcoal-500 tkt-text-white tkt-shadow-sm hover:tkt-bg-charcoal-600;
+  }
+
+  .tkt-generator-next,
+  #tkt-plugin-generator-generator-submit {
+    @apply sm:tkt-ml-auto;
+  }
+
+  .tkt-generator-previous,
+  .tkt-generator-copy {
+    @apply tkt-border tkt-border-slate-200 tkt-bg-white tkt-text-slate-700 hover:tkt-bg-slate-50;
+  }
+
+  .tkt-generator-previous {
+    @apply tkt-border-charcoal-500 tkt-bg-charcoal-500 tkt-text-white hover:tkt-border-wordpress-500 hover:tkt-bg-wordpress-500 hover:tkt-text-charcoal-700;
+  }
+
+  .tkt-generator-review-section {
+    @apply tkt-relative tkt-mb-4 tkt-rounded-2xl tkt-border tkt-border-slate-200 tkt-bg-slate-50 tkt-p-4 sm:tkt-p-5;
+  }
+
+  .tkt-generator-review-section h3 {
+    @apply tkt-m-0 tkt-mb-4 tkt-pr-20 tkt-text-base tkt-font-bold tkt-text-charcoal-500;
+  }
+
+  .tkt-generator-review-section dl {
+    @apply tkt-m-0 tkt-grid tkt-grid-cols-1 tkt-gap-2 sm:tkt-grid-cols-[minmax(9rem,0.35fr)_1fr];
+  }
+
+  .tkt-generator-review-section dt {
+    @apply tkt-font-semibold tkt-text-slate-600;
+  }
+
+  .tkt-generator-review-section dd {
+    @apply tkt-m-0 tkt-break-words tkt-text-charcoal-500;
+  }
+
+  .tkt-generator-edit {
+    @apply tkt-absolute tkt-right-4 tkt-top-4 tkt-rounded-lg tkt-border-0 tkt-bg-transparent tkt-px-2 tkt-py-1 tkt-text-sm tkt-font-semibold tkt-text-charcoal-500 hover:tkt-bg-wordpress-100 focus:tkt-outline-none focus:tkt-ring-2 focus:tkt-ring-wordpress-200;
+  }
+
+  #tkt-plugin-generator-result {
+    @apply tkt-mt-5 tkt-w-full tkt-rounded-2xl tkt-border tkt-p-5 tkt-text-sm tkt-leading-6;
+  }
+
+  #tkt-plugin-generator-result.success {
+    @apply tkt-border-wordpress-200 tkt-bg-wordpress-50 tkt-text-charcoal-500;
+  }
+
+  #tkt-plugin-generator-result.error {
+    @apply tkt-border-red-200 tkt-bg-red-50 tkt-text-red-900;
+  }
+
+  .tkt-generator-command {
+    @apply tkt-my-3 tkt-block tkt-overflow-x-auto tkt-rounded-xl tkt-bg-slate-900 tkt-p-4 tkt-font-mono tkt-text-xs tkt-text-slate-100;
+  }
+
+  #tkt-plugin-generator-overlay {
+    @apply tkt-bg-charcoal-700/90 tkt-p-6 tkt-backdrop-blur-sm;
+  }
+
+  .tkt-generator-spinner {
+    @apply tkt-h-14 tkt-w-14 tkt-rounded-full tkt-border-4 tkt-border-white/20 tkt-border-t-white;
+  }
+
+  .tkt-generator-overlay-text {
+    @apply tkt-mt-6 tkt-text-center tkt-text-xl tkt-font-semibold tkt-text-white;
+  }
+
+  .tkt-generator-overlay-hint {
+    @apply tkt-mt-2 tkt-max-w-md tkt-text-center tkt-text-sm tkt-text-slate-300;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tkt-generator-step-button,
+    .tkt-generator-navigation button,
+    #tkt-plugin-generator-generator-submit,
+    .tkt-generator-copy,
+    .tkt-generator-download {
+      @apply tkt-transition-none;
+    }
+  }
+}

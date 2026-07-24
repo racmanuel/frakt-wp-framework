@@ -92,9 +92,15 @@ class Plugin_Name
         $this->plugin_prefix = 'pfx_';
 
         $this->load_dependencies();
+        /* TKT_GEN_I18N_START */
         $this->set_locale();
+        /* TKT_GEN_I18N_END */
+        /* TKT_GEN_ADMIN_START */
         $this->define_admin_hooks();
+        /* TKT_GEN_ADMIN_END */
+        /* TKT_GEN_PUBLIC_START */
         $this->define_public_hooks();
+        /* TKT_GEN_PUBLIC_END */
 
     }
 
@@ -233,27 +239,34 @@ class Plugin_Name
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-plugin-name-loader.php';
 
+        /* TKT_GEN_I18N_START */
         /**
          * The class responsible for defining internationalization functionality
          * of the plugin.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-plugin-name-i18n.php';
+        /* TKT_GEN_I18N_END */
 
+        /* TKT_GEN_ADMIN_START */
         /**
          * The class responsible for defining all actions that occur in the admin area.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-plugin-name-admin.php';
+        /* TKT_GEN_ADMIN_END */
 
+        /* TKT_GEN_PUBLIC_START */
         /**
          * The class responsible for defining all actions that occur in the public-facing
          * side of the site.
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-plugin-name-public.php';
+        /* TKT_GEN_PUBLIC_END */
 
         $this->loader = new Plugin_Name_Loader();
 
     }
 
+    /* TKT_GEN_I18N_START */
     /**
      * Define the locale for this plugin for internationalization.
      *
@@ -271,7 +284,9 @@ class Plugin_Name
         $this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
 
     }
+    /* TKT_GEN_I18N_END */
 
+    /* TKT_GEN_ADMIN_START */
     /**
      * Register all of the hooks related to the admin area functionality
      * of the plugin.
@@ -302,7 +317,9 @@ class Plugin_Name
         // Hook to disable SCF plugin update notifications
         $this->loader->add_filter('acf/settings/show_updates', $plugin_admin, 'scf_show_updates');
     }
+    /* TKT_GEN_ADMIN_END */
 
+    /* TKT_GEN_PUBLIC_START */
     /**
      * Register all of the hooks related to the public-facing functionality
      * of the plugin.
@@ -318,10 +335,13 @@ class Plugin_Name
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
         $this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
 
+        /* TKT_GEN_SHORTCODE_START */
         // Shortcode name must be the same as in shortcode_atts() third parameter.
         $this->loader->add_shortcode($this->get_plugin_prefix() . 'shortcode', $plugin_public, 'pfx_shortcode_func');
+        /* TKT_GEN_SHORTCODE_END */
 
     }
+    /* TKT_GEN_PUBLIC_END */
 
     /**
      * Run the loader to execute all of the hooks with WordPress.
