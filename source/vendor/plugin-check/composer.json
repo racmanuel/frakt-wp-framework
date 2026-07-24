@@ -9,11 +9,15 @@
     "automattic/vipwpcs": "^3.0.0",
     "composer/installers": "^2.2",
     "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
+    "nikic/php-parser": "^4",
+    "nyholm/psr7": "^1.8",
+    "patrickschur/language-detection": "^5.3",
+    "php-http/curl-client": "^2.3",
     "plugin-check/phpcs-sniffs": "@dev",
-    "wp-coding-standards/wpcs": "^3.1.0"
+    "wp-coding-standards/wpcs": "^3.2.0"
   },
   "require-dev": {
-    "phpcompatibility/php-compatibility": "^9.3",
+    "phpcompatibility/php-compatibility": "dev-develop",
     "phpmd/phpmd": "^2.9",
     "phpstan/extension-installer": "^1.2",
     "phpstan/phpstan": "^1.10",
@@ -21,12 +25,12 @@
     "szepeviktor/phpstan-wordpress": "^1.1",
     "wp-cli/extension-command": "^2.1",
     "wp-cli/wp-cli": "^2.8",
-    "wp-cli/wp-cli-tests": "^4.2.9",
+    "wp-cli/wp-cli-tests": "^5.0.0",
     "wp-cli/language-command": "^2.0",
     "wp-cli/i18n-command": "^2.6",
     "wp-cli/entity-command": "^2.8",
-    "wp-phpunit/wp-phpunit": "^6.3",
-    "yoast/phpunit-polyfills": "^1.0"
+    "wp-phpunit/wp-phpunit": "^7.0",
+    "yoast/phpunit-polyfills": "^4.0.0"
   },
   "repositories": [
     {
@@ -54,11 +58,14 @@
       "composer/installers": true,
       "cweagans/composer-patches": false,
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "phpstan/extension-installer": true
+      "phpstan/extension-installer": true,
+      "php-http/discovery": true
     },
     "platform": {
       "php": "7.4"
-    }
+    },
+    "sort-packages": true,
+    "autoloader-suffix": "Plugin_Check_Plugin"
   },
   "scripts": {
     "behat": "BEHAT_FEATURES_FOLDER=tests/behat/features run-behat-tests",
@@ -67,6 +74,7 @@
     "lint": "phpcs --standard=phpcs.xml.dist",
     "phpmd": "phpmd . text phpmd.xml",
     "phpstan": "phpstan analyse --memory-limit=2048M",
+    "generate-wp-functions-since-data": "php tools/generate-wp-function-since-data.php --wordpress-dir=../../../ --output=includes/Vars/wp-functions-since.json",
     "prepare-behat-tests": "install-package-tests",
     "test": "phpunit"
   },
@@ -77,6 +85,7 @@
     "lint": "Detect coding standards issues",
     "phpmd": "Run PHP mess detector",
     "phpstan": "Run static analysis",
+    "generate-wp-functions-since-data": "Generate the WordPress function @since dataset used by wp_functions_compatibility check",
     "prepare-behat-tests": "Prepare functional tests",
     "test": "Run unit tests"
   }

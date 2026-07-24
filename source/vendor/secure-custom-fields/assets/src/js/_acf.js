@@ -149,7 +149,9 @@
 			}
 			if ( reqWidth > seed.length ) {
 				// so short we pad
-				return Array( 1 + ( reqWidth - seed.length ) ).join( '0' ) + seed;
+				return (
+					Array( 1 + ( reqWidth - seed.length ) ).join( '0' ) + seed
+				);
 			}
 			return seed;
 		};
@@ -208,7 +210,10 @@
 			? matches
 					.map( function ( s, i ) {
 						var c = s.charAt( 0 );
-						return ( i === 0 ? c.toLowerCase() : c.toUpperCase() ) + s.slice( 1 );
+						return (
+							( i === 0 ? c.toLowerCase() : c.toUpperCase() ) +
+							s.slice( 1 )
+						);
 					} )
 					.join( '' )
 			: '';
@@ -576,9 +581,12 @@
 			'&quot;': '"',
 			'&#39;': "'",
 		};
-		return ( '' + string ).replace( /&amp;|&lt;|&gt;|&quot;|&#39;/g, function ( entity ) {
-			return htmlUnescapes[ entity ];
-		} );
+		return ( '' + string ).replace(
+			/&amp;|&lt;|&gt;|&quot;|&#39;/g,
+			function ( entity ) {
+				return htmlUnescapes[ entity ];
+			}
+		);
 	};
 
 	// Tests.
@@ -603,14 +611,48 @@
 	 *
 	 * @date	08/06/2020
 	 * @since	ACF 5.9.0
+	 * @since	ACF 6.4.3 - Use DOMPurify for better security.
 	 *
 	 * @param	string string The input string.
 	 * @return	string
 	 */
+
 	acf.escHtml = function ( string ) {
-		return ( '' + string ).replace( /<script|<\/script/g, function ( html ) {
-			return acf.strEscape( html );
+		string = '' + string; // Convert to string if not already.
+		const DOMPurify = require( 'dompurify' );
+		if ( DOMPurify === undefined || ! DOMPurify.isSupported ) {
+			console.warn(
+				'ACF: DOMPurify not loaded or not supported. Falling back to basic HTML escaping for security.'
+			);
+			return acf.strEscape( string ); // Fallback to basic escaping.
+		}
+		const options = acf.applyFilters( 'esc_html_dompurify_config', {
+			USE_PROFILES: { html: true },
+			ADD_TAGS: [ 'audio', 'video' ],
+			ADD_ATTR: [ 'controls', 'loop', 'muted', 'preload' ],
+			FORBID_TAGS: [
+				'script',
+				'style',
+				'iframe',
+				'object',
+				'embed',
+				'base',
+				'meta',
+				'form',
+			],
+			FORBID_ATTR: [
+				'style',
+				'srcset',
+				'action',
+				'background',
+				'dynsrc',
+				'lowsrc',
+				'on*',
+			],
+			ALLOW_DATA_ATTR: false,
+			ALLOW_ARIA_ATTR: false,
 		} );
+		return DOMPurify.sanitize( string, options );
 	};
 
 	// Tests.
@@ -814,6 +856,172 @@
 	};
 
 	/**
+	 * Check if an object has only numeric string keys.
+	 * Used to detect objects that should be converted to arrays (e.g., checkbox values).
+	 *
+	 * Semantics:
+	 * - Accepts base-10, non-negative integer strings composed of digits only (e.g. "0", "12").
+	 * - Leading zeros are allowed (e.g. "0012") and treated as numeric by downstream logic.
+	 * - Negative ("-1"), decimal ("1.0"), and non-numeric keys are rejected.
+	 *
+	 * @since   SCF 6.6.0
+	 * @private
+	 *
+	 * @param   object obj The object to check
+	 * @return  boolean True if all keys are numeric strings
+	 */
+	const hasOnlyNumericKeys = function ( obj ) {
+		const keys = Object.keys( obj );
+		if ( keys.length === 0 ) {
+			return false;
+		}
+
+		for ( let i = 0; i < keys.length; i++ ) {
+			if ( ! /^\d+$/.test( keys[ i ] ) ) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	/**
+	 * Convert an object with numeric string keys to a numerically sorted array.
+	 * Example: {"0": "one", "2": "three", "1": "two"} becomes ["one", "two", "three"].
+	 *
+	 * Notes on edge-cases:
+	 * - Leading zeros (e.g. "00123") are supported; order is based on the numeric value
+	 *   but the original string key is used to read the value to avoid lookup mismatches.
+	 * - Assumes {@link hasOnlyNumericKeys} has already gated out negatives/decimals.
+	 *
+	 * @since   SCF 6.6.0
+	 * @private
+	 *
+	 * @param   object obj The object to convert
+	 * @return  array The numerically sorted array of values
+	 */
+	const numericObjectToArray = function ( obj ) {
+		const arr = [];
+		// Pair each original key with its numeric value for stable lookup and sorting.
+		const entries = Object.keys( obj )
+			.map( function ( k ) {
+				return { k: k, n: parseInt( k, 10 ) };
+			} )
+			.sort( function ( a, b ) {
+				return a.n - b.n;
+			} );
+
+		for ( let i = 0; i < entries.length; i++ ) {
+			arr.push( obj[ entries[ i ].k ] );
+		}
+		return arr;
+	};
+
+	/**
+	 * Check if a value looks like flexible content data.
+	 * Flexible content objects contain rows where each row object has an 'acf_fc_layout' property.
+	 * Keys for flexible rows are not guaranteed to be numeric: they are typically unique IDs
+	 * (e.g. '69171156640b5') or strings like 'row-0'. Therefore, flexible content detection does
+	 * not rely on numeric keys and is handled separately from numeric-keyed object normalization.
+	 *
+	 * @since   SCF 6.6.0
+	 *
+	 * @param   object value The value to check
+	 * @return  boolean True if this looks like flexible content data
+	 */
+	acf.isFlexibleContentData = function ( value ) {
+		if ( ! acf.isObject( value ) ) {
+			return false;
+		}
+
+		var keys = Object.keys( value );
+		for ( var i = 0; i < keys.length; i++ ) {
+			var key = keys[ i ];
+			if ( key === 'acfcloneindex' ) {
+				continue;
+			}
+
+			var subvalue = value[ key ];
+			if ( acf.isObject( subvalue ) && subvalue.acf_fc_layout ) {
+				return true;
+			}
+		}
+		return false;
+	};
+
+	/**
+	 * Normalizes flexible content data structure by converting objects to arrays.
+	 * Private helper function.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param {Object} obj The object to normalize.
+	 * @return {Object|Array} The normalized data.
+	 */
+	const normalizeFlexibleContentData = function ( obj ) {
+		if ( ! acf.isObject( obj ) ) {
+			return obj;
+		}
+
+		let result = {};
+
+		for ( let key in obj ) {
+			if ( ! obj.hasOwnProperty( key ) ) {
+				continue;
+			}
+
+			var value = obj[ key ];
+
+			// Primitives pass through unchanged
+			if ( ! acf.isObject( value ) ) {
+				result[ key ] = value;
+				continue;
+			}
+
+			// Convert numeric-keyed objects to arrays (e.g., checkbox values)
+			if ( hasOnlyNumericKeys( value ) ) {
+				result[ key ] = numericObjectToArray( value );
+				continue;
+			} // Convert flexible content to arrays
+			if ( acf.isFlexibleContentData( value ) ) {
+				var arr = [];
+				var keys = Object.keys( value );
+
+				for ( var i = 0; i < keys.length; i++ ) {
+					var subkey = keys[ i ];
+					if ( subkey === 'acfcloneindex' ) {
+						continue;
+					}
+
+					var subvalue = value[ subkey ];
+					if ( acf.isObject( subvalue ) && subvalue.acf_fc_layout ) {
+						arr.push( normalizeFlexibleContentData( subvalue ) );
+					}
+				}
+
+				result[ key ] = arr;
+			} else {
+				// Recursively process nested objects
+				result[ key ] = normalizeFlexibleContentData( value );
+			}
+		}
+
+		return result;
+	};
+
+	/**
+	 * Public API wrapper for normalizeFlexibleContentData.
+	 * Normalizes flexible content data structure by converting objects to arrays.
+	 *
+	 * @since 6.6.0
+	 *
+	 * @param {Object} obj The object to normalize.
+	 * @return {Object|Array} The normalized data.
+	 */
+	acf.normalizeFlexibleContentData = function ( obj ) {
+		return normalizeFlexibleContentData( obj );
+	};
+
+	/**
 	 *  acf.serializeArray
 	 *
 	 *  Similar to $.serializeArray() but works with a parent wrapping element.
@@ -882,7 +1090,7 @@
 	}
 */
 
-	acf.addAction = function ( action, callback, priority, context ) {
+	acf.addAction = function () {
 		//action = prefixAction(action);
 		acf.hooks.addAction.apply( this, arguments );
 		return this;
@@ -900,7 +1108,7 @@
 	 *  @return	this
 	 */
 
-	acf.removeAction = function ( action, callback ) {
+	acf.removeAction = function () {
 		//action = prefixAction(action);
 		acf.hooks.removeAction.apply( this, arguments );
 		return this;
@@ -996,7 +1204,7 @@
 	 *  @return	this
 	 */
 
-	acf.addFilter = function ( action ) {
+	acf.addFilter = function () {
 		//action = prefixAction(action);
 		acf.hooks.addFilter.apply( this, arguments );
 		return this;
@@ -1014,7 +1222,7 @@
 	 *  @return	this
 	 */
 
-	acf.removeFilter = function ( action ) {
+	acf.removeFilter = function () {
 		//action = prefixAction(action);
 		acf.hooks.removeFilter.apply( this, arguments );
 		return this;
@@ -1032,7 +1240,7 @@
 	 *  @return	this
 	 */
 
-	acf.applyFilters = function ( action ) {
+	acf.applyFilters = function () {
 		//action = prefixAction(action);
 		return acf.hooks.applyFilters.apply( this, arguments );
 	};
@@ -1221,7 +1429,11 @@
 		var style = $el.attr( 'style' ) + ''; // needed to copy
 
 		// wrap
-		$el.wrap( '<div class="acf-temp-remove" style="height:' + outerHeight + 'px"></div>' );
+		$el.wrap(
+			'<div class="acf-temp-remove" style="height:' +
+				outerHeight +
+				'px"></div>'
+		);
 		var $wrap = $el.parent();
 
 		// set pos
@@ -1268,7 +1480,11 @@
 
 		// create dummy td
 		var $td = $(
-			'<td class="acf-temp-remove" style="padding:0; height:' + height + 'px" colspan="' + children + '"></td>'
+			'<td class="acf-temp-remove" style="padding:0; height:' +
+				height +
+				'px" colspan="' +
+				children +
+				'"></td>'
 		);
 
 		// fade away tr
@@ -1355,7 +1571,8 @@
 				target: $el2,
 				search: args.search,
 				replace: args.replace,
-				replacer: typeof args.rename === 'function' ? args.rename : null,
+				replacer:
+					typeof args.rename === 'function' ? args.rename : null,
 			} );
 		}
 
@@ -1373,7 +1590,10 @@
 				'id',
 				$( this )
 					.prop( 'id' )
-					.replace( 'acf_fields', acf.uniqid( 'duplicated_' ) + '_acf_fields' )
+					.replace(
+						'acf_fields',
+						acf.uniqid( 'duplicated_' ) + '_acf_fields'
+					)
 			);
 		} );
 
@@ -1460,15 +1680,28 @@
 
 		// Destructive Replace.
 		if ( args.destructive ) {
-			var html = acf.strReplace( args.search, args.replace, $el.outerHTML() );
+			var html = acf.strReplace(
+				args.search,
+				args.replace,
+				$el.outerHTML()
+			);
 			$el.replaceWith( html );
 
 			// Standard Replace.
 		} else {
 			$el.attr( 'data-id', args.replace );
-			$el.find( '[id*="' + args.search + '"]' ).attr( 'id', withReplacer( 'id' ) );
-			$el.find( '[for*="' + args.search + '"]' ).attr( 'for', withReplacer( 'for' ) );
-			$el.find( '[name*="' + args.search + '"]' ).attr( 'name', withReplacer( 'name' ) );
+			$el.find( '[id*="' + args.search + '"]' ).attr(
+				'id',
+				withReplacer( 'id' )
+			);
+			$el.find( '[for*="' + args.search + '"]' ).attr(
+				'for',
+				withReplacer( 'for' )
+			);
+			$el.find( '[name*="' + args.search + '"]' ).attr(
+				'name',
+				withReplacer( 'name' )
+			);
 		}
 
 		// return
@@ -1537,7 +1770,9 @@
 	 */
 
 	acf.showLoading = function ( $el ) {
-		$el.append( '<div class="acf-loading-overlay"><i class="acf-loading"></i></div>' );
+		$el.append(
+			'<div class="acf-loading-overlay"><i class="acf-loading"></i></div>'
+		);
 	};
 
 	acf.hideLoading = function ( $el ) {
@@ -1905,7 +2140,9 @@
 		};
 
 		// modern browsers
-		var file = $input[ 0 ].files.length ? acf.isget( $input[ 0 ].files, 0 ) : false;
+		var file = $input[ 0 ].files.length
+			? acf.isget( $input[ 0 ].files, 0 )
+			: false;
 		if ( file ) {
 			// update data
 			data.size = file.size;
@@ -2043,7 +2280,11 @@
 				//  optgroup
 				if ( item.children ) {
 					itemsHtml +=
-						'<optgroup label="' + acf.escAttr( text ) + '">' + crawl( item.children ) + '</optgroup>';
+						'<optgroup label="' +
+						acf.escAttr( text ) +
+						'">' +
+						crawl( item.children ) +
+						'</optgroup>';
 
 					// option
 				} else {
@@ -2157,7 +2398,12 @@
 	 *  @return	bool
 	 */
 	acf.isGutenberg = function () {
-		return !! ( window.wp && wp.data && wp.data.select && wp.data.select( 'core/editor' ) );
+		return !! (
+			window.wp &&
+			wp.data &&
+			wp.data.select &&
+			wp.data.select( 'core/editor' )
+		);
 	};
 
 	/**
@@ -2170,7 +2416,12 @@
 	 *  @return	bool
 	 */
 	acf.isGutenbergPostEditor = function () {
-		return !! ( window.wp && wp.data && wp.data.select && wp.data.select( 'core/edit-post' ) );
+		return !! (
+			window.wp &&
+			wp.data &&
+			wp.data.select &&
+			wp.data.select( 'core/edit-post' )
+		);
 	};
 
 	/**
@@ -2257,8 +2508,11 @@
 			rect.top !== rect.bottom &&
 			rect.top >= 0 &&
 			rect.left >= 0 &&
-			rect.bottom <= ( window.innerHeight || document.documentElement.clientHeight ) &&
-			rect.right <= ( window.innerWidth || document.documentElement.clientWidth )
+			rect.bottom <=
+				( window.innerHeight ||
+					document.documentElement.clientHeight ) &&
+			rect.right <=
+				( window.innerWidth || document.documentElement.clientWidth )
 		);
 	};
 
@@ -2295,7 +2549,9 @@
 		var push = function ( el, callback ) {
 			// Add event listener.
 			if ( ! items.length ) {
-				$( window ).on( 'scroll resize', debounced ).on( 'acfrefresh orientationchange', check );
+				$( window )
+					.on( 'scroll resize', debounced )
+					.on( 'acfrefresh orientationchange', check );
 			}
 
 			// Append to list.
@@ -2311,7 +2567,9 @@
 
 			// Clean up listener.
 			if ( ! items.length ) {
-				$( window ).off( 'scroll resize', debounced ).off( 'acfrefresh orientationchange', check );
+				$( window )
+					.off( 'scroll resize', debounced )
+					.off( 'acfrefresh orientationchange', check );
 			}
 		};
 

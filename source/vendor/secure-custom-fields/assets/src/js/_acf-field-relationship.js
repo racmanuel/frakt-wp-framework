@@ -26,9 +26,11 @@
 		},
 
 		$listItem: function ( list, id ) {
-			return this.$list( list ).find(
-				'.acf-rel-item[data-id="' + id + '"]'
-			);
+			return this.$list( list )
+				.find( '.acf-rel-item' )
+				.filter( function () {
+					return String( $( this ).data( 'id' ) ) === String( id );
+				} );
 		},
 
 		getValue: function () {
@@ -39,11 +41,36 @@
 			return val.length ? val : false;
 		},
 
+		setValue: function ( value ) {
+			if ( ! Array.isArray( value ) ) {
+				value = value ? [ value ] : [];
+			}
+
+			this.$list( 'values' ).html( '' );
+			this.$listItems( 'choices' ).removeClass( 'disabled' );
+
+			value.forEach( ( id ) => {
+				const $choice = this.$listItem( 'choices', id );
+				const text = $choice.length
+					? $choice.html()
+					: acf.strEscape( String( id ) );
+				$choice.addClass( 'disabled' );
+
+				const valueHtml = this.newValue( {
+					id,
+					text,
+				} );
+				this.$list( 'values' ).append( valueHtml );
+			} );
+
+			this.$input().trigger( 'change' );
+		},
+
 		newChoice: function ( props ) {
 			return [
 				'<li>',
 				'<span tabindex="0" data-id="' +
-					props.id +
+					acf.strEscape( String( props.id ) ) +
 					'" class="acf-rel-item">' +
 					props.text +
 					'</span>',
@@ -52,15 +79,16 @@
 		},
 
 		newValue: function ( props ) {
+			const id = acf.strEscape( String( props.id ) );
 			return [
 				'<li>',
 				'<input type="hidden" name="' +
 					this.getInputName() +
 					'[]" value="' +
-					props.id +
+					id +
 					'" />',
 				'<span tabindex="0" data-id="' +
-					props.id +
+					id +
 					'" class="acf-rel-item acf-rel-item-remove">' +
 					props.text,
 				'<a href="#" class="acf-icon -minus small dark" data-name="remove_item"></a>',
@@ -76,6 +104,7 @@
 					// Add sortable.
 					this.$list( 'values' ).sortable( {
 						items: 'li',
+						zIndex: 9999,
 						forceHelperSize: true,
 						forcePlaceholderSize: true,
 						scroll: true,
@@ -126,11 +155,11 @@
 		onKeypressFilter: function ( e, $el ) {
 			// Receive enter key when selecting relationship items.
 			if ( $el.hasClass( 'acf-rel-item-add' ) && e.which == 13 ) {
-				this.onClickAdd(e, $el);
+				this.onClickAdd( e, $el );
 			}
 			// Receive enter key when removing relationship items.
 			if ( $el.hasClass( 'acf-rel-item-remove' ) && e.which == 13 ) {
-				this.onClickRemove(e, $el);
+				this.onClickRemove( e, $el );
 			}
 			// don't submit form
 			if ( e.which == 13 ) {
@@ -213,7 +242,7 @@
 
 			let $span;
 			// Behavior if triggered from tabbed event.
-			if ( $el.hasClass( 'acf-rel-item-remove' )) {
+			if ( $el.hasClass( 'acf-rel-item-remove' ) ) {
 				$span = $el;
 			} else {
 				// Behavior if triggered through click event.
@@ -234,8 +263,10 @@
 			this.$input().trigger( 'change' );
 		},
 
-		onTouchStartValues: function( e, $el ) {
-			$( this.$listItems( 'values' ) ).removeClass( 'relationship-hover' );
+		onTouchStartValues: function ( e, $el ) {
+			$( this.$listItems( 'values' ) ).removeClass(
+				'relationship-hover'
+			);
 			$el.addClass( 'relationship-hover' );
 		},
 

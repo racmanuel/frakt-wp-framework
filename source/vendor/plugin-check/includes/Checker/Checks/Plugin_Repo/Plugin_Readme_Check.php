@@ -12,8 +12,10 @@ use WordPress\Plugin_Check\Checker\Check_Result;
 use WordPress\Plugin_Check\Checker\Checks\Abstract_File_Check;
 use WordPress\Plugin_Check\Lib\Readme\Parser as PCPParser;
 use WordPress\Plugin_Check\Traits\Amend_Check_Result;
-use WordPress\Plugin_Check\Traits\Find_Readme;
+use WordPress\Plugin_Check\Traits\Language_Utils;
 use WordPress\Plugin_Check\Traits\License_Utils;
+use WordPress\Plugin_Check\Traits\Mode_Aware;
+use WordPress\Plugin_Check\Traits\Readme_Utils;
 use WordPress\Plugin_Check\Traits\Stable_Check;
 use WordPress\Plugin_Check\Traits\URL_Utils;
 use WordPress\Plugin_Check\Traits\Version_Utils;
@@ -25,15 +27,18 @@ use WordPressdotorg\Plugin_Directory\Readme\Parser as DotorgParser;
  * @since 1.0.0
  *
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
  */
 class Plugin_Readme_Check extends Abstract_File_Check {
 
 	use Amend_Check_Result;
-	use Find_Readme;
+	use Mode_Aware;
+	use Readme_Utils;
 	use Stable_Check;
 	use License_Utils;
 	use URL_Utils;
 	use Version_Utils;
+	use Language_Utils;
 
 	/**
 	 * Gets the categories for the check.
@@ -117,6 +122,12 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 
 		// Check the readme file for requires headers.
 		$this->check_requires_headers( $result, $readme_file, $parser );
+
+		// Check the readme for language.
+		$this->check_language( $result, $readme_file, $parser );
+
+		// Check for mismatched "Tested up to" header between plugin header and readme.
+		$this->check_tested_up_to_mismatch( $result, $parser, $result->plugin()->main_file() );
 	}
 
 	/**
@@ -247,22 +258,38 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 						}
 
 						if ( version_compare( $tested_upto_major, $latest_wordpress_version, '<' ) ) {
-							$this->add_result_error_for_file(
-								$result,
-								sprintf(
-									/* translators: 1: currently used version, 2: latest stable WordPress version, 3: 'Tested up to' */
-									__( '<strong>Tested up to: %1$s &lt; %2$s.</strong><br>The "%3$s" value in your plugin is not set to the current version of WordPress. This means your plugin will not show up in searches, as we require plugins to be compatible and documented as tested up to the most recent version of WordPress.', 'plugin-check' ),
-									$tested_upto_major,
-									$latest_wordpress_version,
-									'Tested up to'
-								),
-								'outdated_tested_upto_header',
-								$readme_file,
-								0,
-								0,
-								'https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/#readme-header-information',
-								7
+							$outdated_tested_message = sprintf(
+								/* translators: 1: currently used version, 2: latest stable WordPress version, 3: 'Tested up to' */
+								__( '<strong>Tested up to: %1$s &lt; %2$s.</strong><br>The "%3$s" value in your plugin is not set to the current version of WordPress. This means your plugin will not show up in searches, as we require plugins to be compatible and documented as tested up to the most recent version of WordPress.', 'plugin-check' ),
+								$tested_upto_major,
+								$latest_wordpress_version,
+								'Tested up to'
 							);
+							$outdated_tested_docs = 'https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/#readme-header-information';
+
+							if ( $this->is_update_mode( $result ) ) {
+								$this->add_result_warning_for_file(
+									$result,
+									$outdated_tested_message,
+									'outdated_tested_upto_header',
+									$readme_file,
+									0,
+									0,
+									$outdated_tested_docs,
+									5
+								);
+							} else {
+								$this->add_result_error_for_file(
+									$result,
+									$outdated_tested_message,
+									'outdated_tested_upto_header',
+									$readme_file,
+									0,
+									0,
+									$outdated_tested_docs,
+									7
+								);
+							}
 						} elseif ( version_compare( $tested_upto_major, number_format( (float) $latest_wordpress_version + 0.1, 1 ), '>' ) ) {
 							$this->add_result_error_for_file(
 								$result,
@@ -745,9 +772,8 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 			return;
 		}
 
-		$usernames = explode( ',', $matches[1] );
-
-		$usernames = array_unique( array_map( 'trim', $usernames ) );
+		$usernames = explode( ',', trim( $matches[1], ' ,' ) );
+		$usernames = array_filter( array_unique( array_map( 'trim', $usernames ) ) );
 
 		$valid = true;
 
@@ -901,6 +927,109 @@ class Plugin_Readme_Check extends Abstract_File_Check {
 					'https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/#readme-header-information'
 				);
 			}
+		}
+	}
+
+	/**
+	 * Checks the readme file for official language.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param Check_Result           $result      The Check Result to amend.
+	 * @param string                 $readme_file Readme file.
+	 * @param DotorgParser|PCPParser $parser      The Parser object.
+	 */
+	private function check_language( Check_Result $result, string $readme_file, $parser ) {
+		$check_language = $this->is_on_official_language( $parser->short_description );
+
+		if ( ! $check_language ) {
+			$this->add_result_error_for_file(
+				$result,
+				__( 'The readme short description contains unofficial language. It must be written in standard English.', 'plugin-check' ),
+				'readme_short_description_non_official_language',
+				$readme_file,
+				0,
+				0,
+				'https://make.wordpress.org/plugins/2025/07/28/requiring-the-readme-to-be-written-in-english/',
+				6
+			);
+		}
+
+		if ( ! empty( $parser->sections['description'] ) ) {
+			$check_language = $this->is_on_official_language( $parser->sections['description'] );
+
+			if ( ! $check_language ) {
+				$this->add_result_error_for_file(
+					$result,
+					__( 'The readme description contains unofficial language. It must be written in standard English.', 'plugin-check' ),
+					'readme_description_non_official_language',
+					$readme_file,
+					0,
+					0,
+					'https://make.wordpress.org/plugins/2025/07/28/requiring-the-readme-to-be-written-in-english/',
+					6
+				);
+			}
+		}
+	}
+
+
+	/**
+	 * Checks for mismatched "Tested up to" header between plugin header and readme.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param Check_Result           $result           The Check Result to amend.
+	 * @param DotorgParser|PCPParser $parser           The Parser object.
+	 * @param string                 $plugin_main_file The main plugin file path.
+	 */
+	private function check_tested_up_to_mismatch( Check_Result $result, $parser, string $plugin_main_file ) {
+
+		// Check if single file plugin, then bail early.
+		if ( $result->plugin()->is_single_file_plugin() ) {
+			return;
+		}
+
+		// Get the "Tested up to" value from the readme.
+		$readme_tested = isset( $parser->tested ) ? $parser->tested : '';
+
+		if ( empty( $readme_tested ) ) {
+			return;
+		}
+
+		// Get the "Tested up to" value from the plugin header.
+		$tested_header = get_file_data(
+			$plugin_main_file,
+			array( 'TestedWP' => 'Tested up to' ),
+			'plugin'
+		);
+
+		$plugin_tested = isset( $tested_header['TestedWP'] ) ? $tested_header['TestedWP'] : '';
+		if ( empty( $plugin_tested ) ) {
+			return;
+		}
+
+		// Normalize versions by removing any suffixes (like -RC1, -beta1).
+		$readme_tested_normalized = strtok( $readme_tested, '-' );
+		$plugin_tested_normalized = strtok( $plugin_tested, '-' );
+
+		// Compare the two values.
+		if ( $readme_tested_normalized !== $plugin_tested_normalized ) {
+			$this->add_result_error_for_file(
+				$result,
+				sprintf(
+					/* translators: 1: Tested up to value from readme, 2: Tested up to value from plugin header */
+					__( '<strong>Mismatched "Tested up to": %1$s != %2$s.</strong><br>The "Tested up to" value in the readme file must match the "Tested up to" value in the plugin header. If the plugin header has a "Tested up to" value, it will override the readme value, which can cause confusion.', 'plugin-check' ),
+					esc_html( $readme_tested_normalized ),
+					esc_html( $plugin_tested_normalized )
+				),
+				'mismatched_tested_up_to_header',
+				$plugin_main_file,
+				0,
+				0,
+				'https://developer.wordpress.org/plugins/wordpress-org/how-your-readme-txt-works/#readme-header-information',
+				7
+			);
 		}
 	}
 

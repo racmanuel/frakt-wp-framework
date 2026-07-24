@@ -15,6 +15,7 @@ use WordPress\Plugin_Check\Checker\CLI_Runner;
 use WordPress\Plugin_Check\Checker\Default_Check_Repository;
 use WordPress\Plugin_Check\Plugin_Context;
 use WordPress\Plugin_Check\Utilities\Plugin_Request_Utility;
+use WordPress\Plugin_Check\Utilities\Results_Exporter;
 use WP_CLI;
 
 /**
@@ -42,9 +43,11 @@ final class Plugin_Check_Command {
 		'table',
 		'csv',
 		'json',
+		'ctrf',
 		'strict-table',
 		'strict-csv',
 		'strict-json',
+		'strict-ctrf',
 	);
 
 	/**
@@ -77,16 +80,18 @@ final class Plugin_Check_Command {
 	 * : Ignore error codes provided as an argument in comma-separated values.
 	 *
 	 * [--format=<format>]
-	 * : Format to display the results. Options are table, csv, json, strict-table, strict-csv, and strict-json. The default will be a table.
+	 * : Format to display the results. Options are table, csv, json, ctrf, strict-table, strict-csv, strict-json, and strict-ctrf. The default will be a table.
 	 * ---
 	 * default: table
 	 * options:
 	 *   - table
 	 *   - csv
 	 *   - json
+	 *   - ctrf
 	 *   - strict-table
 	 *   - strict-csv
 	 *   - strict-json
+	 *   - strict-ctrf
 	 * ---
 	 *
 	 * [--categories]
@@ -106,7 +111,7 @@ final class Plugin_Check_Command {
 	 *
 	 * [--exclude-directories=<directories>]
 	 * : Additional directories to exclude from checks.
-	 * By default, `.git`, `vendor` and `node_modules` directories are excluded.
+	 * By default, `.git`, `vendor`, `vendor_prefixed`, `vendor-prefixed` and `node_modules` directories are excluded.
 	 *
 	 * [--exclude-files=<files>]
 	 * : Additional files to exclude from checks.
@@ -129,11 +134,29 @@ final class Plugin_Check_Command {
 	 * [--slug=<slug>]
 	 * : Slug to override the default.
 	 *
+	 * [--mode=<mode>]
+	 * : Mode to run the checks in. Options are 'new' (default) or 'update'.
+	 * ---
+	 * default: new
+	 * options:
+	 *   - new
+	 *   - update
+	 * ---
+	 *
+	 * [--ai]
+	 * : Enable AI-based analysis to detect false positives in check results.
+	 *
+	 * [--ai-model=<model>]
+	 * : AI model preference for analysis (e.g., 'openai::gpt-4o'). Requires --ai.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *   wp plugin check akismet
 	 *   wp plugin check akismet --checks=late_escaping
 	 *   wp plugin check akismet --format=json
+	 *   wp plugin check akismet --mode=update
+	 *   wp plugin check akismet --ai
+	 *   wp plugin check akismet --ai --ai-model=openai::gpt-4o
 	 *
 	 * @subcommand check
 	 *
@@ -165,6 +188,9 @@ final class Plugin_Check_Command {
 				'include-low-severity-warnings' => false,
 				'slug'                          => '',
 				'ignore-codes'                  => '',
+				'mode'                          => 'new',
+				'ai'                            => false,
+				'ai-model'                      => '',
 			)
 		);
 
@@ -211,12 +237,24 @@ final class Plugin_Check_Command {
 			);
 		}
 
+		// Ensure the correct slug.
+		if ( is_dir( $plugin ) && empty( $options['slug'] ) ) {
+			$options['slug'] = basename( $plugin );
+		} elseif ( filter_var( $plugin, FILTER_VALIDATE_URL ) && empty( $options['slug'] ) ) {
+			$options['slug'] = Plugin_Request_Utility::get_slug_from_url( $plugin );
+		}
+
 		try {
 			$runner->set_experimental_flag( $options['include-experimental'] );
 			$runner->set_check_slugs( $checks );
 			$runner->set_plugin( $plugin );
 			$runner->set_categories( $categories );
 			$runner->set_slug( $options['slug'] );
+			$runner->set_mode( $options['mode'] );
+			$runner->set_use_ai( $options['ai'] );
+			if ( ! empty( $options['ai-model'] ) ) {
+				$runner->set_ai_model_preference( $options['ai-model'] );
+			}
 		} catch ( Exception $error ) {
 			WP_CLI::error( $error->getMessage() );
 		}
@@ -243,8 +281,40 @@ final class Plugin_Check_Command {
 			$warnings = $result->get_warnings();
 		}
 
+		// Get AI analysis results if available.
+		$ai_analysis = array();
+		if ( $result && $options['ai'] ) {
+			$ai_analysis = $result->get_ai_analysis();
+		}
+
+		// Get AI statistics if available.
+		$ai_stats = array();
+		if ( $result && $options['ai'] ) {
+			$ai_stats = $result->get_ai_stats();
+		}
+
 		if ( empty( $errors ) && empty( $warnings ) ) {
-			WP_CLI::success( __( 'Checks complete. No errors found.', 'plugin-check' ) );
+			$message = __( 'Checks complete. No errors found.', 'plugin-check' );
+
+			// Add AI statistics to the message if available.
+			if ( ! empty( $ai_stats ) && isset( $ai_stats['false_positives'] ) && $ai_stats['false_positives'] > 0 ) {
+				$ai_info = sprintf(
+					// translators: %1$d: Number of possible false positives, %2$s: "possible false positive(s)" label.
+					__( ' AI detected %1$d %2$s', 'plugin-check' ),
+					$ai_stats['false_positives'],
+					_n( 'possible false positive', 'possible false positives', $ai_stats['false_positives'], 'plugin-check' )
+				);
+				if ( isset( $ai_stats['tokens_spent'] ) && $ai_stats['tokens_spent'] > 0 ) {
+					$ai_info .= sprintf(
+						// translators: %s: Tokens spent (formatted).
+						__( ' (Tokens spent: %s)', 'plugin-check' ),
+						number_format_i18n( $ai_stats['tokens_spent'] )
+					);
+				}
+				$message .= '.' . $ai_info;
+			}
+
+			WP_CLI::success( $message );
 
 			return;
 		}
@@ -270,7 +340,7 @@ final class Plugin_Check_Command {
 				$file_warnings = $warnings[ $file_name ];
 				unset( $warnings[ $file_name ] );
 			}
-			$file_results = $this->flatten_file_results( $file_errors, $file_warnings );
+			$file_results = Results_Exporter::flatten_file_results( $file_errors, $file_warnings );
 
 			if ( ! empty( $ignore_codes ) ) {
 				$file_results = $this->get_filtered_results_by_ignore_codes( $file_results, $ignore_codes );
@@ -288,7 +358,7 @@ final class Plugin_Check_Command {
 
 		// Collect remaining warnings.
 		foreach ( $warnings as $file_name => $file_warnings ) {
-			$file_results = $this->flatten_file_results( array(), $file_warnings );
+			$file_results = Results_Exporter::flatten_file_results( array(), $file_warnings );
 
 			if ( ! empty( $ignore_codes ) ) {
 				$file_results = $this->get_filtered_results_by_ignore_codes( $file_results, $ignore_codes );
@@ -304,6 +374,19 @@ final class Plugin_Check_Command {
 			}
 		}
 
+		// Handle CTRF formats.
+		if ( Results_Exporter::FORMAT_CTRF === $options['format'] || 'strict-' . Results_Exporter::FORMAT_CTRF === $options['format'] ) {
+			$ctrf_report = Results_Exporter::to_ctrf_json(
+				$all_results,
+				array(
+					'timestamp_iso' => gmdate( 'c' ),
+				)
+			);
+
+			WP_CLI::line( $ctrf_report );
+			return;
+		}
+
 		// Handle strict-* formats.
 		if ( str_starts_with( $options['format'], 'strict-' ) ) {
 			$base_format = substr( $options['format'], 7 );
@@ -316,6 +399,13 @@ final class Plugin_Check_Command {
 			return;
 		}
 
+		$false_positive_results = array();
+		if ( ! empty( $ai_analysis ) ) {
+			$split_results          = $this->split_false_positive_results( $all_results, $ai_analysis );
+			$all_results            = $split_results['actionable'];
+			$false_positive_results = $split_results['false_positives'];
+		}
+
 		// Group results by file.
 		$results_by_file = array();
 
@@ -325,6 +415,11 @@ final class Plugin_Check_Command {
 
 		foreach ( $results_by_file as $file_name => $file_results ) {
 			$this->display_results( $formatter, $file_name, $file_results );
+		}
+
+		// Display AI analysis summary if available.
+		if ( ! empty( $ai_analysis ) || ! empty( $ai_stats ) ) {
+			$this->display_ai_summary( $ai_analysis, $ai_stats, $false_positive_results );
 		}
 	}
 
@@ -584,79 +679,6 @@ final class Plugin_Check_Command {
 	}
 
 	/**
-	 * Flattens and combines the given associative array of file errors and file warnings into a two-dimensional array.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $file_errors   Errors from a Check_Result, for a specific file.
-	 * @param array $file_warnings Warnings from a Check_Result, for a specific file.
-	 * @return array Combined file results.
-	 *
-	 * @SuppressWarnings(PHPMD.NPathComplexity)
-	 */
-	private function flatten_file_results( $file_errors, $file_warnings ) {
-		$file_results = array();
-
-		foreach ( $file_errors as $line => $line_errors ) {
-			foreach ( $line_errors as $column => $column_errors ) {
-				foreach ( $column_errors as $column_error ) {
-
-					$column_error['message'] = str_replace( array( '<br>', '<strong>', '</strong>', '<code>', '</code>' ), array( ' ', '', '', '`', '`' ), $column_error['message'] );
-					$column_error['message'] = html_entity_decode( $column_error['message'] );
-
-					$file_results[] = array_merge(
-						$column_error,
-						array(
-							'type'   => 'ERROR',
-							'line'   => $line,
-							'column' => $column,
-						)
-					);
-				}
-			}
-		}
-
-		foreach ( $file_warnings as $line => $line_warnings ) {
-			foreach ( $line_warnings as $column => $column_warnings ) {
-				foreach ( $column_warnings as $column_warning ) {
-
-					$column_warning['message'] = str_replace( array( '<br>', '<strong>', '</strong>', '<code>', '</code>' ), array( ' ', '', '', '`', '`' ), $column_warning['message'] );
-
-					$file_results[] = array_merge(
-						$column_warning,
-						array(
-							'type'   => 'WARNING',
-							'line'   => $line,
-							'column' => $column,
-						)
-					);
-				}
-			}
-		}
-
-		usort(
-			$file_results,
-			static function ( $a, $b ) {
-				if ( $a['line'] < $b['line'] ) {
-					return -1;
-				}
-				if ( $a['line'] > $b['line'] ) {
-					return 1;
-				}
-				if ( $a['column'] < $b['column'] ) {
-					return -1;
-				}
-				if ( $a['column'] > $b['column'] ) {
-					return 1;
-				}
-				return 0;
-			}
-		);
-
-		return $file_results;
-	}
-
-	/**
 	 * Displays the results.
 	 *
 	 * @since 1.0.0
@@ -677,6 +699,140 @@ final class Plugin_Check_Command {
 
 		WP_CLI::line();
 		WP_CLI::line();
+	}
+
+	/**
+	 * Splits likely false positives out of the main check results.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param array $results     Check results.
+	 * @param array $ai_analysis AI analysis results.
+	 * @return array Results split into actionable and false positive groups.
+	 */
+	private function split_false_positive_results( array $results, array $ai_analysis ) {
+		$split_results = array(
+			'actionable'      => array(),
+			'false_positives' => array(),
+		);
+
+		foreach ( $results as $item ) {
+			$analysis = $this->find_ai_analysis_for_result( $item, $ai_analysis );
+
+			if ( ! empty( $analysis['is_false_positive'] ) ) {
+				if ( ! empty( $analysis['reasoning'] ) ) {
+					$item['reasoning'] = $analysis['reasoning'];
+				}
+				$split_results['false_positives'][] = $item;
+				continue;
+			}
+
+			$split_results['actionable'][] = $item;
+		}
+
+		return $split_results;
+	}
+
+	/**
+	 * Finds the AI analysis entry for a result item.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param array $item        Result item.
+	 * @param array $ai_analysis AI analysis results.
+	 * @return array|null AI analysis entry, or null if none is found.
+	 */
+	private function find_ai_analysis_for_result( array $item, array $ai_analysis ) {
+		foreach ( $ai_analysis as $analysis ) {
+			if ( ! is_array( $analysis ) ) {
+				continue;
+			}
+
+			if (
+				(string) ( $analysis['file'] ?? '' ) === (string) ( $item['file'] ?? '' ) &&
+				(int) ( $analysis['line'] ?? 0 ) === (int) ( $item['line'] ?? 0 ) &&
+				(int) ( $analysis['column'] ?? 0 ) === (int) ( $item['column'] ?? 0 ) &&
+				(string) ( $analysis['code'] ?? '' ) === (string) ( $item['code'] ?? '' )
+			) {
+				return $analysis;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Displays AI analysis summary.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param array $ai_analysis            AI analysis results.
+	 * @param array $ai_stats               AI statistics.
+	 * @param array $false_positive_results False positive results.
+	 */
+	private function display_ai_summary(
+		array $ai_analysis,
+		array $ai_stats,
+		array $false_positive_results = array()
+	) {
+		WP_CLI::line( '' );
+		WP_CLI::line( str_repeat( '─', 60 ) );
+		WP_CLI::line( '✨ ' . __( 'AI Possible False Positive Analysis', 'plugin-check' ) );
+		WP_CLI::line( str_repeat( '─', 60 ) );
+
+		if ( ! empty( $ai_stats ) ) {
+			$issues_analyzed = isset( $ai_stats['issues_analyzed'] ) ? (int) $ai_stats['issues_analyzed'] : 0;
+			$false_positives = isset( $ai_stats['false_positives'] ) ? (int) $ai_stats['false_positives'] : 0;
+			$tokens_spent    = isset( $ai_stats['tokens_spent'] ) ? (int) $ai_stats['tokens_spent'] : 0;
+
+			WP_CLI::line(
+				sprintf(
+					/* translators: %d: Number of issues analyzed. */
+					__( 'Issues analyzed: %d', 'plugin-check' ),
+					$issues_analyzed
+				)
+			);
+			WP_CLI::line(
+				sprintf(
+					/* translators: %d: Number of possible false positives detected. */
+					__( 'Possible false positives detected: %d', 'plugin-check' ),
+					$false_positives
+				)
+			);
+
+			if ( $tokens_spent > 0 ) {
+				WP_CLI::line(
+					sprintf(
+						/* translators: %s: Number of tokens spent. */
+						__( 'Tokens spent: %s', 'plugin-check' ),
+						number_format_i18n( $tokens_spent )
+					)
+				);
+			}
+		}
+
+		// Show individual false positive details.
+		if ( ! empty( $false_positive_results ) ) {
+			WP_CLI::line( '' );
+			WP_CLI::line( __( 'Possible false positives:', 'plugin-check' ) );
+
+			foreach ( $false_positive_results as $item ) {
+				$location = isset( $item['file'] ) ? $item['file'] : '';
+				if ( isset( $item['line'] ) ) {
+					$location .= ':' . $item['line'];
+				}
+
+				WP_CLI::line(
+					sprintf(
+						'  %s - %s',
+						$location,
+						isset( $item['reasoning'] ) ? $item['reasoning'] : $item['message']
+					)
+				);
+			}
+		}
+
+		WP_CLI::line( '' );
 	}
 
 	/**

@@ -1,8 +1,9 @@
 {
   "repositories": [
     {
+      "name": "wp-packages",
       "type": "composer",
-      "url": "https://wpackagist.org"
+      "url": "https://repo.wp-packages.org"
     }
   ],
   "extra": {
@@ -13,13 +14,14 @@
     }
   },
   "require": {
-    "wpackagist-plugin/secure-custom-fields": "*",
-    "wpackagist-plugin/query-monitor": "*",
-    "wpackagist-plugin/user-switching":"*",
-    "wpackagist-plugin/wp-crontrol":"*",
-    "wpackagist-plugin/plugin-check":"*",
-    "wpackagist-plugin/jwt-authentication-for-wp-rest-api":"*",
-    "wpackagist-plugin/transients-manager":"*"
+    "composer/installers": "^2.0",
+    "wp-plugin/secure-custom-fields": "*",
+    "wp-plugin/query-monitor": "*",
+    "wp-plugin/user-switching":"*",
+    "wp-plugin/wp-crontrol":"*",
+    "wp-plugin/plugin-check":"*",
+    "wp-plugin/jwt-authentication-for-wp-rest-api":"*",
+    "wp-plugin/transients-manager":"*"
   },
   "config": {
     "allow-plugins": {

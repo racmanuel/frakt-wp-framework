@@ -11,7 +11,8 @@
 			'click .copyable': 'onClickCopy',
 			'click .handle': 'onClickEdit',
 			'click .close-field': 'onClickEdit',
-			'click a[data-key="acf_field_settings_tabs"]': 'onChangeSettingsTab',
+			'click a[data-key="acf_field_settings_tabs"]':
+				'onChangeSettingsTab',
 			'click .delete-field': 'onClickDelete',
 			'click .duplicate-field': 'duplicate',
 			'click .move-field': 'move',
@@ -82,7 +83,9 @@
 		},
 
 		$setting: function ( name ) {
-			return this.$( '.acf-field-settings:first .acf-field-setting-' + name );
+			return this.$(
+				'.acf-field-settings:first .acf-field-setting-' + name
+			);
 		},
 
 		$fieldTypeSelect: function () {
@@ -237,7 +240,12 @@
 		},
 
 		makeCopyable: function ( text ) {
-			if ( ! navigator.clipboard ) return '<span class="copyable copy-unsupported">' + text + '</span>';
+			if ( ! navigator.clipboard )
+				return (
+					'<span class="copyable copy-unsupported">' +
+					text +
+					'</span>'
+				);
 			return '<span class="copyable">' + text + '</span>';
 		},
 
@@ -271,8 +279,14 @@
 				suppressFilters: true,
 				dropdownCssClass: 'field-type-select-results',
 				templateResult: function ( selection ) {
-					if ( selection.loading || ( selection.element && selection.element.nodeName === 'OPTGROUP' ) ) {
-						var $selection = $( '<span class="acf-selection"></span>' );
+					if (
+						selection.loading ||
+						( selection.element &&
+							selection.element.nodeName === 'OPTGROUP' )
+					) {
+						var $selection = $(
+							'<span class="acf-selection"></span>'
+						);
 						$selection.html( acf.strEscape( selection.text ) );
 					} else {
 						var $selection = $(
@@ -300,20 +314,26 @@
 			} );
 
 			this.fieldTypeSelect2.on( 'select2:open', function () {
-				$( '.field-type-select-results input.select2-search__field' ).attr(
-					'placeholder',
-					acf.__( 'Type to search...' )
-				);
+				$(
+					'.field-type-select-results input.select2-search__field'
+				).attr( 'placeholder', acf.__( 'Type to search...' ) );
 			} );
 
 			this.fieldTypeSelect2.on( 'change', function ( e ) {
-				$( e.target ).parents( 'ul:first' ).find( 'button.browse-fields' ).prop( 'disabled', true );
+				$( e.target )
+					.parents( 'ul:first' )
+					.find( 'button.browse-fields' )
+					.prop( 'disabled', true );
 			} );
 
 			// When typing happens on the li element above the select2.
 			this.fieldTypeSelect2.$el
 				.parent()
-				.on( 'keydown', '.select2-selection.select2-selection--single', this.onKeyDownSelect );
+				.on(
+					'keydown',
+					'.select2-selection.select2-selection--single',
+					this.onKeyDownSelect
+				);
 		},
 
 		addProFields: function () {
@@ -330,14 +350,23 @@
 			const PROFieldTypes = acf.get( 'PROFieldTypes' );
 			if ( typeof PROFieldTypes !== 'object' ) return;
 
-			const $layoutGroup = $fieldTypeSelect.find( 'optgroup option[value="group"]' ).parent();
+			const $layoutGroup = $fieldTypeSelect
+				.find( 'optgroup option[value="group"]' )
+				.parent();
 
-			const $contentGroup = $fieldTypeSelect.find( 'optgroup option[value="image"]' ).parent();
+			const $contentGroup = $fieldTypeSelect
+				.find( 'optgroup option[value="image"]' )
+				.parent();
 
 			for ( const [ name, field ] of Object.entries( PROFieldTypes ) ) {
-				const $useGroup = field.category === 'content' ? $contentGroup : $layoutGroup;
-				const $existing = $useGroup.children( '[value="' + name + '"]' );
-				const label = `${ acf.strEscape( field.label ) } (${ acf.strEscape( acf.__( 'PRO Only' ) ) })`;
+				const $useGroup =
+					field.category === 'content' ? $contentGroup : $layoutGroup;
+				const $existing = $useGroup.children(
+					'[value="' + name + '"]'
+				);
+				const label = `${ acf.strEscape(
+					field.label
+				) } (${ acf.strEscape( acf.__( 'PRO Only' ) ) })`;
 
 				if ( $existing.length ) {
 					// Already added by pro, update existing option.
@@ -349,7 +378,9 @@
 					}
 				} else {
 					// Append new disabled option.
-					$useGroup.append( `<option value="null" disabled="disabled">${ label }</option>` );
+					$useGroup.append(
+						`<option value="null" disabled="disabled">${ label }</option>`
+					);
 				}
 			}
 
@@ -360,7 +391,7 @@
 			// vars
 			var $handle = this.$( '.handle:first' );
 			var menu_order = this.prop( 'menu_order' );
-			var label = this.getLabel();
+			var label = acf.strEscape( this.getLabel() );
 			var name = this.prop( 'name' );
 			var type = this.getTypeLabel();
 			var key = this.prop( 'key' );
@@ -376,9 +407,21 @@
 
 			// update label
 			$handle.find( '.li-field-label strong a' ).html( label );
+			let shouldConvertToLowercase = name === name.toLowerCase();
+			shouldConvertToLowercase = acf.applyFilters(
+				'convert_field_name_to_lowercase',
+				shouldConvertToLowercase,
+				this
+			);
 
 			// update name
-			$handle.find( '.li-field-name' ).html( this.makeCopyable( acf.strSanitize( name ) ) );
+			$handle
+				.find( '.li-field-name' )
+				.html(
+					this.makeCopyable(
+						acf.strSanitize( name, shouldConvertToLowercase )
+					)
+				);
 
 			// update type
 			const iconName = acf.strSlugify( this.getType() );
@@ -418,7 +461,9 @@
 			navigator.clipboard.writeText( copyValue ).then( () => {
 				$( e.target ).closest( '.copyable' ).addClass( 'copied' );
 				setTimeout( function () {
-					$( e.target ).closest( '.copyable' ).removeClass( 'copied' );
+					$( e.target )
+						.closest( '.copyable' )
+						.removeClass( 'copied' );
 				}, 2000 );
 			} );
 		},
@@ -426,7 +471,10 @@
 		onClickEdit: function ( e ) {
 			const $target = $( e.target );
 
-			if ( $target.parent().hasClass( 'row-options' ) && ! $target.hasClass( 'edit-field' ) ) {
+			if (
+				$target.parent().hasClass( 'row-options' ) &&
+				! $target.hasClass( 'edit-field' )
+			) {
 				return;
 			}
 
@@ -442,7 +490,9 @@
 		 * Adds 'active' class to row options nearest to the target.
 		 */
 		onFocusEdit: function ( e ) {
-			var $rowOptions = $( e.target ).closest( 'li' ).find( '.row-options' );
+			var $rowOptions = $( e.target )
+				.closest( 'li' )
+				.find( '.row-options' );
 			$rowOptions.addClass( 'active' );
 		},
 
@@ -451,11 +501,15 @@
 		 */
 		onBlurEdit: function ( e ) {
 			var focusDelayMilliseconds = 50;
-			var $rowOptionsBlurElement = $( e.target ).closest( 'li' ).find( '.row-options' );
+			var $rowOptionsBlurElement = $( e.target )
+				.closest( 'li' )
+				.find( '.row-options' );
 
 			// Timeout so that `activeElement` gives the new element in focus instead of the body.
 			setTimeout( function () {
-				var $rowOptionsFocusElement = $( document.activeElement ).closest( 'li' ).find( '.row-options' );
+				var $rowOptionsFocusElement = $( document.activeElement )
+					.closest( 'li' )
+					.find( '.row-options' );
 				if ( ! $rowOptionsBlurElement.is( $rowOptionsFocusElement ) ) {
 					$rowOptionsBlurElement.removeClass( 'active' );
 				}
@@ -490,14 +544,17 @@
 				! (
 					( e.which >= 186 && e.which <= 222 ) || // punctuation and special characters
 					[
-						8, 9, 13, 16, 17, 18, 19, 20, 27, 32, 33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 91, 92, 93, 144,
-						145,
+						8, 9, 13, 16, 17, 18, 19, 20, 27, 32, 33, 34, 35, 36,
+						37, 38, 39, 40, 45, 46, 91, 92, 93, 144, 145,
 					].includes( e.which ) || // Special keys
 					( e.which >= 112 && e.which <= 123 )
 				)
 			) {
 				// Function keys
-				$( this ).closest( '.select2-container' ).siblings( 'select:enabled' ).select2( 'open' );
+				$( this )
+					.closest( '.select2-container' )
+					.siblings( 'select:enabled' )
+					.select2( 'open' );
 				return;
 			}
 		},
@@ -598,7 +655,16 @@
 			}
 
 			// render
-			if ( [ 'menu_order', 'label', 'required', 'name', 'type', 'key' ].indexOf( name ) > -1 ) {
+			if (
+				[
+					'menu_order',
+					'label',
+					'required',
+					'name',
+					'type',
+					'key',
+				].indexOf( name ) > -1
+			) {
 				this.render();
 			}
 
@@ -609,24 +675,61 @@
 		onChangeLabel: function ( e, $el ) {
 			// set
 			const label = $el.val();
-			const safeLabel = acf.encode( label );
+			const safeLabel = acf.strEscape( label );
 			this.set( 'label', safeLabel );
 
 			// render name
 			if ( this.prop( 'name' ) == '' ) {
-				var name = acf.applyFilters( 'generate_field_object_name', acf.strSanitize( label ), this );
+				var name = acf.applyFilters(
+					'generate_field_object_name',
+					acf.strSanitize( label ),
+					this
+				);
 				this.prop( 'name', name );
 			}
 		},
 
 		onChangeName: function ( e, $el ) {
-			const sanitizedName = acf.strSanitize( $el.val(), false );
+			const id = this.get( 'id' );
+			let forceSanitize = false;
+			// If id is not a number or is zero, force sanitize
+			if ( typeof id !== 'number' || id === 0 ) {
+				forceSanitize = true;
+			}
 
-			$el.val( sanitizedName );
-			this.set( 'name', sanitizedName );
+			// Get the input's value attribute
+			const valueAttr = $el.val();
 
-			if ( sanitizedName.startsWith( 'field_' ) ) {
-				alert( acf.__( 'The string "field_" may not be used at the start of a field name' ) );
+			// If value is a lowercase string, force sanitize
+			if (
+				typeof valueAttr === 'string' &&
+				valueAttr === valueAttr.toLowerCase()
+			) {
+				forceSanitize = true;
+			}
+
+			forceSanitize = acf.applyFilters(
+				'convert_field_name_to_lowercase',
+				forceSanitize,
+				this
+			);
+
+			// Sanitize the input value (force if needed)
+			const sanitized = acf.strSanitize( $el.val(), forceSanitize );
+
+			// Set the sanitized value back to the input
+			$el.val( sanitized );
+
+			// Update the field's name property
+			this.set( 'name', sanitized );
+
+			// Warn if the name starts with "field_"
+			if ( sanitized.startsWith( 'field_' ) ) {
+				alert(
+					acf.__(
+						'The string "field_" may not be used at the start of a field name'
+					)
+				);
 			}
 		},
 
@@ -825,7 +928,11 @@
 
 			// bail early if changed
 			if ( changed ) {
-				alert( acf.__( 'This field cannot be moved until its changes have been saved' ) );
+				alert(
+					acf.__(
+						'This field cannot be moved until its changes have been saved'
+					)
+				);
 				return;
 			}
 
@@ -895,10 +1002,13 @@
 				popup.content( html );
 
 				if ( wp.a11y && wp.a11y.speak && acf.__ ) {
-					wp.a11y.speak( acf.__( 'Field moved to other group' ), 'polite' );
+					wp.a11y.speak(
+						acf.__( 'Field moved to other group' ),
+						'polite'
+					);
 				}
 
-				popup.$( '.acf-close-popup' ).focus();
+				popup.$( '.acf-close-popup' ).trigger( 'focus' );
 
 				field.removeAnimate();
 			};
@@ -947,7 +1057,9 @@
 			const $oldSettings = {};
 
 			this.$el
-				.find( '.acf-field-settings:first > .acf-field-settings-main > .acf-field-type-settings' )
+				.find(
+					'.acf-field-settings:first > .acf-field-settings-main > .acf-field-type-settings'
+				)
 				.each( function () {
 					let tab = $( this ).data( 'parent-tab' );
 					let $tabSettings = $( this ).children().removeData();
@@ -972,7 +1084,11 @@
 			const $loading = $(
 				'<div class="acf-field"><div class="acf-input"><div class="acf-loading"></div></div></div>'
 			);
-			this.$el.find( '.acf-field-settings-main-general .acf-field-type-settings' ).before( $loading );
+			this.$el
+				.find(
+					'.acf-field-settings-main-general .acf-field-type-settings'
+				)
+				.before( $loading );
 
 			const ajaxData = {
 				action: 'acf/field_group/render_field_settings',
@@ -1016,11 +1132,15 @@
 
 			tabs.forEach( ( tab ) => {
 				const $tab = self.$el.find(
-					'.acf-field-settings-main-' + tab.replace( '_', '-' ) + ' .acf-field-type-settings'
+					'.acf-field-settings-main-' +
+						tab.replace( '_', '-' ) +
+						' .acf-field-type-settings'
 				);
 				let tabContent = '';
 
-				if ( [ 'object', 'string' ].includes( typeof settings[ tab ] ) ) {
+				if (
+					[ 'object', 'string' ].includes( typeof settings[ tab ] )
+				) {
 					tabContent = settings[ tab ];
 				}
 
@@ -1047,12 +1167,18 @@
 
 		hideEmptyTabs: function () {
 			const $settings = this.$settings();
-			const $tabs = $settings.find( '.acf-field-settings:first > .acf-field-settings-main' );
+			const $tabs = $settings.find(
+				'.acf-field-settings:first > .acf-field-settings-main'
+			);
 
 			$tabs.each( function () {
 				const $tabContent = $( this );
-				const tabName = $tabContent.find( '.acf-field-type-settings:first' ).data( 'parentTab' );
-				const $tabLink = $settings.find( '.acf-settings-type-' + tabName ).first();
+				const tabName = $tabContent
+					.find( '.acf-field-type-settings:first' )
+					.data( 'parentTab' );
+				const $tabLink = $settings
+					.find( '.acf-settings-type-' + tabName )
+					.first();
 
 				if ( $.trim( $tabContent.text() ) === '' ) {
 					$tabLink.hide();

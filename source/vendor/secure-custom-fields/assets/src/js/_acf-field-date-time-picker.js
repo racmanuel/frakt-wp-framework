@@ -6,6 +6,51 @@
 			return this.$( '.acf-date-time-picker' );
 		},
 
+		setValue: function ( val ) {
+			acf.val( this.$input(), val );
+
+			const $inputText = this.$inputText();
+			if ( val && $inputText.length ) {
+				try {
+					const parts = val.split( ' ' );
+					const dateValue = parts[ 0 ] || '';
+					const timeValue = parts[ 1 ] || '';
+					const date = $.datepicker.parseDate(
+						'yy-mm-dd',
+						dateValue
+					);
+					const dateFormat =
+						this.get( 'date_format' ) ||
+						$inputText.datetimepicker( 'option', 'dateFormat' );
+					const timeFormat =
+						this.get( 'time_format' ) ||
+						$inputText.datetimepicker( 'option', 'timeFormat' );
+					const dateText = $.datepicker.formatDate(
+						dateFormat,
+						date
+					);
+					let timeText = timeValue;
+					const matches = timeValue.match(
+						/^(\d{2}):(\d{2}):(\d{2})$/
+					);
+
+					if ( matches && $.datepicker.formatTime ) {
+						timeText = $.datepicker.formatTime( timeFormat, {
+							hour: parseInt( matches[ 1 ], 10 ),
+							minute: parseInt( matches[ 2 ], 10 ),
+							second: parseInt( matches[ 3 ], 10 ),
+						} );
+					}
+
+					$inputText.val( dateText + ' ' + timeText );
+				} catch ( e ) {
+					$inputText.val( val );
+				}
+			} else {
+				$inputText.val( '' );
+			}
+		},
+
 		initialize: function () {
 			// vars
 			var $input = this.$input();
@@ -33,6 +78,43 @@
 
 			// add date time picker
 			acf.newDateTimePicker( $inputText, args );
+
+			// Check if default to today is enabled and field is empty
+			if (
+				$inputText.data( 'default-to-today' ) === 1 &&
+				! $input.val()
+			) {
+				// Get current date
+				const currentDate = new Date();
+
+				// Format display date and time
+				const displayDate = $.datepicker.formatDate(
+					args.dateFormat,
+					currentDate
+				);
+				const displayTime = $.datepicker.formatTime( args.timeFormat, {
+					hour: currentDate.getHours(),
+					minute: currentDate.getMinutes(),
+					second: currentDate.getSeconds(),
+				} );
+
+				// Set the display input value (what user sees)
+				$inputText.val( `${ displayDate } ${ displayTime }` );
+
+				// Format hidden field date and time (for database storage)
+				const hiddenDate = $.datepicker.formatDate(
+					'yy-mm-dd',
+					currentDate
+				);
+				const hiddenTime = $.datepicker.formatTime( 'hh:mm:ss', {
+					hour: currentDate.getHours(),
+					minute: currentDate.getMinutes(),
+					second: currentDate.getSeconds(),
+				} );
+
+				// Set the hidden input value (what gets saved)
+				$input.val( `${ hiddenDate } ${ hiddenTime }` );
+			}
 
 			// action
 			acf.doAction( 'date_time_picker_init', $inputText, args, this );

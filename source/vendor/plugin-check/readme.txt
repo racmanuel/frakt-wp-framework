@@ -1,8 +1,8 @@
 === Plugin Check (PCP) ===
 
 Contributors:      wordpressdotorg
-Tested up to:      6.8
-Stable tag:        1.6.0
+Tested up to:      7.0
+Stable tag:        2.0.0
 License:           GPLv2 or later
 License URI:       https://www.gnu.org/licenses/gpl-2.0.html
 Tags:              plugin best practices, testing, accessibility, performance, security
@@ -27,6 +27,23 @@ The checks are grouped into several categories, so that you can customize which 
 Keep in mind that this plugin is not a replacement for the manual review process, but it will help you speed up the process of getting your plugin approved for the WordPress.org plugin repository, and it will also help you avoid some common mistakes.
 
 Even if you do not intend to host your plugin in the WordPress.org directory, you are encouraged to use Plugin Check so that your plugin follows the base requirements and best practices for WordPress plugins.
+
+**Plugin Namer Tool**
+
+Plugin Check now includes an AI-powered Plugin Namer tool (accessible via _Tools > Plugin Check Namer_) that helps plugin authors evaluate plugin names before submission. This tool checks for:
+
+* Similarity to existing plugins in the WordPress.org directory
+* Potential trademark conflicts with well-known brands
+* Compliance with WordPress plugin naming guidelines
+* Generic or overly broad naming issues
+
+The Plugin Namer provides instant feedback with actionable suggestions, helping you choose a clear, unique, and policy-compliant name that stands out in the plugin directory. This feature requires WordPress 7.0+ and configured AI connectors.
+
+**Important:** The Plugin Namer tool provides guidance only and is not definitive. All plugin name decisions are subject to final review and approval by the WordPress.org Plugins team reviewers.
+
+= Checks reviewed by AI =
+
+When AI analysis is enabled, Plugin Check can review selected results to help identify likely false positives. Related issues are grouped and analyzed with prompts tailored to the type of check, using the surrounding code as context. The AI review does not remove or change the original results, but adds an additional summary that highlights which findings may need human review before taking action.
 
 == Installation ==
 
@@ -67,6 +84,81 @@ To be approved in the WordPress.org plugin directory, a plugin must typically pa
 In any case, passing the checks in this tool likely helps to achieve a smooth plugin review process, but is no guarantee that a plugin will be approved in the WordPress.org plugin directory.
 
 == Changelog ==
+
+= 2.0.0 =
+
+* Enhancement - Add WordPress functions compatibility check to flag usage of functions unavailable in a plugin's declared minimum WordPress version.
+* Enhancement - Add Write File check to detect plugins saving data in the plugin folder instead of the uploads directory or database.
+* Enhancement - Add batched AI false positive detection with check-specific prompts and AI model selection for WP-CLI.
+* Enhancement - Add CTRF export support for check results.
+* Enhancement - Add an error count summary to the Plugin Check UI.
+* Enhancement - Improve Direct File Access detection for library-style files.
+* Enhancement - Adjust checks for update mode.
+* Fix - Relax Update URI header validation for WordPress.org plugin URLs.
+* Fix - Improve WordPress functions compatibility detection to avoid PHP serialization false positives.
+* Fix - Respect `wp_supports_ai()` and text-capable model filtering in the Plugin Namer.
+* Fix - Show Plugin Namer token usage in results.
+* Fix - Recognize EUPL as a GPL-compatible license.
+* Fix - Improve internationalization for emoji-prefixed labels.
+* Fix - Update PHPCS sniffer repository links.
+* Tweak - Update WP-CLI runtime checks documentation.
+* Chore - Add automated WordPress function compatibility data generation.
+* Chore - Add AI usage disclosure to the pull request template.
+* Chore - Add AI coding agent instructions.
+* Chore - Clean up wp-env development and test configuration warnings.
+* Chore - Show a WordPress Playground preview button on pull requests.
+* Chore - Update development and CI dependencies.
+
+= 1.9.0 =
+
+* Enhancement - Use the WordPress 7.0 core AI connectors.
+* Enhancement - Add External Admin Menu Links check to detect external URLs in top-level admin menus.
+* Enhancement - Add and refine the block metadata compatibility check to require `apiVersion` 3+ for WordPress 7.0+ iframe editor compatibility, including adjusted severity by mode.
+* Enhancement - Improve Plugin Updater detection to identify Plugin Update Checker (PUC) calls.
+* Enhancement - Accept WTFPL as a GPL-compatible license.
+* Fix - Improve PayPal donation URL validation for complex query strings.
+* Fix - Ensure AI Check uses the configured model preference.
+* Fix - Show a clear Plugin Namer error message when AI connector status is unavailable.
+* Fix - Update the Plugin Namer connector settings page link.
+* Tweak - Convert the `load_plugin_textdomain()` check from error to warning severity.
+* Fix - Improve readme contributors validation when trailing commas are present.
+* Fix - Make markdown file checks case-insensitive.
+* Tweak - Refine escaping sniff error messages for clearer guidance.
+* Chore - Update development dependencies, including `@wordpress/scripts`, `simple-git`, `basic-ftp`, `svgo`, `immutable`, and `@wp-playground/cli`.
+* Tweak - Update WordPress.org Plugins Team naming for consistency.
+
+= 1.8.0 =
+
+* Enhancement - Add AI-powered Plugin Namer tool to evaluate plugin names for trademark conflicts and naming best practices.
+* Enhancement - Add AI Instructions Detection Check to identify AI tool configuration files and development-only directories.
+* Enhancement - Add support for exporting check results in CSV, JSON, and Markdown formats.
+* Enhancement - Add check type filter to allow filtering results by errors and warnings.
+* Enhancement - Add Direct File Access check to ensure proper security validation with ABSPATH constant.
+* Enhancement - Add check for mismatched "Tested up to" header between plugin header and readme.txt.
+* Enhancement - Update trademark check to remove acronym exceptions and improve flexibility.
+* Enhancement - Add heredoc sniff to detect and restrict heredoc usage (nowdoc allowed).
+* Fix - Update Playground integration blueprint for compatibility.
+* Fix - Force correct plugin slug detection in WP-CLI command.
+
+= 1.7.0 =
+
+* Enhancement - Add Minified File Detection Check to identify and handle minified files in plugins.
+* Enhancement - Implement check for insecure use of wp_verify_nonce() to improve security validation.
+* Enhancement - Add direct database query sniff to detect direct database calls without using WordPress functions.
+* Enhancement - Add prefixing check to ensure proper function and class name prefixing.
+* Enhancement - Update localhost sniff regex to improve detection of localhost URLs including *.local domains.
+* Enhancement - Disallow runtime checks when custom user table constants are defined for better compatibility.
+* Enhancement - Add forbidden functions check to detect usage of disallowed PHP functions.
+* Enhancement - New check for wp_safe_redirect to encourage use of WordPress safe redirect function.
+* Enhancement - Improve mismatched text domain check for better internationalization validation.
+* Enhancement - Detect links that request five-star reviews to enforce plugin directory guidelines.
+* Enhancement - Add The Unlicense to GPL-compatible license check.
+* Enhancement - Improve localhost sniff code for more accurate detection.
+* Fix - Ignore vendor_prefixed and vendor-prefixed folders in checks to prevent false positives.
+* Fix - Handle possible empty element in scanner to prevent PHP warnings.
+* Fix - Hide error output in scanner for cleaner output.
+* Fix - Call ReflectionProperty::setAccessible() only in older PHP versions for better PHP 8.1+ compatibility.
+* Fix - Prevent deletion of custom WordPress tables during cleanup in test environment.
 
 = 1.6.0 =
 
@@ -150,7 +242,7 @@ In any case, passing the checks in this tool likely helps to achieve a smooth pl
 * Enhancement - Improved the use of localhost URLs in the Plugin.
 * Enhancement - Documented checks in the plugin.
 * Enhancement - Increased severity for Code obfuscation checks.
-* Enhancement - Diffentiate between no existent readme and default readme file.
+* Enhancement - Differentiate between non-existent readme and default readme file.
 * Enhancement - Encourage developers to use native functions for loading images in templates.
 * Enhancement - Added a check for not allowing include libraries already in WordPress core.
 * Enhancement - Warning for usage of query_posts() in favor of WP_Query.

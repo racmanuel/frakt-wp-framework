@@ -150,91 +150,143 @@
             "install-path": "./installers"
         },
         {
-            "name": "wpackagist-plugin/jwt-authentication-for-wp-rest-api",
-            "version": "1.4.0",
-            "version_normalized": "1.4.0.0",
+            "name": "wp-plugin/jwt-authentication-for-wp-rest-api",
+            "version": "1.5.0",
+            "version_normalized": "1.5.0.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/jwt-authentication-for-wp-rest-api/",
-                "reference": "tags/1.4.0"
+                "reference": "tags/1.5.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/jwt-authentication-for-wp-rest-api.1.4.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/jwt-authentication-for-wp-rest-api.1.5.0.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
+            "time": "2026-03-23T19:23:21+00:00",
             "type": "wordpress-plugin",
             "installation-source": "dist",
-            "homepage": "https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "tmeister"
+                }
+            ],
+            "description": "Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.",
+            "homepage": "https://enriquechavez.co",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/#developers",
+                "issues": "https://wordpress.org/support/plugin/jwt-authentication-for-wp-rest-api",
+                "source": "https://plugins.svn.wordpress.org/jwt-authentication-for-wp-rest-api"
+            },
             "install-path": "../jwt-authentication-for-wp-rest-api"
         },
         {
-            "name": "wpackagist-plugin/plugin-check",
-            "version": "1.6.0",
-            "version_normalized": "1.6.0.0",
+            "name": "wp-plugin/plugin-check",
+            "version": "2.0.0",
+            "version_normalized": "2.0.0.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/plugin-check/",
-                "reference": "tags/1.6.0"
+                "reference": "tags/2.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/plugin-check.1.6.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/plugin-check.2.0.0.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
+            "time": "2026-05-29T15:35:57+00:00",
             "type": "wordpress-plugin",
             "installation-source": "dist",
-            "homepage": "https://wordpress.org/plugins/plugin-check/",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "WordPress.org"
+                }
+            ],
+            "description": "Plugin Check is a WordPress.org tool which provides checks to help plugins meet the directory requirements and follow various best practices.",
+            "homepage": "https://github.com/WordPress/plugin-check",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/plugin-check/#developers",
+                "issues": "https://wordpress.org/support/plugin/plugin-check",
+                "source": "https://plugins.svn.wordpress.org/plugin-check"
+            },
             "install-path": "../plugin-check"
         },
         {
-            "name": "wpackagist-plugin/query-monitor",
-            "version": "3.19.0",
-            "version_normalized": "3.19.0.0",
+            "name": "wp-plugin/query-monitor",
+            "version": "4.0.7",
+            "version_normalized": "4.0.7.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/query-monitor/",
-                "reference": "tags/3.19.0"
+                "reference": "tags/4.0.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/query-monitor.3.19.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/query-monitor.4.0.7.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
+            "time": "2026-06-20T20:20:53+00:00",
             "type": "wordpress-plugin",
             "installation-source": "dist",
-            "homepage": "https://wordpress.org/plugins/query-monitor/",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "John Blackbourn"
+                }
+            ],
+            "description": "Query Monitor is the developer tools panel for WordPress and WooCommerce.",
+            "homepage": "https://querymonitor.com/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/query-monitor/#developers",
+                "issues": "https://wordpress.org/support/plugin/query-monitor",
+                "source": "https://plugins.svn.wordpress.org/query-monitor"
+            },
             "install-path": "../query-monitor"
         },
         {
-            "name": "wpackagist-plugin/secure-custom-fields",
-            "version": "6.5.5",
-            "version_normalized": "6.5.5.0",
+            "name": "wp-plugin/secure-custom-fields",
+            "version": "6.9.2",
+            "version_normalized": "6.9.2.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/secure-custom-fields/",
-                "reference": "tags/6.5.5"
+                "reference": "tags/6.9.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/secure-custom-fields.6.5.5.zip"
+                "url": "https://downloads.wordpress.org/plugin/secure-custom-fields.6.9.2.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
+            "time": "2026-07-21T15:45:58+00:00",
             "type": "wordpress-plugin",
             "installation-source": "dist",
-            "homepage": "https://wordpress.org/plugins/secure-custom-fields/",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "WordPress.org"
+                }
+            ],
+            "description": "Secure Custom Fields boosts content management with custom fields and options. It deactivates Advanced Custom Fields to prevent duplicate code errors.",
+            "homepage": "https://developer.wordpress.org/secure-custom-fields/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/secure-custom-fields/#developers",
+                "issues": "https://wordpress.org/support/plugin/secure-custom-fields",
+                "source": "https://plugins.svn.wordpress.org/secure-custom-fields"
+            },
             "install-path": "../secure-custom-fields"
         },
         {
-            "name": "wpackagist-plugin/transients-manager",
+            "name": "wp-plugin/transients-manager",
             "version": "2.0.7",
             "version_normalized": "2.0.7.0",
             "source": {
@@ -247,53 +299,92 @@
                 "url": "https://downloads.wordpress.org/plugin/transients-manager.2.0.7.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
+            "time": "2026-03-23T19:23:21+00:00",
             "type": "wordpress-plugin",
             "installation-source": "dist",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "Syed Balkhi"
+                }
+            ],
+            "description": "Provides a familiar interface to view, search, edit, and delete Transients.",
             "homepage": "https://wordpress.org/plugins/transients-manager/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/transients-manager/#developers",
+                "issues": "https://wordpress.org/support/plugin/transients-manager",
+                "source": "https://plugins.svn.wordpress.org/transients-manager"
+            },
             "install-path": "../transients-manager"
         },
         {
-            "name": "wpackagist-plugin/user-switching",
-            "version": "1.10.0",
-            "version_normalized": "1.10.0.0",
+            "name": "wp-plugin/user-switching",
+            "version": "1.12.1",
+            "version_normalized": "1.12.1.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/user-switching/",
-                "reference": "tags/1.10.0"
+                "reference": "tags/1.12.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/user-switching.1.10.0.zip"
+                "url": "https://downloads.wordpress.org/plugin/user-switching.1.12.1.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
+            "time": "2026-07-09T00:26:11+00:00",
             "type": "wordpress-plugin",
             "installation-source": "dist",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "John Blackbourn"
+                }
+            ],
+            "description": "Instant switching between user accounts in WordPress and WooCommerce.",
             "homepage": "https://wordpress.org/plugins/user-switching/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/user-switching/#developers",
+                "issues": "https://wordpress.org/support/plugin/user-switching",
+                "source": "https://plugins.svn.wordpress.org/user-switching"
+            },
             "install-path": "../user-switching"
         },
         {
-            "name": "wpackagist-plugin/wp-crontrol",
-            "version": "1.19.1",
-            "version_normalized": "1.19.1.0",
+            "name": "wp-plugin/wp-crontrol",
+            "version": "1.21.0",
+            "version_normalized": "1.21.0.0",
             "source": {
                 "type": "svn",
                 "url": "https://plugins.svn.wordpress.org/wp-crontrol/",
-                "reference": "tags/1.19.1"
+                "reference": "tags/1.21.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://downloads.wordpress.org/plugin/wp-crontrol.1.19.1.zip"
+                "url": "https://downloads.wordpress.org/plugin/wp-crontrol.1.21.0.zip"
             },
             "require": {
-                "composer/installers": "^1.0 || ^2.0"
+                "composer/installers": "~1.0|~2.0"
             },
+            "time": "2026-05-20T14:41:16+00:00",
             "type": "wordpress-plugin",
             "installation-source": "dist",
-            "homepage": "https://wordpress.org/plugins/wp-crontrol/",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "John Blackbourn"
+                }
+            ],
+            "description": "WP Crontrol enables you to take control of the cron events on your WordPress website.",
+            "homepage": "https://wp-crontrol.com",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/wp-crontrol/#developers",
+                "issues": "https://wordpress.org/support/plugin/wp-crontrol",
+                "source": "https://plugins.svn.wordpress.org/wp-crontrol"
+            },
             "install-path": "../wp-crontrol"
         }
     ],

@@ -5,9 +5,6 @@
  * This file generates navigation commands for each registered post type that
  * the current user has access to, creating "View All", "Add New", and "Edit" commands.
  *
- * Post type data is provided via acf.data.customPostTypes, which is populated
- * by the PHP side after capability checks ensure the user has appropriate access.
- *
  * @since SCF 6.5.0
  */
 
@@ -15,100 +12,129 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { createElement } from '@wordpress/element';
-import { Icon } from '@wordpress/components';
-import { dispatch } from '@wordpress/data';
+import { dispatch, resolveSelect, select } from '@wordpress/data';
 import { addQueryArgs } from '@wordpress/url';
 import { page, plus, edit } from '@wordpress/icons';
 
 /**
  * Register custom post type commands
  */
-const registerPostTypeCommands = () => {
-	// Only proceed when WordPress commands API and there are custom post types accessible
-	if (
-		! dispatch( 'core/commands' ) ||
-		! window.acf?.data?.customPostTypes?.length
-	) {
+const registerPostTypeCommands = async () => {
+	if ( ! resolveSelect( 'core' ) || ! dispatch( 'core/commands' ) ) {
 		return;
 	}
 
-	const commandStore = dispatch( 'core/commands' );
-	const adminUrl = window.acf.data.admin_url || '';
-	const postTypes = window.acf.data.customPostTypes;
+	const postTypes = await resolveSelect( 'core' ).getPostTypes( {
+		per_page: -1,
+		source: 'scf',
+	} );
 
-	postTypes.forEach( ( postType ) => {
-		// Skip invalid post types or those missing required labels
-		if ( ! postType?.name || ! postType?.all_items || ! postType?.add_new_item ) {
+	const commandStore = dispatch( 'core/commands' );
+	const registeredCommands = select( 'core/commands' ).getCommands();
+
+	postTypes.forEach( async ( postType ) => {
+		if ( ! postType?.visibility?.show_ui ) {
 			return;
 		}
 
-		// Register "View All" command for this post type
-		commandStore.registerCommand( {
-			name: `scf/cpt-${ postType.name }`,
-			label: postType.all_items,
-			icon: createElement( Icon, { icon: page } ),
-			context: 'admin',
-			description: postType.all_items,
-			keywords: [
-				'post type',
-				'content',
-				'cpt',
-				postType.name,
-				postType.label,
-			].filter( Boolean ),
-			callback: ( { close } ) => {
-				document.location = addQueryArgs(adminUrl + 'edit.php', {
-					post_type: postType.name
-				});
-				close();
-			},
+		const viewAllCommandUrl = addQueryArgs( 'edit.php', {
+			post_type: postType.slug,
 		} );
 
-		// Register "Add New" command for this post type
-		commandStore.registerCommand( {
-			name: `scf/new-${ postType.name }`,
-			label: postType.add_new_item,
-			icon: createElement( Icon, { icon: plus } ),
-			context: 'admin',
-			description: postType.add_new_item,
-			keywords: [
-				'add',
-				'new',
+		// WordPress stores destination URLs in the command *name*, appended to
+		// the menu slug (which is also a relative URL), resulting in somewhat
+		// peculiar naming, e.g.
+		// edit.php?post_type=movie-post-new.php?post_type=movie
+		if (
+			! registeredCommands.some( ( cmd ) =>
+				cmd.name.endsWith( viewAllCommandUrl )
+			) &&
+			( await resolveSelect( 'core' ).canUser(
+				'read',
+				postType.rest_base
+			) )
+		) {
+			// Register "View All" command for this post type
+			commandStore.registerCommand( {
+				name: `scf/cpt-${ postType.slug }`,
+				label: postType.labels.all_items,
+				icon: page,
+				keywords: [
+					'post type',
+					'content',
+					'cpt',
+					postType.slug,
+					postType.name,
+				].filter( Boolean ),
+				callback: ( { close } ) => {
+					document.location = viewAllCommandUrl;
+					close();
+				},
+			} );
+		}
+
+		const addNewCommandUrl = addQueryArgs( 'post-new.php', {
+			post_type: postType.slug,
+		} );
+
+		if (
+			! registeredCommands.some( ( cmd ) =>
+				cmd.name.endsWith( addNewCommandUrl )
+			) &&
+			( await resolveSelect( 'core' ).canUser(
 				'create',
-				'content',
-				postType.name,
-				postType.label,
-			],
-			callback: ( { close } ) => {
-				document.location = addQueryArgs(adminUrl + 'post-new.php', {
-					post_type: postType.name
-				});
-				close();
-			},
-		} );
+				postType.rest_base
+			) )
+		) {
+			// Register "Add New" command for this post type
+			commandStore.registerCommand( {
+				name: `scf/new-${ postType.slug }`,
+				label: postType.labels.add_new_item,
+				icon: plus,
+				keywords: [
+					'add',
+					'new',
+					'create',
+					'content',
+					postType.slug,
+					postType.name,
+				],
+				callback: ( { close } ) => {
+					document.location = addNewCommandUrl;
+					close();
+				},
+			} );
+		}
 
-		// Register "Edit Post Type" command for registered CPTs
+		// Register "Edit Post Type" command. The scf_post_id field is only
+		// exposed to users who can edit the post type definition, so its
+		// absence means the command must not be offered.
+		if ( ! postType.scf_post_id ) {
+			return;
+		}
+
 		commandStore.registerCommand( {
-			name: `scf/edit-${ postType.name }`,
-			label: sprintf(__('Edit post type: %s', 'secure-custom-fields'), postType.label),
-			icon: createElement( Icon, { icon: edit } ),
-			context: 'admin',
-			description: sprintf(__('Edit the %s post type settings', 'secure-custom-fields'), postType.label),
+			name: `scf/edit-${ postType.slug }`,
+			label: sprintf(
+				/* translators: %s: post type label */
+				__( 'Edit post type: %s', 'secure-custom-fields' ),
+				postType.name
+			),
+			icon: edit,
 			keywords: [
 				'edit',
 				'modify',
 				'post type',
 				'cpt',
 				'settings',
+				postType.slug,
 				postType.name,
-				postType.label,
 			],
 			callback: ( { close } ) => {
-				document.location = addQueryArgs(adminUrl + 'post.php', {
-					post: postType.id,
-					action: 'edit'
-				});
+				document.location = addQueryArgs( 'post.php', {
+					post: postType.scf_post_id,
+					action: 'edit',
+				} );
 				close();
 			},
 		} );

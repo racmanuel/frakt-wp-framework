@@ -112,7 +112,7 @@
         // Hack to focus with the cursor at the end of the input.
         const $pageTitle = popup.$el.find('#acf_ui_options_page-page_title');
         const pageTitleVal = $pageTitle.val();
-        $pageTitle.focus().val('').val(pageTitleVal);
+        $pageTitle.trigger('focus').val('').val(pageTitleVal);
         acf.newSelect2($('#acf_ui_options_page-parent_slug'), {
           field: false,
           templateSelection: parentPageSelectTemplate,

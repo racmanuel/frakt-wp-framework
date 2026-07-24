@@ -47,7 +47,32 @@
 			// add date picker
 			acf.newDatePicker( $inputText, args );
 
-			// action
+			// Check if default to today is enabled and field is empty
+			if (
+				$inputText.data( 'default-to-today' ) === 1 &&
+				! $input.val()
+			) {
+				// Get current date
+				const currentDate = new Date();
+
+				// Format display date
+				const displayDate = $.datepicker.formatDate(
+					args.dateFormat,
+					currentDate
+				);
+
+				// Set the display input value (what user sees)
+				$inputText.val( `${ displayDate }` );
+
+				// Format hidden field date (for database storage)
+				const hiddenDate = $.datepicker.formatDate(
+					'yymmdd',
+					currentDate
+				);
+
+				// Set the hidden input value (what gets saved)
+				$input.val( `${ hiddenDate }` );
+			}
 			acf.doAction( 'date_picker_init', $inputText, args, this );
 		},
 
@@ -88,6 +113,27 @@
 
 			// action for 3rd party customization
 			acf.doAction( 'date_picker_init', $inputText, args, this );
+		},
+
+		setValue: function ( val ) {
+			acf.val( this.$input(), val );
+
+			const $inputText = this.$inputText();
+			if ( val && $inputText.length ) {
+				try {
+					const date = $.datepicker.parseDate( 'yymmdd', val );
+					const dateFormat =
+						this.get( 'date_format' ) ||
+						$inputText.datepicker( 'option', 'dateFormat' );
+					$inputText.val(
+						$.datepicker.formatDate( dateFormat, date )
+					);
+				} catch ( e ) {
+					$inputText.val( val );
+				}
+			} else {
+				$inputText.val( '' );
+			}
 		},
 
 		onBlur: function () {

@@ -5,17 +5,18 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 	class acf_field_checkbox extends acf_field {
 
 		/**
-		 * The values of the checkboxes.
+		 * A local store of all values for de-duplication.
 		 *
-		 * @var $values (string)
+		 * @var array
 		 */
-		public $values = '';
+		private array $_values; //phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- backwards compatibility.
+
 		/**
-		 * Whether all checkboxes are checked.
+		 * An internal boolean tracking if all checkboxes are checked.
 		 *
-		 * @var $all_checked (bool)
+		 * @var boolean
 		 */
-		public $all_checked = false;
+		private bool $_all_checked; //phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore -- backwards compatibility.
 
 		/**
 		 * This function will setup the field type data
@@ -65,8 +66,8 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 		function render_field( $field ) {
 
 			// reset vars
-			$this->values      = array();
-			$this->all_checked = true;
+			$this->_values      = array();
+			$this->_all_checked = true;
 
 			// ensure array
 			$field['value']   = acf_get_array( $field['value'] );
@@ -79,7 +80,13 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 			$li = '';
 			$ul = array(
 				'class' => 'acf-checkbox-list',
+				'role'  => 'group',
 			);
+
+			// Add aria-labelledby if field has an ID for proper screen reader announcement
+			if ( ! empty( $field['id'] ) ) {
+				$ul['aria-labelledby'] = $field['id'] . '-label';
+			}
 
 			// append to class
 			$ul['class'] .= ' ' . ( 'horizontal' === acf_maybe_get( $field, 'layout' ) ? 'acf-hl' : 'acf-bl' );
@@ -180,7 +187,7 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 			}
 
 			// checked
-			if ( $this->all_checked ) {
+			if ( $this->_all_checked ) {
 				$atts['checked'] = 'checked';
 			}
 
@@ -223,7 +230,7 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 					);
 
 					// bail early if choice already exists
-					if ( in_array( $esc_value, $this->values, true ) ) {
+					if ( in_array( $esc_value, $this->_values, true ) ) {
 						continue;
 					}
 
@@ -298,7 +305,7 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 					if ( in_array( $esc_value, $args['value'] ) ) {
 						$atts['checked'] = 'checked';
 					} else {
-						$this->all_checked = false;
+						$this->_all_checked = false;
 					}
 
 					// disabled
@@ -307,7 +314,7 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 					}
 
 					// store value added
-					$this->values[] = $esc_value;
+					$this->_values[] = $esc_value;
 
 					// append
 					$html .= acf_get_checkbox_input( $atts );
@@ -470,20 +477,18 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 
 
 		/**
-		 * This filter is applied to the $value before it is updated in the db
+		 * Filters the $value before it is updated in the db.
 		 *
-		 * @type    filter
 		 * @since   ACF 3.6
 		 * @date    23/01/13
 		 *
-		 * @param   $value - the value which will be saved in the database
-		 * @param   $post_id - the post_id of which the value will be saved
-		 * @param   $field - the field array holding all the field options
+		 * @param mixed          $value   The value which will be saved in the database.
+		 * @param integer|string $post_id The post_id of which the value will be saved.
+		 * @param array          $field   The field array holding all the field options.
 		 *
-		 * @return  $value - the modified value
+		 * @return mixed
 		 */
 		function update_value( $value, $post_id, $field ) {
-
 			// bail early if is empty
 			if ( empty( $value ) ) {
 				return $value;
@@ -492,8 +497,8 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 			// select -> update_value()
 			$value = acf_get_field_type( 'select' )->update_value( $value, $post_id, $field );
 
-			// save_other_choice
-			if ( $field['save_custom'] ) {
+			// save_custom
+			if ( $field['save_custom'] && scf_current_user_has_capability() ) {
 
 				// get raw $field (may have been changed via repeater field)
 				// if field is local, it won't have an ID
@@ -508,26 +513,7 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 					return $value;
 				}
 
-				// loop
-				foreach ( $value as $v ) {
-
-					// ignore if already exists
-					if ( isset( $field['choices'][ $v ] ) ) {
-						continue;
-					}
-
-					// unslash (fixes serialize single quote issue)
-					$v = wp_unslash( $v );
-
-					// sanitize (remove tags)
-					$v = sanitize_text_field( $v );
-
-					// append
-					$field['choices'][ $v ] = $v;
-				}
-
-				// save
-				acf_update_field( $field );
+				acf_get_field_type( 'select' )->append_user_choices_to_field( $value, $post_id, $field );
 			}
 
 			// return
@@ -606,8 +592,18 @@ if ( ! class_exists( 'acf_field_checkbox' ) ) :
 
 			return $schema;
 		}
-	}
 
+		/**
+		 * Returns an array of JSON-LD Property output types that are supported by this field type.
+		 *
+		 * @since 6.8
+		 *
+		 * @return string[]
+		 */
+		public function get_jsonld_output_types(): array {
+			return array( 'Text' );
+		}
+	}
 
 	// initialize
 	acf_register_field_type( 'acf_field_checkbox' );

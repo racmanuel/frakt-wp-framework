@@ -1,10 +1,18 @@
 <?php
+/**
+ * ACF internal post type base class.
+ *
+ * @package wordpress/secure-custom-fields
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
 if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
+	/**
+	 * Base class for ACF-backed internal post types.
+	 */
 	abstract class ACF_Internal_Post_Type {
 
 
@@ -155,7 +163,7 @@ if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
 			$raw_post['title']      = $post->post_title;
 			$raw_post['key']        = $post->post_name;
 			$raw_post['menu_order'] = $post->menu_order;
-			$raw_post['active']     = in_array( $post->post_status, array( 'publish', 'auto-draft' ) );
+			$raw_post['active']     = in_array( $post->post_status, array( 'publish', 'auto-draft' ), true );
 
 			return $raw_post;
 		}
@@ -166,7 +174,7 @@ if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
 		 * @since ACF 6.1
 		 *
 		 * @param integer|string $id The post ID, key, or name.
-		 * @return WP_Post|bool The post object, or false on failure.
+		 * @return WP_Post|boolean The post object, or false on failure.
 		 */
 		public function get_post_object( $id = 0 ) {
 			if ( is_numeric( $id ) ) {
@@ -184,7 +192,7 @@ if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
 				$cache_key = $this->cache_key . $id;
 				$post_id   = wp_cache_get( $cache_key, 'secure-custom-fields' );
 
-				if ( $post_id === false ) {
+				if ( false === $post_id ) {
 					$query_key = 'acf_' . $this->post_key_prefix . 'key';
 
 					// Query posts.
@@ -394,7 +402,7 @@ if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
 			$cache_key = acf_cache_key( $this->cache_key_plural );
 			$post_ids  = wp_cache_get( $cache_key, 'secure-custom-fields' ); // TODO: Do we need to change the group at all?
 
-			if ( $post_ids === false ) {
+			if ( false === $post_ids ) {
 
 				// Query posts.
 				$posts = get_posts(
@@ -443,11 +451,12 @@ if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
 		 * @return array
 		 */
 		public function filter_posts( $posts, $args = array() ) {
-			if ( ! empty( $args['active'] ) ) {
-				$posts = array_filter(
+			if ( isset( $args['active'] ) ) {
+				$active_filter = (bool) $args['active'];
+				$posts         = array_filter(
 					$posts,
-					function ( $post ) {
-						return $post['active'];
+					function ( $post ) use ( $active_filter ) {
+						return (bool) $post['active'] === $active_filter;
 					}
 				);
 			}
@@ -717,6 +726,20 @@ if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
 			// Disable filters to ensure ACF loads data from DB.
 			acf_disable_filters();
 
+			$new_post_id = (int) $new_post_id;
+
+			if ( 0 > $new_post_id ) {
+				return false;
+			}
+
+			if ( $new_post_id ) {
+				$target = get_post( $new_post_id );
+
+				if ( ! $target || $target->post_type !== $this->post_type ) {
+					return false;
+				}
+			}
+
 			$post = $this->get_post( $id );
 			if ( ! $post || ! $post['ID'] ) {
 				return false;
@@ -724,7 +747,7 @@ if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
 
 			// Update attributes.
 			$post['ID']  = $new_post_id;
-			$post['key'] = uniqid( 'group_' );
+			$post['key'] = uniqid( $this->post_key_prefix ); // See https://github.com/WordPress/secure-custom-fields/pull/240
 
 			// Add (copy) to title when appropriate.
 			if ( ! $new_post_id ) {
@@ -734,7 +757,12 @@ if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
 			// When importing a new field group, insert a temporary post and set the field group's ID.
 			// This allows fields to be updated before the field group (field group ID is needed for field parent setting).
 			if ( ! $post['ID'] ) {
-				$post['ID'] = wp_insert_post( array( 'post_title' => $post['key'] ) );
+				$post['ID'] = wp_insert_post(
+					array(
+						'post_title' => $post['key'],
+						'post_type'  => $this->post_type,
+					)
+				);
 			}
 
 			$post = $this->update_post( $post );
@@ -837,6 +865,8 @@ if ( ! class_exists( 'ACF_Internal_Post_Type' ) ) {
 		 * @return string
 		 */
 		public function export_post_as_php( $post = array() ) {
+			unset( $post );
+
 			return '';
 		}
 

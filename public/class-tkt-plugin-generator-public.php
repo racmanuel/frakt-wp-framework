@@ -1153,31 +1153,31 @@ class Tkt_Plugin_Generator_Public
 		// Map form fields to composer packages
 		$dependency_map = [
 			'include_acf' => [
-				'package' => 'wpackagist-plugin/secure-custom-fields',
+				'package' => 'wp-plugin/secure-custom-fields',
 				'label'   => 'Secure Custom Fields',
 			],
 			'include_qm' => [
-				'package' => 'wpackagist-plugin/query-monitor',
+				'package' => 'wp-plugin/query-monitor',
 				'label'   => 'Query Monitor',
 			],
 			'include_us' => [
-				'package' => 'wpackagist-plugin/user-switching',
+				'package' => 'wp-plugin/user-switching',
 				'label'   => 'User Switching',
 			],
 			'include_wpc' => [
-				'package' => 'wpackagist-plugin/wp-crontrol',
+				'package' => 'wp-plugin/wp-crontrol',
 				'label'   => 'WP Crontrol',
 			],
 			'include_pc' => [
-				'package' => 'wpackagist-plugin/plugin-check',
+				'package' => 'wp-plugin/plugin-check',
 				'label'   => 'Plugin Check',
 			],
 			'include_jwt' => [
-				'package' => 'wpackagist-plugin/jwt-authentication-for-wp-rest-api',
+				'package' => 'wp-plugin/jwt-authentication-for-wp-rest-api',
 				'label'   => 'JWT Authentication for WP REST API',
 			],
 			'include_tm' => [
-				'package' => 'wpackagist-plugin/transients-manager',
+				'package' => 'wp-plugin/transients-manager',
 				'label'   => 'Transients Manager',
 			],
 		];

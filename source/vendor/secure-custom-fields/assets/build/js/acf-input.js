@@ -709,11 +709,11 @@
 /***/ (() => {
 
 (function ($, undefined) {
-  var __ = acf.__;
-  var parseString = function (val) {
+  const __ = acf.__;
+  const parseString = function (val) {
     return val ? '' + val : '';
   };
-  var isEqualTo = function (v1, v2) {
+  const isEqualTo = function (v1, v2) {
     return parseString(v1).toLowerCase() === parseString(v2).toLowerCase();
   };
 
@@ -724,30 +724,30 @@
    * @param {number|string|Array} v2 - The selected value to compare.
    * @returns {boolean} Returns true if the values are equal numbers, otherwise returns false.
    */
-  var isEqualToNumber = function (v1, v2) {
+  const isEqualToNumber = function (v1, v2) {
     if (v2 instanceof Array) {
       return v2.length === 1 && isEqualToNumber(v1, v2[0]);
     }
     return parseFloat(v1) === parseFloat(v2);
   };
-  var isGreaterThan = function (v1, v2) {
+  const isGreaterThan = function (v1, v2) {
     return parseFloat(v1) > parseFloat(v2);
   };
-  var isLessThan = function (v1, v2) {
+  const isLessThan = function (v1, v2) {
     return parseFloat(v1) < parseFloat(v2);
   };
-  var inArray = function (v1, array) {
+  const inArray = function (v1, array) {
     // cast all values as string
     array = array.map(function (v2) {
       return parseString(v2);
     });
     return array.indexOf(v1) > -1;
   };
-  var containsString = function (haystack, needle) {
+  const containsString = function (haystack, needle) {
     return parseString(haystack).indexOf(parseString(needle)) > -1;
   };
-  var matchesPattern = function (v1, pattern) {
-    var regexp = new RegExp(parseString(pattern), 'gi');
+  const matchesPattern = function (v1, pattern) {
+    const regexp = new RegExp(parseString(pattern), 'gi');
     return parseString(v1).match(regexp);
   };
   const conditionalSelect2 = function (field, type) {
@@ -764,11 +764,11 @@
     };
     const typeAttr = acf.escAttr(type);
     const template = function (selection) {
-      return `<span class="acf-${typeAttr}-select-name acf-conditional-select-name">` + acf.escHtml(selection.text) + '</span>';
+      return `<span class="acf-${typeAttr}-select-name acf-conditional-select-name">` + acf.strEscape(selection.text) + '</span>';
     };
     const resultsTemplate = function (results) {
       let classes = results.text.startsWith('- ') ? `acf-${typeAttr}-select-name acf-${typeAttr}-select-sub-item` : `acf-${typeAttr}-select-name`;
-      return '<span class="' + classes + '">' + acf.escHtml(results.text) + '</span>' + `<span class="acf-${typeAttr}-select-id acf-conditional-select-id">` + (results.id ? results.id : '') + '</span>';
+      return '<span class="' + classes + '">' + acf.strEscape(results.text) + '</span>' + `<span class="acf-${typeAttr}-select-id acf-conditional-select-id">` + (results.id ? results.id : '') + '</span>';
     };
     const select2Props = {
       field: false,
@@ -795,7 +795,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasPageLink = acf.Condition.extend({
+  const HasPageLink = acf.Condition.extend({
     type: 'hasPageLink',
     operator: '==',
     label: __('Page is equal to'),
@@ -814,7 +814,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasPageLinkNotEqual = acf.Condition.extend({
+  const HasPageLinkNotEqual = acf.Condition.extend({
     type: 'hasPageLinkNotEqual',
     operator: '!==',
     label: __('Page is not equal to'),
@@ -833,7 +833,7 @@
    *
    *  @since ACF 6.3
    */
-  var containsPageLink = acf.Condition.extend({
+  const containsPageLink = acf.Condition.extend({
     type: 'containsPageLink',
     operator: '==contains',
     label: __('Pages contain'),
@@ -860,7 +860,7 @@
    *
    *  @since ACF 6.3
    */
-  var containsNotPageLink = acf.Condition.extend({
+  const containsNotPageLink = acf.Condition.extend({
     type: 'containsNotPageLink',
     operator: '!=contains',
     label: __('Pages do not contain'),
@@ -887,7 +887,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasAnyPageLink = acf.Condition.extend({
+  const HasAnyPageLink = acf.Condition.extend({
     type: 'hasAnyPageLink',
     operator: '!=empty',
     label: __('Has any page selected'),
@@ -910,7 +910,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasNoPageLink = acf.Condition.extend({
+  const HasNoPageLink = acf.Condition.extend({
     type: 'hasNoPageLink',
     operator: '==empty',
     label: __('Has no page selected'),
@@ -933,7 +933,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasUser = acf.Condition.extend({
+  const HasUser = acf.Condition.extend({
     type: 'hasUser',
     operator: '==',
     label: __('User is equal to'),
@@ -952,7 +952,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasUserNotEqual = acf.Condition.extend({
+  const HasUserNotEqual = acf.Condition.extend({
     type: 'hasUserNotEqual',
     operator: '!==',
     label: __('User is not equal to'),
@@ -971,7 +971,7 @@
    *
    *  @since ACF 6.3
    */
-  var containsUser = acf.Condition.extend({
+  const containsUser = acf.Condition.extend({
     type: 'containsUser',
     operator: '==contains',
     label: __('Users contain'),
@@ -998,7 +998,7 @@
    *
    *  @since ACF 6.3
    */
-  var containsNotUser = acf.Condition.extend({
+  const containsNotUser = acf.Condition.extend({
     type: 'containsNotUser',
     operator: '!=contains',
     label: __('Users do not contain'),
@@ -1024,7 +1024,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasAnyUser = acf.Condition.extend({
+  const HasAnyUser = acf.Condition.extend({
     type: 'hasAnyUser',
     operator: '!=empty',
     label: __('Has any user selected'),
@@ -1047,7 +1047,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasNoUser = acf.Condition.extend({
+  const HasNoUser = acf.Condition.extend({
     type: 'hasNoUser',
     operator: '==empty',
     label: __('Has no user selected'),
@@ -1070,7 +1070,7 @@
    *
    *  @since	ACF 6.3
    */
-  var HasRelationship = acf.Condition.extend({
+  const HasRelationship = acf.Condition.extend({
     type: 'hasRelationship',
     operator: '==',
     label: __('Relationship is equal to'),
@@ -1089,7 +1089,7 @@
    *
    *  @since	ACF 6.3
    */
-  var HasRelationshipNotEqual = acf.Condition.extend({
+  const HasRelationshipNotEqual = acf.Condition.extend({
     type: 'hasRelationshipNotEqual',
     operator: '!==',
     label: __('Relationship is not equal to'),
@@ -1108,7 +1108,7 @@
    *
    *  @since	ACF 6.3
    */
-  var containsRelationship = acf.Condition.extend({
+  const containsRelationship = acf.Condition.extend({
     type: 'containsRelationship',
     operator: '==contains',
     label: __('Relationships contain'),
@@ -1134,7 +1134,7 @@
    *
    *  @since	ACF 6.3
    */
-  var containsNotRelationship = acf.Condition.extend({
+  const containsNotRelationship = acf.Condition.extend({
     type: 'containsNotRelationship',
     operator: '!=contains',
     label: __('Relationships do not contain'),
@@ -1160,7 +1160,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasAnyRelation = acf.Condition.extend({
+  const HasAnyRelation = acf.Condition.extend({
     type: 'hasAnyRelation',
     operator: '!=empty',
     label: __('Has any relationship selected'),
@@ -1183,7 +1183,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasNoRelation = acf.Condition.extend({
+  const HasNoRelation = acf.Condition.extend({
     type: 'hasNoRelation',
     operator: '==empty',
     label: __('Has no relationship selected'),
@@ -1206,7 +1206,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasPostObject = acf.Condition.extend({
+  const HasPostObject = acf.Condition.extend({
     type: 'hasPostObject',
     operator: '==',
     label: __('Post is equal to'),
@@ -1225,7 +1225,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasPostObjectNotEqual = acf.Condition.extend({
+  const HasPostObjectNotEqual = acf.Condition.extend({
     type: 'hasPostObjectNotEqual',
     operator: '!==',
     label: __('Post is not equal to'),
@@ -1244,7 +1244,7 @@
    *
    *  @since ACF 6.3
    */
-  var containsPostObject = acf.Condition.extend({
+  const containsPostObject = acf.Condition.extend({
     type: 'containsPostObject',
     operator: '==contains',
     label: __('Posts contain'),
@@ -1271,7 +1271,7 @@
    *
    *  @since ACF 6.3
    */
-  var containsNotPostObject = acf.Condition.extend({
+  const containsNotPostObject = acf.Condition.extend({
     type: 'containsNotPostObject',
     operator: '!=contains',
     label: __('Posts do not contain'),
@@ -1298,7 +1298,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasAnyPostObject = acf.Condition.extend({
+  const HasAnyPostObject = acf.Condition.extend({
     type: 'hasAnyPostObject',
     operator: '!=empty',
     label: __('Has any post selected'),
@@ -1321,7 +1321,7 @@
    *
    *  @since ACF 6.3
    */
-  var HasNoPostObject = acf.Condition.extend({
+  const HasNoPostObject = acf.Condition.extend({
     type: 'hasNoPostObject',
     operator: '==empty',
     label: __('Has no post selected'),
@@ -1344,7 +1344,7 @@
    *
    *  @since	ACF 6.3
    */
-  var HasTerm = acf.Condition.extend({
+  const HasTerm = acf.Condition.extend({
     type: 'hasTerm',
     operator: '==',
     label: __('Term is equal to'),
@@ -1363,7 +1363,7 @@
    *
    *  @since	ACF 6.3
    */
-  var hasTermNotEqual = acf.Condition.extend({
+  const hasTermNotEqual = acf.Condition.extend({
     type: 'hasTermNotEqual',
     operator: '!==',
     label: __('Term is not equal to'),
@@ -1382,7 +1382,7 @@
    *
    *  @since	ACF 6.3
    */
-  var containsTerm = acf.Condition.extend({
+  const containsTerm = acf.Condition.extend({
     type: 'containsTerm',
     operator: '==contains',
     label: __('Terms contain'),
@@ -1407,7 +1407,7 @@
    *
    *  @since	ACF 6.3
    */
-  var containsNotTerm = acf.Condition.extend({
+  const containsNotTerm = acf.Condition.extend({
     type: 'containsNotTerm',
     operator: '!=contains',
     label: __('Terms do not contain'),
@@ -1432,7 +1432,7 @@
    *
    *  @since	ACF 6.3
    */
-  var HasAnyTerm = acf.Condition.extend({
+  const HasAnyTerm = acf.Condition.extend({
     type: 'hasAnyTerm',
     operator: '!=empty',
     label: __('Has any term selected'),
@@ -1455,7 +1455,7 @@
    *
    *  @since	ACF 6.3
    */
-  var HasNoTerm = acf.Condition.extend({
+  const HasNoTerm = acf.Condition.extend({
     type: 'hasNoTerm',
     operator: '==empty',
     label: __('Has no term selected'),
@@ -1482,7 +1482,7 @@
    *  @param	void
    *  @return	void
    */
-  var HasValue = acf.Condition.extend({
+  const HasValue = acf.Condition.extend({
     type: 'hasValue',
     operator: '!=empty',
     label: __('Has any value'),
@@ -1509,7 +1509,7 @@
    *  @param	void
    *  @return	void
    */
-  var HasNoValue = HasValue.extend({
+  const HasNoValue = HasValue.extend({
     type: 'hasNoValue',
     operator: '==empty',
     label: __('Has no value'),
@@ -1528,7 +1528,7 @@
    *  @param	void
    *  @return	void
    */
-  var EqualTo = acf.Condition.extend({
+  const EqualTo = acf.Condition.extend({
     type: 'equalTo',
     operator: '==',
     label: __('Value is equal to'),
@@ -1555,7 +1555,7 @@
    *  @param	void
    *  @return	void
    */
-  var NotEqualTo = EqualTo.extend({
+  const NotEqualTo = EqualTo.extend({
     type: 'notEqualTo',
     operator: '!=',
     label: __('Value is not equal to'),
@@ -1574,7 +1574,7 @@
    *  @param	void
    *  @return	void
    */
-  var PatternMatch = acf.Condition.extend({
+  const PatternMatch = acf.Condition.extend({
     type: 'patternMatch',
     operator: '==pattern',
     label: __('Value matches pattern'),
@@ -1597,7 +1597,7 @@
    *  @param	void
    *  @return	void
    */
-  var Contains = acf.Condition.extend({
+  const Contains = acf.Condition.extend({
     type: 'contains',
     operator: '==contains',
     label: __('Value contains'),
@@ -1620,7 +1620,7 @@
    *  @param	void
    *  @return	void
    */
-  var TrueFalseEqualTo = EqualTo.extend({
+  const TrueFalseEqualTo = EqualTo.extend({
     type: 'trueFalseEqualTo',
     choiceType: 'select',
     fieldTypes: ['true_false'],
@@ -1642,7 +1642,7 @@
    *  @param	void
    *  @return	void
    */
-  var TrueFalseNotEqualTo = NotEqualTo.extend({
+  const TrueFalseNotEqualTo = NotEqualTo.extend({
     type: 'trueFalseNotEqualTo',
     choiceType: 'select',
     fieldTypes: ['true_false'],
@@ -1664,13 +1664,13 @@
    *  @param	void
    *  @return	void
    */
-  var SelectEqualTo = acf.Condition.extend({
+  const SelectEqualTo = acf.Condition.extend({
     type: 'selectEqualTo',
     operator: '==',
     label: __('Value is equal to'),
     fieldTypes: ['select', 'checkbox', 'radio', 'button_group'],
     match: function (rule, field) {
-      var val = field.val();
+      const val = field.val();
       if (val instanceof Array) {
         return inArray(rule.value, val);
       } else {
@@ -1679,8 +1679,8 @@
     },
     choices: function (fieldObject) {
       // vars
-      var choices = [];
-      var lines = fieldObject.$setting('choices textarea').val().split('\n');
+      const choices = [];
+      const lines = fieldObject.$setting('choices textarea').val().split('\n');
 
       // allow null
       if (fieldObject.$input('allow_null').prop('checked')) {
@@ -1720,7 +1720,7 @@
    *  @param	void
    *  @return	void
    */
-  var SelectNotEqualTo = SelectEqualTo.extend({
+  const SelectNotEqualTo = SelectEqualTo.extend({
     type: 'selectNotEqualTo',
     operator: '!=',
     label: __('Value is not equal to'),
@@ -1739,13 +1739,13 @@
    *  @param	void
    *  @return	void
    */
-  var GreaterThan = acf.Condition.extend({
+  const GreaterThan = acf.Condition.extend({
     type: 'greaterThan',
     operator: '>',
     label: __('Value is greater than'),
     fieldTypes: ['number', 'range'],
     match: function (rule, field) {
-      var val = field.val();
+      let val = field.val();
       if (val instanceof Array) {
         val = val.length;
       }
@@ -1766,12 +1766,12 @@
    *  @param	void
    *  @return	void
    */
-  var LessThan = GreaterThan.extend({
+  const LessThan = GreaterThan.extend({
     type: 'lessThan',
     operator: '<',
     label: __('Value is less than'),
     match: function (rule, field) {
-      var val = field.val();
+      let val = field.val();
       if (val instanceof Array) {
         val = val.length;
       }
@@ -1795,7 +1795,7 @@
    *  @param	void
    *  @return	void
    */
-  var SelectionGreaterThan = GreaterThan.extend({
+  const SelectionGreaterThan = GreaterThan.extend({
     type: 'selectionGreaterThan',
     label: __('Selection is greater than'),
     fieldTypes: ['checkbox', 'select', 'post_object', 'page_link', 'relationship', 'taxonomy', 'user']
@@ -1811,7 +1811,7 @@
    *  @param	void
    *  @return	void
    */
-  var SelectionLessThan = LessThan.extend({
+  const SelectionLessThan = LessThan.extend({
     type: 'selectionLessThan',
     label: __('Selection is less than'),
     fieldTypes: ['checkbox', 'select', 'post_object', 'page_link', 'relationship', 'taxonomy', 'user']
@@ -2454,6 +2454,14 @@
       $label.prepend(accordionManager.iconHtml({
         open: this.get('open')
       }));
+      $label.attr({
+        tabindex: 0,
+        role: 'button',
+        'aria-expanded': this.get('open') ? 'true' : 'false'
+      });
+      $input.attr({
+        role: 'region'
+      });
 
       // classes
       // - remove 'inside' which is a #poststuff WP class
@@ -2488,6 +2496,7 @@
     },
     events: {
       'click .acf-accordion-title': 'onClick',
+      'keydown .acf-accordion-title': 'onKeydown',
       'invalidField .acf-accordion': 'onInvalidField'
     },
     isOpen: function ($el) {
@@ -2525,6 +2534,7 @@
         open: true
       }));
       $el.addClass('-open');
+      $el.find('.acf-accordion-title:first').attr('aria-expanded', 'true');
 
       // action
       acf.doAction('show', $el);
@@ -2545,6 +2555,7 @@
         open: false
       }));
       $el.removeClass('-open');
+      $el.find('.acf-accordion-title:first').attr('aria-expanded', 'false');
 
       // action
       acf.doAction('hide', $el);
@@ -2555,6 +2566,15 @@
 
       // open close
       this.toggle($el.parent());
+    },
+    onKeydown: function (e, $el) {
+      // check for enter or space
+      if (13 === e.which) {
+        // prevent Default
+        e.preventDefault();
+        // open close
+        this.toggle($el.parent());
+      }
     },
     onInvalidField: function (e, $el) {
       // bail early if already focused
@@ -2595,13 +2615,17 @@
 /*!**************************************************!*\
   !*** ./assets/src/js/_acf-field-button-group.js ***!
   \**************************************************/
-/***/ (() => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 
 (function ($, undefined) {
-  var Field = acf.Field.extend({
+  const Field = acf.Field.extend({
     type: 'button_group',
     events: {
-      'click input[type="radio"]': 'onClick'
+      'click input[type="radio"]': 'onClick',
+      'keydown label': 'onKeyDown'
     },
     $control: function () {
       return this.$('.acf-button-group');
@@ -2609,25 +2633,65 @@
     $input: function () {
       return this.$('input:checked');
     },
+    initialize: function () {
+      this.updateButtonStates();
+    },
     setValue: function (val) {
       this.$('input[value="' + val + '"]').prop('checked', true).trigger('change');
+      this.updateButtonStates();
+    },
+    updateButtonStates: function () {
+      const labels = this.$control().find('label');
+      const input = this.$input();
+      labels.removeClass('selected').attr('aria-checked', 'false').attr('tabindex', '-1');
+      if (input.length) {
+        // If there's a checked input, mark its parent label as selected
+        input.parent('label').addClass('selected').attr('aria-checked', 'true').attr('tabindex', '0');
+      } else {
+        labels.first().attr('tabindex', '0');
+      }
     },
     onClick: function (e, $el) {
-      // vars
-      var $label = $el.parent('label');
-      var selected = $label.hasClass('selected');
+      this.selectButton($el.parent('label'));
+    },
+    onKeyDown: function (event, label) {
+      const key = event.which;
 
-      // remove previous selected
-      this.$('.selected').removeClass('selected');
-
-      // add active class
-      $label.addClass('selected');
-
-      // allow null
-      if (this.get('allow_null') && selected) {
-        $label.removeClass('selected');
-        $el.prop('checked', false).trigger('change');
+      // Space or Enter: select the button
+      if (key === 13 || key === 32) {
+        event.preventDefault();
+        this.selectButton(label);
+        return;
       }
+
+      // Arrow keys: move focus between buttons
+      if (key === 37 || key === 39 || key === 38 || key === 40) {
+        event.preventDefault();
+        const labels = this.$control().find('label');
+        const currentIndex = labels.index(label);
+        let nextIndex;
+
+        // Left/Up arrow: move to previous, wrap to last if at start
+        if (key === 37 || key === 38) {
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : labels.length - 1;
+        }
+        // Right/Down arrow: move to next, wrap to first if at end
+        else {
+          nextIndex = currentIndex < labels.length - 1 ? currentIndex + 1 : 0;
+        }
+        const nextLabel = labels.eq(nextIndex);
+        labels.attr('tabindex', '-1');
+        nextLabel.attr('tabindex', '0').trigger('focus');
+      }
+    },
+    selectButton: function (element) {
+      const inputRadio = element.find('input[type="radio"]');
+      const isSelected = element.hasClass('selected');
+      inputRadio.prop('checked', true).trigger('change');
+      if (this.get('allow_null') && isSelected) {
+        inputRadio.prop('checked', false).trigger('change');
+      }
+      this.updateButtonStates();
     }
   });
   acf.registerFieldType(Field);
@@ -2648,7 +2712,8 @@
       'change input': 'onChange',
       'click .acf-add-checkbox': 'onClickAdd',
       'click .acf-checkbox-toggle': 'onClickToggle',
-      'click .acf-checkbox-custom': 'onClickCustom'
+      'click .acf-checkbox-custom': 'onClickCustom',
+      'keydown input[type="checkbox"]': 'onKeyDownInput'
     },
     $control: function () {
       return this.$('.acf-checkbox-list');
@@ -2661,6 +2726,26 @@
     },
     $inputs: function () {
       return this.$('input[type="checkbox"]').not('.acf-checkbox-toggle');
+    },
+    setValue: function (val) {
+      if (!Array.isArray(val)) {
+        val = val ? [val] : [];
+      }
+      this.$inputs().each(function () {
+        const $input = $(this);
+        const checked = val.includes($input.val());
+        $input.prop('checked', checked);
+        if (checked) {
+          $input.parent('label').addClass('selected');
+        } else {
+          $input.parent('label').removeClass('selected');
+        }
+      });
+      const $toggle = this.$toggle();
+      if ($toggle.length) {
+        const checked = this.$inputs().not(':checked').length === 0;
+        $toggle.prop('checked', checked);
+      }
     },
     getValue: function () {
       var val = [];
@@ -2697,23 +2782,12 @@
     onClickAdd: function (e, $el) {
       var html = '<li><input class="acf-checkbox-custom" type="checkbox" checked="checked" /><input type="text" name="' + this.getInputName() + '[]" /></li>';
       $el.parent('li').before(html);
-      $el.parent('li').parent().find('input[type="text"]').last().focus();
+      $el.parent('li').parent().find('input[type="text"]').last().trigger('focus');
     },
     onClickToggle: function (e, $el) {
-      // Vars.
+      var $inputs = this.$inputs();
       var checked = $el.prop('checked');
-      var $inputs = this.$('input[type="checkbox"]');
-      var $labels = this.$('label');
-
-      // Update "checked" state.
-      $inputs.prop('checked', checked);
-
-      // Add or remove "selected" class.
-      if (checked) {
-        $labels.addClass('selected');
-      } else {
-        $labels.removeClass('selected');
-      }
+      $inputs.prop('checked', checked).trigger('change');
     },
     onClickCustom: function (e, $el) {
       var checked = $el.prop('checked');
@@ -2730,6 +2804,21 @@
         // remove
         if ($text.val() == '') {
           $el.parent('li').remove();
+        }
+      }
+    },
+    onKeyDownInput: function (e, $el) {
+      // Check if Enter key (keyCode 13) was pressed
+      if (e.which === 13) {
+        // Prevent default form submission
+        e.preventDefault();
+
+        // Toggle the checkbox state and trigger change event
+        $el.prop('checked', !$el.prop('checked')).trigger('change');
+
+        // If this is the "Select All" toggle checkbox, run the toggle logic
+        if ($el.is('.acf-checkbox-toggle')) {
+          this.onClickToggle(e, $el);
         }
       }
     }
@@ -2789,10 +2878,20 @@
         change: onChange,
         clear: onChange
       };
+      if ('custom' === $inputText.data('acf-palette-type')) {
+        const paletteColor = $inputText.data('acf-palette-colors').match(/#(?:[0-9a-fA-F]{3}){1,2}|rgba?\([\s*(\d|.)+\s*,]+\)/g);
+        if (paletteColor) {
+          let trimmed = paletteColor.map(color => color.trim());
+          args.palettes = trimmed;
+        }
+      }
 
       // filter
       var args = acf.applyFilters('color_picker_args', args, this);
-
+      if (Array.isArray(args.palettes) && args.palettes.length > 10) {
+        // Add class for large custom palette styling
+        this.$control().addClass('acf-color-picker-large-custom-palette');
+      }
       // initialize
       $inputText.wpColorPicker(args);
     },
@@ -2859,7 +2958,23 @@
       // add date picker
       acf.newDatePicker($inputText, args);
 
-      // action
+      // Check if default to today is enabled and field is empty
+      if ($inputText.data('default-to-today') === 1 && !$input.val()) {
+        // Get current date
+        const currentDate = new Date();
+
+        // Format display date
+        const displayDate = $.datepicker.formatDate(args.dateFormat, currentDate);
+
+        // Set the display input value (what user sees)
+        $inputText.val(`${displayDate}`);
+
+        // Format hidden field date (for database storage)
+        const hiddenDate = $.datepicker.formatDate('yymmdd', currentDate);
+
+        // Set the hidden input value (what gets saved)
+        $input.val(`${hiddenDate}`);
+      }
       acf.doAction('date_picker_init', $inputText, args, this);
     },
     initializeCompatibility: function () {
@@ -2899,6 +3014,21 @@
 
       // action for 3rd party customization
       acf.doAction('date_picker_init', $inputText, args, this);
+    },
+    setValue: function (val) {
+      acf.val(this.$input(), val);
+      const $inputText = this.$inputText();
+      if (val && $inputText.length) {
+        try {
+          const date = $.datepicker.parseDate('yymmdd', val);
+          const dateFormat = this.get('date_format') || $inputText.datepicker('option', 'dateFormat');
+          $inputText.val($.datepicker.formatDate(dateFormat, date));
+        } catch (e) {
+          $inputText.val(val);
+        }
+      } else {
+        $inputText.val('');
+      }
     },
     onBlur: function () {
       if (!this.$inputText().val()) {
@@ -2974,6 +3104,35 @@
     $control: function () {
       return this.$('.acf-date-time-picker');
     },
+    setValue: function (val) {
+      acf.val(this.$input(), val);
+      const $inputText = this.$inputText();
+      if (val && $inputText.length) {
+        try {
+          const parts = val.split(' ');
+          const dateValue = parts[0] || '';
+          const timeValue = parts[1] || '';
+          const date = $.datepicker.parseDate('yy-mm-dd', dateValue);
+          const dateFormat = this.get('date_format') || $inputText.datetimepicker('option', 'dateFormat');
+          const timeFormat = this.get('time_format') || $inputText.datetimepicker('option', 'timeFormat');
+          const dateText = $.datepicker.formatDate(dateFormat, date);
+          let timeText = timeValue;
+          const matches = timeValue.match(/^(\d{2}):(\d{2}):(\d{2})$/);
+          if (matches && $.datepicker.formatTime) {
+            timeText = $.datepicker.formatTime(timeFormat, {
+              hour: parseInt(matches[1], 10),
+              minute: parseInt(matches[2], 10),
+              second: parseInt(matches[3], 10)
+            });
+          }
+          $inputText.val(dateText + ' ' + timeText);
+        } catch (e) {
+          $inputText.val(val);
+        }
+      } else {
+        $inputText.val('');
+      }
+    },
     initialize: function () {
       // vars
       var $input = this.$input();
@@ -3001,6 +3160,34 @@
 
       // add date time picker
       acf.newDateTimePicker($inputText, args);
+
+      // Check if default to today is enabled and field is empty
+      if ($inputText.data('default-to-today') === 1 && !$input.val()) {
+        // Get current date
+        const currentDate = new Date();
+
+        // Format display date and time
+        const displayDate = $.datepicker.formatDate(args.dateFormat, currentDate);
+        const displayTime = $.datepicker.formatTime(args.timeFormat, {
+          hour: currentDate.getHours(),
+          minute: currentDate.getMinutes(),
+          second: currentDate.getSeconds()
+        });
+
+        // Set the display input value (what user sees)
+        $inputText.val(`${displayDate} ${displayTime}`);
+
+        // Format hidden field date and time (for database storage)
+        const hiddenDate = $.datepicker.formatDate('yy-mm-dd', currentDate);
+        const hiddenTime = $.datepicker.formatTime('hh:mm:ss', {
+          hour: currentDate.getHours(),
+          minute: currentDate.getMinutes(),
+          second: currentDate.getSeconds()
+        });
+
+        // Set the hidden input value (what gets saved)
+        $input.val(`${hiddenDate} ${hiddenTime}`);
+      }
 
       // action
       acf.doAction('date_time_picker_init', $inputText, args, this);
@@ -3066,13 +3253,20 @@
 /***/ (() => {
 
 (function ($, undefined) {
-  var Field = acf.models.ImageField.extend({
+  const Field = acf.models.ImageField.extend({
     type: 'file',
     $control: function () {
       return this.$('.acf-file-uploader');
     },
     $input: function () {
       return this.$('input[type="hidden"]:first');
+    },
+    events: {
+      'click a[data-name="add"]': 'onClickAdd',
+      'click a[data-name="edit"]': 'onClickEdit',
+      'click a[data-name="remove"]': 'onClickRemove',
+      'change input[type="file"]': 'onChange',
+      'keydown .file-wrap': 'onImageWrapKeydown'
     },
     validateAttachment: function (attachment) {
       // defaults
@@ -3113,25 +3307,46 @@
       this.$('[data-name="filesize"]').text(attachment.filesizeHumanReadable);
 
       // vars
-      var val = attachment.id || '';
+      const val = attachment.id || '';
 
       // update val
       acf.val(this.$input(), val);
-
-      // update class
       if (val) {
+        // update class
         this.$control().addClass('has-value');
+        const fileWrap = this.$('.file-wrap');
+        if (fileWrap.length) {
+          fileWrap.trigger('focus');
+        }
       } else {
         this.$control().removeClass('has-value');
       }
     },
+    setValue: function (val) {
+      val = val ? String(val) : '';
+      if (acf.val(this.$input(), val, true) === false) {
+        return;
+      }
+      if (val) {
+        if (window.wp && wp.media && wp.media.attachment) {
+          const attachment = wp.media.attachment(val);
+          attachment.fetch().then($.proxy(function () {
+            this.render(attachment);
+          }, this));
+        } else {
+          this.$control().addClass('has-value');
+        }
+      } else {
+        this.render(false);
+      }
+    },
     selectAttachment: function () {
       // vars
-      var parent = this.parent();
-      var multiple = parent && parent.get('type') === 'repeater';
+      const parent = this.parent();
+      const multiple = parent && parent.get('type') === 'repeater';
 
       // new frame
-      var frame = acf.newMediaPopup({
+      const frame = acf.newMediaPopup({
         mode: 'select',
         title: acf.__('Select File'),
         field: this.get('key'),
@@ -3147,9 +3362,9 @@
         }, this)
       });
     },
-    editAttachment: function () {
+    editAttachment: function (button) {
       // vars
-      var val = this.val();
+      const val = this.val();
 
       // bail early if no val
       if (!val) {
@@ -3163,8 +3378,21 @@
         button: acf.__('Update File'),
         attachment: val,
         field: this.get('key'),
-        select: $.proxy(function (attachment, i) {
+        select: $.proxy(function (attachment) {
           this.render(attachment);
+        }, this),
+        close: $.proxy(function () {
+          if ('edit-button' === button) {
+            const edit = this.$el.find('a[data-name="edit"]');
+            if (edit.length) {
+              edit.trigger('focus');
+            }
+          } else {
+            const imageWrap = this.$el.find('.image-wrap');
+            if (imageWrap.length) {
+              imageWrap.trigger('focus');
+            }
+          }
         }, this)
       });
     }
@@ -3186,9 +3414,9 @@
     map: false,
     wait: 'load',
     events: {
-      'click a[data-name="clear"]': 'onClickClear',
-      'click a[data-name="locate"]': 'onClickLocate',
-      'click a[data-name="search"]': 'onClickSearch',
+      'click button[data-name="clear"]': 'onClickClear',
+      'click button[data-name="locate"]': 'onClickLocate',
+      'click button[data-name="search"]': 'onClickSearch',
       'keydown .search': 'onKeydownSearch',
       'keyup .search': 'onKeyupSearch',
       'focus .search': 'onFocusSearch',
@@ -3633,8 +3861,12 @@
     onClickSearch: function () {
       this.searchAddress(this.$search().val());
     },
-    onFocusSearch: function (e, $el) {
-      this.setState('searching');
+    onFocusSearch: function (event, searchInput) {
+      const currentValue = this.val();
+      const currentAddress = currentValue ? currentValue.address : '';
+      if (searchInput.val() !== currentAddress) {
+        this.setState('searching');
+      }
     },
     onBlurSearch: function (e, $el) {
       // Get saved address value.
@@ -3647,9 +3879,19 @@
       }
     },
     onKeyupSearch: function (e, $el) {
-      // Clear empty value.
-      if (!$el.val()) {
+      const val = this.val();
+      const address = val ? val.address : '';
+      if ($el.val()) {
+        // If search input has value
+        if ($el.val() !== address) {
+          this.setState('searching');
+        } else {
+          this.setState('default');
+        }
+      } else {
+        // If search input is empty
         this.val(false);
+        this.setState('default');
       }
     },
     // Prevent form from submitting.
@@ -3769,6 +4011,53 @@
     $mediaLibraryButton() {
       return this.$('.acf-icon-picker-media-library-button');
     },
+    $mediaLibraryPreviewImg() {
+      return this.$('.acf-icon-picker-media-library-preview-img img');
+    },
+    getValue() {
+      return {
+        type: this.$typeInput().val(),
+        value: this.$valueInput().val()
+      };
+    },
+    setValue(val) {
+      if (!val || typeof val !== 'object') {
+        val = {
+          type: '',
+          value: ''
+        };
+      }
+      const type = val.type || '';
+      const value = val.value || '';
+      this.updateTypeAndValue(type, value);
+      if (type) {
+        this.$tabButton().filter(`[data-unique-tab-key="${type}"]`).trigger('click');
+        const $iconsList = this.$(`.acf-icon-list[data-parent-tab="${type}"]`);
+        if ($iconsList.length) {
+          $iconsList.find('.acf-icon-picker-list-icon.active').removeClass('active');
+          $iconsList.find('input:checked').prop('checked', false);
+          const $icon = $iconsList.find(`.acf-icon-picker-list-icon[data-icon="${value}"]`);
+          if ($icon.length) {
+            $icon.addClass('active');
+            $icon.find('input').prop('checked', true);
+            this.set('selectedIcon', value);
+          }
+        }
+      }
+      if (type === 'url') {
+        this.$('.acf-icon_url').val(value);
+      }
+      if (type === 'media_library' && value && window.wp?.media?.attachment) {
+        const attachment = wp.media.attachment(value);
+        attachment.fetch().then(() => {
+          const url = attachment.get('url');
+          if (url) {
+            this.set('mediaLibraryPreviewUrl', url);
+            this.$mediaLibraryPreviewImg().attr('src', url);
+          }
+        });
+      }
+    },
     initialize() {
       // Set up actions hook callbacks.
       this.addActions();
@@ -3781,6 +4070,12 @@
 
       // Store the type and value object.
       this.set('typeAndValue', typeAndValue);
+      if (typeAndValue.type === 'media_library') {
+        const previewUrl = this.$mediaLibraryPreviewImg().attr('src');
+        if (previewUrl) {
+          this.set('mediaLibraryPreviewUrl', previewUrl);
+        }
+      }
 
       // Any time any acf tab is clicked, we will re-scroll to the selected icon.
       $('.acf-tab-button').on('click', () => {
@@ -3795,10 +4090,20 @@
     addActions() {
       // Set up an action listener for when the type and value changes.
       acf.addAction(this.get('name') + '/type_and_value_change', newTypeAndValue => {
-        // Align the visual state of each tab to the current value.
-        this.alignIconListTabsToCurrentValue(newTypeAndValue);
-        this.alignMediaLibraryTabToCurrentValue(newTypeAndValue);
-        this.alignUrlTabToCurrentValue(newTypeAndValue);
+        const currentType = this.$typeInput().val();
+        const currentValue = this.$valueInput().val();
+        if (currentType === newTypeAndValue.type && currentValue === newTypeAndValue.value) {
+          this.alignIconListTabsToCurrentValue(newTypeAndValue);
+          this.alignMediaLibraryTabToCurrentValue(newTypeAndValue);
+          this.alignUrlTabToCurrentValue(newTypeAndValue);
+        } else {
+          const currentTypeAndValue = this.get('typeAndValue');
+          if (currentTypeAndValue) {
+            this.alignIconListTabsToCurrentValue(currentTypeAndValue);
+            this.alignMediaLibraryTabToCurrentValue(currentTypeAndValue);
+            this.alignUrlTabToCurrentValue(currentTypeAndValue);
+          }
+        }
       });
     },
     updateTypeAndValue(type, value) {
@@ -3811,11 +4116,11 @@
       acf.val(this.$typeInput(), type);
       acf.val(this.$valueInput(), value);
 
-      // Fire an action to let each tab set itself according to the typeAndValue state.
-      acf.doAction(this.get('name') + '/type_and_value_change', typeAndValue);
-
       // Set the state.
       this.set('typeAndValue', typeAndValue);
+
+      // Fire an action to let each tab set itself according to the typeAndValue state.
+      acf.doAction(this.get('name') + '/type_and_value_change', typeAndValue);
     },
     scrollToSelectedIcon() {
       const innerElement = this.$selectedIcon();
@@ -3880,16 +4185,21 @@
       }
     },
     getIconsList(tabName) {
+      let icons;
       if ('dashicons' === tabName) {
         const iconPickeri10n = acf.get('iconPickeri10n') || [];
-        return Object.entries(iconPickeri10n).map(([key, value]) => {
-          return {
-            key,
-            label: value
-          };
-        });
+        icons = Object.entries(iconPickeri10n).map(([key, label]) => ({
+          key,
+          label
+        }));
+      } else {
+        const iconList = this.$(`.acf-icon-list[data-parent-tab="${tabName}"]`);
+        if (iconList.length !== 0) {
+          const iconsData = iconList.data('icons');
+          icons = Array.isArray(iconsData) ? iconsData : [];
+        }
       }
-      return acf.get(`iconPickerIcons_${tabName}`);
+      return icons;
     },
     getIconsBySearch(searchTerm, tabName) {
       const lowercaseSearchTerm = searchTerm.toLowerCase();
@@ -4064,8 +4374,8 @@
   \*******************************************/
 /***/ (() => {
 
-(function ($, undefined) {
-  var Field = acf.Field.extend({
+(function ($) {
+  const Field = acf.Field.extend({
     type: 'image',
     $control: function () {
       return this.$('.acf-image-uploader');
@@ -4077,7 +4387,8 @@
       'click a[data-name="add"]': 'onClickAdd',
       'click a[data-name="edit"]': 'onClickEdit',
       'click a[data-name="remove"]': 'onClickRemove',
-      'change input[type="file"]': 'onChange'
+      'change input[type="file"]': 'onChange',
+      'keydown .image-wrap': 'onImageWrapKeydown'
     },
     initialize: function () {
       // add attribute to form
@@ -4104,7 +4415,7 @@
       });
 
       // Override with "preview size".
-      var size = acf.isget(attachment, 'sizes', this.get('preview_size'));
+      const size = acf.isget(attachment, 'sizes', this.get('preview_size'));
       if (size) {
         attachment.url = size.url;
         attachment.width = size.width;
@@ -4117,31 +4428,36 @@
     render: function (attachment) {
       attachment = this.validateAttachment(attachment);
 
+      // Update value.
+      acf.val(this.$input(), String(attachment.id || ''), true);
+
       // Update DOM.
       this.$('img').attr({
         src: attachment.url,
         alt: attachment.alt
       });
       if (attachment.id) {
-        this.val(attachment.id);
         this.$control().addClass('has-value');
+        const imageWrap = this.$('.image-wrap');
+        if (imageWrap.length) {
+          imageWrap.trigger('focus');
+        }
       } else {
-        this.val('');
         this.$control().removeClass('has-value');
       }
     },
     // create a new repeater row and render value
     append: function (attachment, parent) {
       // create function to find next available field within parent
-      var getNext = function (field, parent) {
+      const getNext = function (field, parent) {
         // find existing file fields within parent
-        var fields = acf.getFields({
+        const fields = acf.getFields({
           key: field.get('key'),
           parent: parent.$el
         });
 
         // find the first field with no value
-        for (var i = 0; i < fields.length; i++) {
+        for (let i = 0; i < fields.length; i++) {
           if (!fields[i].val()) {
             return fields[i];
           }
@@ -4152,7 +4468,7 @@
       };
 
       // find existing file fields within parent
-      var field = getNext(this, parent);
+      let field = getNext(this, parent);
 
       // add new row if no available field
       if (!field) {
@@ -4162,16 +4478,17 @@
 
       // render
       if (field) {
+        acf.val(field.$input(), String(attachment.id || attachment.attributes?.id || ''));
         field.render(attachment);
       }
     },
     selectAttachment: function () {
       // vars
-      var parent = this.parent();
-      var multiple = parent && parent.get('type') === 'repeater';
+      const parent = this.parent();
+      const multiple = parent && parent.get('type') === 'repeater';
 
       // new frame
-      var frame = acf.newMediaPopup({
+      const frame = acf.newMediaPopup({
         mode: 'select',
         type: 'image',
         title: acf.__('Select Image'),
@@ -4183,50 +4500,101 @@
           if (i > 0) {
             this.append(attachment, parent);
           } else {
+            acf.val(this.$input(), String(attachment.id || attachment.attributes?.id || ''));
             this.render(attachment);
           }
         }, this)
       });
     },
-    editAttachment: function () {
+    editAttachment: function (attachment) {
       // vars
-      var val = this.val();
-
-      // bail early if no val
-      if (!val) return;
-
-      // popup
-      var frame = acf.newMediaPopup({
-        mode: 'edit',
-        title: acf.__('Edit Image'),
-        button: acf.__('Update Image'),
-        attachment: val,
-        field: this.get('key'),
-        select: $.proxy(function (attachment, i) {
-          this.render(attachment);
-        }, this)
-      });
+      const val = this.val();
+      if (val) {
+        // popup
+        var frame = acf.newMediaPopup({
+          mode: 'edit',
+          title: acf.__('Edit Image'),
+          button: acf.__('Update Image'),
+          attachment: val,
+          field: this.get('key'),
+          select: $.proxy(function (attachment) {
+            acf.val(this.$input(), String(attachment.id || attachment.attributes?.id || ''));
+            this.render(attachment);
+          }, this),
+          close: $.proxy(function () {
+            if ('edit-button' === attachment) {
+              const edit = this.$el.find('a[data-name="edit"]');
+              if (edit.length) {
+                edit.trigger('focus');
+              }
+            } else {
+              const imageWrap = this.$('.image-wrap');
+              if (imageWrap.length) {
+                imageWrap.trigger('focus');
+              }
+            }
+          }, this)
+        });
+      }
     },
     removeAttachment: function () {
+      acf.val(this.$input(), '');
       this.render(false);
     },
     onClickAdd: function (e, $el) {
       this.selectAttachment();
     },
     onClickEdit: function (e, $el) {
-      this.editAttachment();
+      this.editAttachment('edit-button');
     },
     onClickRemove: function (e, $el) {
       this.removeAttachment();
     },
     onChange: function (e, $el) {
-      var $hiddenInput = this.$input();
+      const $hiddenInput = this.$input();
       if (!$el.val()) {
         $hiddenInput.val('');
       }
       acf.getFileInputData($el, function (data) {
         $hiddenInput.val($.param(data));
       });
+    },
+    setValue: function (val) {
+      val = val ? String(val) : '';
+      if (acf.val(this.$input(), val, true) === false) {
+        return;
+      }
+      if (val) {
+        if (window.wp && wp.media && wp.media.attachment) {
+          const attachment = wp.media.attachment(val);
+          attachment.fetch().then($.proxy(function () {
+            this.render(attachment);
+          }, this));
+        } else {
+          this.$control().addClass('has-value');
+        }
+      } else {
+        this.render(false);
+      }
+    },
+    onImageWrapKeydown: function (event, imageWrapElement) {
+      // Check if Enter key was pressed (keycode 13)
+      if (event.which === 13) {
+        // Check if the event target is the imageWrapElement itself
+        if (event.target === imageWrapElement[0]) {
+          // Prevent the default Enter key behavior
+          event.preventDefault();
+
+          // Check if the field has a value
+          if (this.val()) {
+            // Check if the uploader is NOT the basic uploader
+            if (this.get('uploader') !== 'basic') {
+              // Open the edit attachment dialog
+              this.editAttachment();
+            }
+          }
+        }
+      }
     }
   });
   acf.registerFieldType(Field);
@@ -4449,6 +4817,12 @@
         this.$control().removeClass('has-value');
       }
       acf.val(this.$input(), val);
+      this.$search().val(val || '');
+      if (val) {
+        this.maybeSearch();
+      } else {
+        this.$('.canvas-media').html('');
+      }
     },
     showLoading: function (show) {
       acf.showLoading(this.$('.canvas'));
@@ -4595,7 +4969,8 @@
   var Field = acf.Field.extend({
     type: 'radio',
     events: {
-      'click input[type="radio"]': 'onClick'
+      'click input[type="radio"]': 'onClick',
+      'keydown input[type="radio"]': 'onKeyDownInput'
     },
     $control: function () {
       return this.$('.acf-radio-list');
@@ -4605,6 +4980,26 @@
     },
     $inputText: function () {
       return this.$('input[type="text"]');
+    },
+    setValue: function (val) {
+      this.$('.selected').removeClass('selected');
+      this.$('input[type="radio"]').prop('checked', false);
+      if (val !== false && val !== null && val !== '') {
+        const $input = this.$('input[type="radio"]').filter(function () {
+          return $(this).val() === val;
+        });
+        if ($input.length) {
+          $input.prop('checked', true);
+          $input.parent('label').addClass('selected');
+          if (this.get('other_choice')) {
+            if (val === 'other') {
+              this.$inputText().prop('disabled', false);
+            } else {
+              this.$inputText().prop('disabled', true);
+            }
+          }
+        }
+      }
     },
     getValue: function () {
       var val = this.$input().val();
@@ -4642,6 +5037,12 @@
         } else {
           this.$inputText().prop('disabled', true);
         }
+      }
+    },
+    onKeyDownInput: function (event, input) {
+      if (event.which === 13) {
+        event.preventDefault();
+        input.prop('checked', true).trigger('change');
       }
     }
   });
@@ -4720,7 +5121,9 @@
       return this.$list(list).find('.acf-rel-item');
     },
     $listItem: function (list, id) {
-      return this.$list(list).find('.acf-rel-item[data-id="' + id + '"]');
+      return this.$list(list).find('.acf-rel-item').filter(function () {
+        return String($(this).data('id')) === String(id);
+      });
     },
     getValue: function () {
       var val = [];
@@ -4729,11 +5132,30 @@
       });
       return val.length ? val : false;
     },
+    setValue: function (value) {
+      if (!Array.isArray(value)) {
+        value = value ? [value] : [];
+      }
+      this.$list('values').html('');
+      this.$listItems('choices').removeClass('disabled');
+      value.forEach(id => {
+        const $choice = this.$listItem('choices', id);
+        const text = $choice.length ? $choice.html() : acf.strEscape(String(id));
+        $choice.addClass('disabled');
+        const valueHtml = this.newValue({
+          id,
+          text
+        });
+        this.$list('values').append(valueHtml);
+      });
+      this.$input().trigger('change');
+    },
     newChoice: function (props) {
-      return ['<li>', '<span tabindex="0" data-id="' + props.id + '" class="acf-rel-item">' + props.text + '</span>', '</li>'].join('');
+      return ['<li>', '<span tabindex="0" data-id="' + acf.strEscape(String(props.id)) + '" class="acf-rel-item">' + props.text + '</span>', '</li>'].join('');
     },
     newValue: function (props) {
-      return ['<li>', '<input type="hidden" name="' + this.getInputName() + '[]" value="' + props.id + '" />', '<span tabindex="0" data-id="' + props.id + '" class="acf-rel-item acf-rel-item-remove">' + props.text, '<a href="#" class="acf-icon -minus small dark" data-name="remove_item"></a>', '</span>', '</li>'].join('');
+      const id = acf.strEscape(String(props.id));
+      return ['<li>', '<input type="hidden" name="' + this.getInputName() + '[]" value="' + id + '" />', '<span tabindex="0" data-id="' + id + '" class="acf-rel-item acf-rel-item-remove">' + props.text, '<a href="#" class="acf-icon -minus small dark" data-name="remove_item"></a>', '</span>', '</li>'].join('');
     },
     initialize: function () {
       // Delay initialization until "interacted with" or "in view".
@@ -4741,6 +5163,7 @@
         // Add sortable.
         this.$list('values').sortable({
           items: 'li',
+          zIndex: 9999,
           forceHelperSize: true,
           forcePlaceholderSize: true,
           scroll: true,
@@ -5066,6 +5489,13 @@
     },
     $input: function () {
       return this.$('select');
+    },
+    setValue: function (val) {
+      const $input = this.$input();
+      $input.val(val);
+      if (this.select2) {
+        $input.trigger('change');
+      }
     },
     initialize: function () {
       // vars
@@ -5398,6 +5828,11 @@
 
       // set active
       this.setActive(tab);
+
+      // Recalculate admin menu pinning so a previously taller tab (e.g. one
+      // containing WYSIWYG fields) doesn't leave the menu pinned against a
+      // shorter page, which can lock page scroll.
+      $(document).trigger('wp-pin-menu');
     },
     closeTab: function (tab) {
       // close
@@ -5635,6 +6070,7 @@
     events: {
       'click a[data-name="add"]': 'onClickAdd',
       'click input[type="radio"]': 'onClickRadio',
+      'keydown label': 'onKeyDownLabel',
       removeField: 'onRemove'
     },
     $control: function () {
@@ -5897,6 +6333,17 @@
         $label.removeClass('selected');
         $el.prop('checked', false).trigger('change');
       }
+    },
+    onKeyDownLabel: function (e, $el) {
+      // bail early if not space or enter
+      if (e.which !== 13) {
+        return;
+      }
+      e.preventDefault();
+      const firstInput = $el.find('input').first();
+      if (firstInput.length) {
+        firstInput.trigger('click').trigger('focus');
+      }
     }
   });
   acf.registerFieldType(Field);
@@ -5915,6 +6362,30 @@
     type: 'time_picker',
     $control: function () {
       return this.$('.acf-time-picker');
+    },
+    setValue: function (val) {
+      acf.val(this.$input(), val);
+      const $inputText = this.$inputText();
+      if (val && $inputText.length) {
+        try {
+          const timeFormat = this.get('time_format') || $inputText.timepicker('option', 'timeFormat');
+          const matches = val.match(/^(\d{2}):(\d{2}):(\d{2})$/);
+          if (matches && $.datepicker && $.datepicker.formatTime) {
+            const timeText = $.datepicker.formatTime(timeFormat, {
+              hour: parseInt(matches[1], 10),
+              minute: parseInt(matches[2], 10),
+              second: parseInt(matches[3], 10)
+            });
+            $inputText.val(timeText);
+          } else {
+            $inputText.val(val);
+          }
+        } catch (e) {
+          $inputText.val(val);
+        }
+      } else {
+        $inputText.val('');
+      }
     },
     initialize: function () {
       // vars
@@ -5999,6 +6470,13 @@
     },
     $switch: function () {
       return this.$('.acf-switch');
+    },
+    setValue: function (val) {
+      if (val && val !== '0') {
+        this.switchOn();
+      } else {
+        this.switchOff();
+      }
     },
     getValue: function () {
       return this.$input().prop('checked') ? 1 : 0;
@@ -6159,6 +6637,16 @@
     },
     $input: function () {
       return this.$('textarea');
+    },
+    setValue: function (val) {
+      acf.val(this.$input(), val);
+      if (this.getMode() === 'visual') {
+        const id = this.get('id');
+        const editor = window.tinymce && tinymce.get(id);
+        if (editor && !editor.isHidden()) {
+          editor.setContent(val || '');
+        }
+      }
     },
     getMode: function () {
       return this.$control().hasClass('tmce-active') ? 'visual' : 'text';
@@ -8782,12 +9270,7 @@
 
         // Create postbox if doesn't exist.
         if (!postbox) {
-          var wpMinorVersion = parseFloat(acf.get('wp_version'));
-          if (wpMinorVersion >= 5.5) {
-            var postboxHeader = ['<div class="postbox-header">', '<h2 class="hndle ui-sortable-handle">', '<span>' + acf.escHtml(result.title) + '</span>', '</h2>', '<div class="handle-actions hide-if-no-js">', '<button type="button" class="handlediv" aria-expanded="true">', '<span class="screen-reader-text">Toggle panel: ' + acf.escHtml(result.title) + '</span>', '<span class="toggle-indicator" aria-hidden="true"></span>', '</button>', '</div>', '</div>'].join('');
-          } else {
-            var postboxHeader = ['<button type="button" class="handlediv" aria-expanded="true">', '<span class="screen-reader-text">Toggle panel: ' + acf.escHtml(result.title) + '</span>', '<span class="toggle-indicator" aria-hidden="true"></span>', '</button>', '<h2 class="hndle ui-sortable-handle">', '<span>' + acf.escHtml(result.title) + '</span>', '</h2>'].join('');
-          }
+          var postboxHeader = ['<div class="postbox-header">', '<h2 class="hndle ui-sortable-handle">', '<span>' + result.title + '</span>', '</h2>', '<div class="handle-actions hide-if-no-js">', '<button type="button" class="handlediv" aria-expanded="true">', '<span class="screen-reader-text">' + acf.__('Toggle panel') + ': ' + result.title + '</span>', '<span class="toggle-indicator" aria-hidden="true"></span>', '</button>', '</div>', '</div>'].join('');
 
           // Ensure result.classes is set.
           if (!result.classes) result.classes = '';
@@ -8924,10 +9407,7 @@
       acf.unload.disable();
 
       // Refresh metaboxes since WP 5.3.
-      var wpMinorVersion = parseFloat(acf.get('wp_version'));
-      if (wpMinorVersion >= 5.3) {
-        this.addAction('refresh_post_screen', this.onRefreshPostScreen);
-      }
+      this.addAction('refresh_post_screen', this.onRefreshPostScreen);
 
       // Trigger "refresh" after WP has moved metaboxes into place.
       wp.domReady(acf.refresh);
@@ -9964,12 +10444,20 @@
       init.setup = function (ed) {
         ed.on('change', function (e) {
           ed.save(); // save to textarea
-          $textarea.trigger('change');
+          if (!$textarea.closest('.attachment-info').length) {
+            $textarea.trigger('change');
+          }
+        });
+        ed.on('blur', function (e) {
+          if ($textarea.closest('.attachment-info').length) {
+            ed.save();
+            $textarea.trigger('change');
+          }
         });
 
         // Fix bug where Gutenberg does not hear "mouseup" event and tries to select multiple blocks.
         ed.on('mouseup', function (e) {
-          var event = new MouseEvent('mouseup');
+          const event = new MouseEvent('mouseup');
           window.dispatchEvent(event);
         });
 
@@ -10172,7 +10660,9 @@
 
       // Ensure textarea element is visible
       // - Fixes bug in block editor when switching between "Block" and "Document" tabs.
-      $('#' + id).show();
+      if (!tinymce.get(id)) {
+        $('#' + id).show();
+      }
 
       // toggle
       switchEditors.go(id, 'tmce');
@@ -10999,13 +11489,18 @@
    *
    * @date	20/10/2021
    * @since	ACF 5.11.0
+   *
+   * @param {jQuery} [$form] - Optional form element to scope the input search to. If omitted, searches the entire document.
    */
-  var ensureInvalidFieldVisibility = function () {
-    // Load each ACF input field and check it's browser validation state.
-    var $inputs = $('.acf-field input');
+  const ensureInvalidFieldVisibility = function ($form) {
+    // Load each ACF input field and check its browser validation state.
+    // Scope to the given form if provided, otherwise search the entire document.
+    const $inputs = $form ? $form.find('.acf-field input') : $('.acf-field input');
     $inputs.each(function () {
-      if (!this.checkValidity()) {
-        // Field is invalid, so we need to make sure it's metabox is visible.
+      // Use validity.valid (a property) instead of checkValidity() (a method) to avoid
+      // dispatching the native 'invalid' event, which can trigger ACF validation prematurely.
+      if (!this.validity.valid) {
+        // Field is invalid, so we need to make sure its metabox is visible.
         ensureFieldPostBoxIsVisible($(this));
       }
     });
@@ -11166,19 +11661,33 @@
      *
      *  Callback when clicking submit.
      *
+     *  Only acts on submit buttons that are associated with a form containing ACF fields.
+     *  This prevents submit buttons in unrelated UI (e.g. the WP link inserter modal) from
+     *  triggering premature validation of ACF fields on the page behind the modal.
+     *
+     *  Uses the native HTMLButtonElement.form property to resolve the associated form,
+     *  which correctly handles both DOM-ancestor forms and the HTML form="id" attribute.
+     *
      *  @date	4/9/18
      *  @since	ACF 5.7.5
      *
      *  @param	object e The event object.
-     *  @param	jQuery $el The input element.
+     *  @param	jQuery $el The submit button element.
      *  @return	void
      */
     onClickSubmit: function (e, $el) {
-      // Some browsers (safari) force their browser validation before our AJAX validation,
-      // so we need to make sure fields are visible earlier than showErrors()
-      ensureInvalidFieldVisibility();
+      const form = $el.length ? $el[0].form : null;
+      if (!form) {
+        return;
+      }
+      const $form = $(form);
+      if (!$form.find('.acf-field').length) {
+        return;
+      }
 
-      // store the "click event" for later use in this.onSubmit()
+      // Some browsers (safari) force their browser validation before our AJAX validation,
+      // so we need to make sure fields are visible earlier than showErrors().
+      ensureInvalidFieldVisibility($form);
       this.set('originalEvent', e);
     },
     /**
@@ -11314,9 +11823,12 @@
         // Backup vars.
         var _this = this;
         var _args = arguments;
-
         // Perform validation within a Promise.
         return new Promise(function (resolve, reject) {
+          if (typeof acf.gutenbergEditPost === 'function') {
+            acf.gutenbergEditPost();
+          }
+
           // Bail early if is autosave or preview.
           if (options.isAutosave || options.isPreview) {
             return resolve('Validation ignored (autosave).');
@@ -11346,9 +11858,78 @@
             }
           }
 
+          // Recursive function to check all blocks (including nested innerBlocks) for ACF validation errors
+          function checkBlocksForErrors(blocks) {
+            const errors = [];
+            return new Promise(function (resolve) {
+              // Iterate through each block
+              blocks.forEach(block => {
+                // If this block has nested blocks, recursively check them
+                if (block.innerBlocks.length > 0) {
+                  checkBlocksForErrors(block.innerBlocks).then(hasError => {
+                    if (hasError) {
+                      return resolve(true);
+                    }
+                  });
+                }
+
+                // Check if this block has an ACF error attribute
+                if (block.attributes.hasAcfError) {
+                  // Check if the publish panel is open and close it if so
+                  const publishPanel = document.getElementsByClassName('editor-post-publish-panel')[0];
+                  if (publishPanel) {
+                    // See https://github.com/WordPress/secure-custom-fields/pull/272
+                    // `togglePublishSidebar` was only introduced in WP 6.6, it should be optional
+                    wp.data.dispatch('core/editor').togglePublishSidebar?.();
+                  }
+
+                  // Add block to errors array
+                  errors.push(block);
+
+                  // Dispatch a custom event to notify about the block with validation error
+                  document.dispatchEvent(new CustomEvent('acf/block/has-error', {
+                    detail: {
+                      acfBlocksWithValidationErrors: block.clientId
+                    }
+                  }));
+
+                  // Log debug message
+                  acf.debug('Rejecting save because the block editor has a invalid ACF block selected.');
+
+                  // Resolve with true (error found)
+                  return resolve(true);
+                }
+              });
+
+              // If errors were found, select the first one
+              if (errors.length > 0) {
+                const blockClientId = errors[0].clientId;
+                wp.data.dispatch('core/block-editor').selectBlock(blockClientId);
+              }
+
+              // No errors found, resolve with false
+              return resolve(false);
+            });
+          }
+
+          // Call the function with all blocks from the editor
+          checkBlocksForErrors(wp.data.select('core/block-editor').getBlocks()).then(hasError => {
+            // If errors were found
+            if (hasError) {
+              // Display an error notice
+              notices.createErrorNotice(acf.__('An ACF Block on this page requires attention before you can save.'), {
+                id: 'acf-blocks-validation',
+                isDismissible: true
+              });
+
+              // Reject the save operation
+              return reject('ACF Block Validation failed');
+            }
+          });
+
           // Validate the editor form.
           var valid = acf.validateForm({
-            form: $('#editor'),
+            form: $('#wpbody-content > .block-editor'),
             reset: true,
             complete: function ($form, validator) {
               // Always unlock the form after AJAX.
@@ -11357,12 +11938,23 @@
             failure: function ($form, validator) {
               // Get validation error and append to Gutenberg notices.
               var notice = validator.get('notice');
-              notices.createErrorNotice(notice.get('text'), {
-                id: 'acf-validation',
-                isDismissible: true
-              });
+              var action = validator.get('action');
+              if (action && 'object' === typeof action && action.label && action.url) {
+                notices.createErrorNotice(notice.get('text', {
+                  id: 'acf-validation',
+                  isDismissible: true,
+                  actions: [{
+                    label: action.label,
+                    url: action.url
+                  }]
+                }));
+              } else {
+                notices.createErrorNotice(notice.get('text'), {
+                  id: 'acf-validation',
+                  isDismissible: true
+                });
+              }
               notice.remove();
-
               // Restore last non "publish" status.
               if (lastPostStatus) {
                 editor.editPost({
@@ -11484,7 +12076,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _acf_field_accordion_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./_acf-field-accordion.js */ "./assets/src/js/_acf-field-accordion.js");
 /* harmony import */ var _acf_field_accordion_js__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_acf_field_accordion_js__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _acf_field_button_group_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./_acf-field-button-group.js */ "./assets/src/js/_acf-field-button-group.js");
-/* harmony import */ var _acf_field_button_group_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_acf_field_button_group_js__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _acf_field_checkbox_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./_acf-field-checkbox.js */ "./assets/src/js/_acf-field-checkbox.js");
 /* harmony import */ var _acf_field_checkbox_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_acf_field_checkbox_js__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _acf_field_color_picker_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./_acf-field-color-picker.js */ "./assets/src/js/_acf-field-color-picker.js");

@@ -7,6 +7,7 @@
 			'click .acf-add-checkbox': 'onClickAdd',
 			'click .acf-checkbox-toggle': 'onClickToggle',
 			'click .acf-checkbox-custom': 'onClickCustom',
+			'keydown input[type="checkbox"]': 'onKeyDownInput',
 		},
 
 		$control: function () {
@@ -25,6 +26,30 @@
 			return this.$( 'input[type="checkbox"]' ).not(
 				'.acf-checkbox-toggle'
 			);
+		},
+
+		setValue: function ( val ) {
+			if ( ! Array.isArray( val ) ) {
+				val = val ? [ val ] : [];
+			}
+
+			this.$inputs().each( function () {
+				const $input = $( this );
+				const checked = val.includes( $input.val() );
+				$input.prop( 'checked', checked );
+
+				if ( checked ) {
+					$input.parent( 'label' ).addClass( 'selected' );
+				} else {
+					$input.parent( 'label' ).removeClass( 'selected' );
+				}
+			} );
+
+			const $toggle = this.$toggle();
+			if ( $toggle.length ) {
+				const checked = this.$inputs().not( ':checked' ).length === 0;
+				$toggle.prop( 'checked', checked );
+			}
 		},
 
 		getValue: function () {
@@ -71,24 +96,13 @@
 				.parent()
 				.find( 'input[type="text"]' )
 				.last()
-				.focus();
+				.trigger( 'focus' );
 		},
 
 		onClickToggle: function ( e, $el ) {
-			// Vars.
+			var $inputs = this.$inputs();
 			var checked = $el.prop( 'checked' );
-			var $inputs = this.$( 'input[type="checkbox"]' );
-			var $labels = this.$( 'label' );
-
-			// Update "checked" state.
-			$inputs.prop( 'checked', checked );
-
-			// Add or remove "selected" class.
-			if ( checked ) {
-				$labels.addClass( 'selected' );
-			} else {
-				$labels.removeClass( 'selected' );
-			}
+			$inputs.prop( 'checked', checked ).trigger( 'change' );
 		},
 
 		onClickCustom: function ( e, $el ) {
@@ -106,6 +120,23 @@
 				// remove
 				if ( $text.val() == '' ) {
 					$el.parent( 'li' ).remove();
+				}
+			}
+		},
+		onKeyDownInput: function ( e, $el ) {
+			// Check if Enter key (keyCode 13) was pressed
+			if ( e.which === 13 ) {
+				// Prevent default form submission
+				e.preventDefault();
+
+				// Toggle the checkbox state and trigger change event
+				$el.prop( 'checked', ! $el.prop( 'checked' ) ).trigger(
+					'change'
+				);
+
+				// If this is the "Select All" toggle checkbox, run the toggle logic
+				if ( $el.is( '.acf-checkbox-toggle' ) ) {
+					this.onClickToggle( e, $el );
 				}
 			}
 		},

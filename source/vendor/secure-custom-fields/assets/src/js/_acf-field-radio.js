@@ -4,6 +4,7 @@
 
 		events: {
 			'click input[type="radio"]': 'onClick',
+			'keydown input[type="radio"]': 'onKeyDownInput',
 		},
 
 		$control: function () {
@@ -16,6 +17,32 @@
 
 		$inputText: function () {
 			return this.$( 'input[type="text"]' );
+		},
+
+		setValue: function ( val ) {
+			this.$( '.selected' ).removeClass( 'selected' );
+			this.$( 'input[type="radio"]' ).prop( 'checked', false );
+
+			if ( val !== false && val !== null && val !== '' ) {
+				const $input = this.$( 'input[type="radio"]' ).filter(
+					function () {
+						return $( this ).val() === val;
+					}
+				);
+
+				if ( $input.length ) {
+					$input.prop( 'checked', true );
+					$input.parent( 'label' ).addClass( 'selected' );
+
+					if ( this.get( 'other_choice' ) ) {
+						if ( val === 'other' ) {
+							this.$inputText().prop( 'disabled', false );
+						} else {
+							this.$inputText().prop( 'disabled', true );
+						}
+					}
+				}
+			}
 		},
 
 		getValue: function () {
@@ -55,6 +82,12 @@
 				} else {
 					this.$inputText().prop( 'disabled', true );
 				}
+			}
+		},
+		onKeyDownInput: function ( event, input ) {
+			if ( event.which === 13 ) {
+				event.preventDefault();
+				input.prop( 'checked', true ).trigger( 'change' );
 			}
 		},
 	} );

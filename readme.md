@@ -177,14 +177,14 @@ When `WP_DEBUG` is enabled in your `wp-config.php`:
 ```php
 define('WP_DEBUG', true);
 ```
-Frakt automatically loads the following developer tools (via Composer or WP Packagist):
+Frakt automatically loads the following developer tools (via Composer or WP Packages):
 ```json
-"wpackagist-plugin/secure-custom-fields": "*",
-"wpackagist-plugin/query-monitor": "*",
-"wpackagist-plugin/user-switching": "*",
-"wpackagist-plugin/wp-crontrol": "*",
-"wpackagist-plugin/plugin-check": "*",
-"wpackagist-plugin/jwt-authentication-for-wp-rest-api": "*"
+"wp-plugin/secure-custom-fields": "*",
+"wp-plugin/query-monitor": "*",
+"wp-plugin/user-switching": "*",
+"wp-plugin/wp-crontrol": "*",
+"wp-plugin/plugin-check": "*",
+"wp-plugin/jwt-authentication-for-wp-rest-api": "*"
 ```
 No manual activation or setup is required — they're included for development only and excluded in production environments.
 

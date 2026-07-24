@@ -209,6 +209,7 @@
         $tbody.sortable({
           items: '> .acf-field-setting-fc_layout',
           handle: '.acf-fc_draggable',
+          zIndex: 9999,
           forceHelperSize: true,
           forcePlaceholderSize: true,
           scroll: true,
@@ -298,7 +299,7 @@
     },
     onChangeLabel: function (e, $el) {
       let label = $el.val();
-      const safeLabel = acf.encode(label);
+      const safeLabel = acf.strEscape(label);
       this.set('layoutLabel', safeLabel);
       this.$el.attr('data-layout-label', safeLabel);
       let $name = this.$input('name');

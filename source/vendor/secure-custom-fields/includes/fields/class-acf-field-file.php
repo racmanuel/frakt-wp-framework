@@ -130,7 +130,7 @@ if ( ! class_exists( 'acf_field_file' ) ) :
 					)
 				);
 				?>
-				<div class="show-if-value file-wrap">
+				<div class="show-if-value file-wrap" tabindex="0" role="button" aria-label="<?php esc_attr_e( 'Selected file. Press tab to access file options.', 'secure-custom-fields' ); ?>">
 					<div class="file-icon">
 						<img data-name="icon" src="<?php echo esc_url( $o['icon'] ); ?>" alt="" />
 					</div>
@@ -148,14 +148,14 @@ if ( ! class_exists( 'acf_field_file' ) ) :
 						</p>
 					</div>
 					<div class="acf-actions -hover">
-						<?php if ( $uploader != 'basic' ) : ?>
-							<a class="acf-icon -pencil dark" data-name="edit" href="#" title="<?php esc_attr_e( 'Edit', 'secure-custom-fields' ); ?>"></a>
+						<?php if ( 'basic' !== $uploader ) : ?>
+							<a class="acf-icon -pencil dark" data-name="edit" href="#" title="<?php esc_attr_e( 'Edit', 'secure-custom-fields' ); ?>" aria-label="<?php esc_attr_e( 'Edit file', 'secure-custom-fields' ); ?>"></a>
 						<?php endif; ?>
-						<a class="acf-icon -cancel dark" data-name="remove" href="#" title="<?php esc_attr_e( 'Remove', 'secure-custom-fields' ); ?>"></a>
+						<a class="acf-icon -cancel dark" data-name="remove" href="#" title="<?php esc_attr_e( 'Remove', 'secure-custom-fields' ); ?>" aria-label="<?php esc_attr_e( 'Remove file', 'secure-custom-fields' ); ?>"></a>
 					</div>
 				</div>
 				<div class="hide-if-value">
-					<?php if ( $uploader == 'basic' ) : ?>
+					<?php if ( 'basic' === $uploader ) : ?>
 
 						<?php if ( $field['value'] && ! is_numeric( $field['value'] ) ) : ?>
 							<div class="acf-error-message">
@@ -165,13 +165,17 @@ if ( ! class_exists( 'acf_field_file' ) ) :
 
 						<label class="acf-basic-uploader">
 							<?php
-							acf_file_input(
-								array(
-									'name' => $field['name'],
-									'id'   => $field['id'],
-									'key'  => $field['key'],
-								)
+							$args = array(
+								'name' => $field['name'],
+								'id'   => $field['id'],
+								'key'  => $field['key'],
 							);
+
+							if ( ! empty( $field['mime_types'] ) ) {
+								$args['accept'] = $field['mime_types'];
+							}
+
+							acf_file_input( $args );
 							?>
 						</label>
 
@@ -509,13 +513,97 @@ if ( ! class_exists( 'acf_field_file' ) ) :
 		/**
 		 * Apply basic formatting to prepare the value for default REST output.
 		 *
-		 * @param mixed          $value
-		 * @param string|integer $post_id
-		 * @param array          $field
-		 * @return mixed
+		 * @since ACF 5.0.0
+		 * @since SCF 6.8.0 Now respects the return_format field setting.
+		 *
+		 * @param mixed          $value   The field value.
+		 * @param string|integer $post_id The post ID.
+		 * @param array          $field   The field array.
+		 * @return mixed The formatted value based on return_format setting.
 		 */
 		public function format_value_for_rest( $value, $post_id, array $field ) {
-			return acf_format_numerics( $value );
+			return $this->format_value( $value, $post_id, $field );
+		}
+
+		/**
+		 * Formats the field value for JSON-LD output.
+		 *
+		 * @since 6.8.0
+		 *
+		 * @param mixed          $value   The value of the field.
+		 * @param integer|string $post_id The ID of the post.
+		 * @param array          $field   The field array.
+		 * @return mixed
+		 */
+		public function format_value_for_jsonld( $value, $post_id, $field ) {
+			if ( empty( $value ) ) {
+				return null;
+			}
+
+			// Get output format with fallback.
+			$output_format = $field['schema_output_format'] ?? '';
+			if ( empty( $output_format ) ) {
+				$property      = $field['schema_property'] ?? '';
+				$output_format = \SCF\AI\GEO\Schema::get_default_output_format( $this->name, $property );
+			}
+
+			// Get attachment ID.
+			$attachment_id = is_array( $value ) ? ( $value['ID'] ?? 0 ) : (int) $value;
+			if ( ! $attachment_id ) {
+				return null;
+			}
+
+			$url = wp_get_attachment_url( $attachment_id );
+			if ( ! $url ) {
+				return null;
+			}
+
+			// URL format - just return the URL string.
+			if ( 'URL' === $output_format ) {
+				return $url;
+			}
+
+			// MediaObject or DataDownload format.
+			$file_object = array(
+				'@type'      => $output_format ? $output_format : 'MediaObject',
+				'contentUrl' => $url,
+			);
+
+			// Add name from attachment title.
+			$attachment = get_post( $attachment_id );
+			if ( $attachment && $attachment->post_title ) {
+				$file_object['name'] = $attachment->post_title;
+			}
+
+			// Add description if available.
+			if ( $attachment && $attachment->post_content ) {
+				$file_object['description'] = $attachment->post_content;
+			}
+
+			// Add file metadata.
+			$file_path = get_attached_file( $attachment_id );
+			if ( $file_path && file_exists( $file_path ) ) {
+				$file_object['contentSize'] = size_format( filesize( $file_path ) );
+			}
+
+			// Add MIME type.
+			$mime_type = get_post_mime_type( $attachment_id );
+			if ( $mime_type ) {
+				$file_object['encodingFormat'] = $mime_type;
+			}
+
+			return $file_object;
+		}
+
+		/**
+		 * Returns an array of JSON-LD Property output types that are supported by this field type.
+		 *
+		 * @since 6.8
+		 *
+		 * @return string[]
+		 */
+		public function get_jsonld_output_types(): array {
+			return array( 'MediaObject', 'DataDownload', 'URL' );
 		}
 	}
 

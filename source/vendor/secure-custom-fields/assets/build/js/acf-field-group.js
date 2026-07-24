@@ -35,7 +35,7 @@
     initialize: function () {
       this.open();
       this.lockFocusToModal(true);
-      this.$el.find('.acf-modal-title').focus();
+      this.$el.find('.acf-modal-title').trigger('focus');
       acf.doAction('show', this.$el);
     },
     tmpl: function () {
@@ -1196,7 +1196,7 @@
       // vars
       var $handle = this.$('.handle:first');
       var menu_order = this.prop('menu_order');
-      var label = this.getLabel();
+      var label = acf.strEscape(this.getLabel());
       var name = this.prop('name');
       var type = this.getTypeLabel();
       var key = this.prop('key');
@@ -1212,9 +1212,11 @@
 
       // update label
       $handle.find('.li-field-label strong a').html(label);
+      let shouldConvertToLowercase = name === name.toLowerCase();
+      shouldConvertToLowercase = acf.applyFilters('convert_field_name_to_lowercase', shouldConvertToLowercase, this);
 
       // update name
-      $handle.find('.li-field-name').html(this.makeCopyable(acf.strSanitize(name)));
+      $handle.find('.li-field-name').html(this.makeCopyable(acf.strSanitize(name, shouldConvertToLowercase)));
 
       // update type
       const iconName = acf.strSlugify(this.getType());
@@ -1417,7 +1419,7 @@
     onChangeLabel: function (e, $el) {
       // set
       const label = $el.val();
-      const safeLabel = acf.encode(label);
+      const safeLabel = acf.strEscape(label);
       this.set('label', safeLabel);
 
       // render name
@@ -1427,10 +1429,33 @@
       }
     },
     onChangeName: function (e, $el) {
-      const sanitizedName = acf.strSanitize($el.val(), false);
-      $el.val(sanitizedName);
-      this.set('name', sanitizedName);
-      if (sanitizedName.startsWith('field_')) {
+      const id = this.get('id');
+      let forceSanitize = false;
+      // If id is not a number or is zero, force sanitize
+      if (typeof id !== 'number' || id === 0) {
+        forceSanitize = true;
+      }
+
+      // Get the input's value attribute
+      const valueAttr = $el.val();
+
+      // If value is a lowercase string, force sanitize
+      if (typeof valueAttr === 'string' && valueAttr === valueAttr.toLowerCase()) {
+        forceSanitize = true;
+      }
+      forceSanitize = acf.applyFilters('convert_field_name_to_lowercase', forceSanitize, this);
+
+      // Sanitize the input value (force if needed)
+      const sanitized = acf.strSanitize($el.val(), forceSanitize);
+
+      // Set the sanitized value back to the input
+      $el.val(sanitized);
+
+      // Update the field's name property
+      this.set('name', sanitized);
+
+      // Warn if the name starts with "field_"
+      if (sanitized.startsWith('field_')) {
         alert(acf.__('The string "field_" may not be used at the start of a field name'));
       }
     },
@@ -1689,7 +1714,7 @@
         if (wp.a11y && wp.a11y.speak && acf.__) {
           wp.a11y.speak(acf.__('Field moved to other group'), 'polite');
         }
-        popup.$('.acf-close-popup').focus();
+        popup.$('.acf-close-popup').trigger('focus');
         field.removeAnimate();
       };
 
@@ -2143,6 +2168,7 @@
           }).end();
         },
         handle: '.acf-sortable-handle',
+        zIndex: 9999,
         connectWith: '.acf-field-list',
         start: function (e, ui) {
           var field = acf.getFieldObject(ui.item);
@@ -2755,13 +2781,13 @@
         }
         if (selection.loading || selection.element && selection.element.nodeName === 'OPTGROUP') {
           var $selection = $('<span class="acf-selection"></span>');
-          $selection.html(acf.escHtml(selection.text));
+          $selection.html(acf.strEscape(selection.text));
           return $selection;
         }
         if ('undefined' === typeof selection.human_field_type || 'undefined' === typeof selection.field_type || 'undefined' === typeof selection.this_field) {
           return selection.text;
         }
-        var $selection = $('<i title="' + acf.escHtml(selection.human_field_type) + '" class="field-type-icon field-type-icon-' + acf.escHtml(selection.field_type.replaceAll('_', '-')) + '"></i><span class="acf-selection has-icon">' + acf.escHtml(selection.text) + '</span>');
+        var $selection = $('<i title="' + acf.escAttr(selection.human_field_type) + '" class="field-type-icon field-type-icon-' + acf.strEscape(selection.field_type.replaceAll('_', '-')) + '"></i><span class="acf-selection has-icon">' + acf.strEscape(selection.text) + '</span>');
         if (selection.this_field) {
           $selection.last().append('<span class="acf-select2-default-pill">' + acf.__('This Field') + '</span>');
         }

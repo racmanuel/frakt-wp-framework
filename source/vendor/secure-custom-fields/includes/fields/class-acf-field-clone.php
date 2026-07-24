@@ -59,7 +59,6 @@ if ( ! class_exists( 'acf_field_clone' ) ) :
 				'display'      => 'seamless',
 				'layout'       => 'block',
 			);
-			$this->cloning       = array();
 			$this->have_rows     = 'single';
 
 			// register filter
@@ -139,6 +138,12 @@ if ( ! class_exists( 'acf_field_clone' ) ) :
 			// loop.
 			$count = count( $fields );
 			while ( $i < $count ) {
+
+				// Skip invalid/null field entries.
+				if ( ! isset( $fields[ $i ] ) || ! is_array( $fields[ $i ] ) ) {
+					++$i;
+					continue;
+				}
 
 				// vars.
 				$field = $fields[ $i ];
@@ -899,6 +904,10 @@ if ( ! class_exists( 'acf_field_clone' ) ) :
 			$nonce = acf_request_arg( 'nonce', '' );
 
 			if ( ! acf_verify_ajax( $nonce, 'acf/fields/clone/query' ) ) {
+				die();
+			}
+
+			if ( ! acf_current_user_can_admin() ) {
 				die();
 			}
 

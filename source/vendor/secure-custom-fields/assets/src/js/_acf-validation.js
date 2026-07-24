@@ -226,7 +226,11 @@
 			if ( errorCount == 1 ) {
 				errorMessage += '. ' + acf.__( '1 field requires attention' );
 			} else if ( errorCount > 1 ) {
-				errorMessage += '. ' + acf.__( '%d fields require attention' ).replace( '%d', errorCount );
+				errorMessage +=
+					'. ' +
+					acf
+						.__( '%d fields require attention' )
+						.replace( '%d', errorCount );
 			}
 
 			// notice
@@ -258,7 +262,8 @@
 			setTimeout( function () {
 				$( 'html, body' ).animate(
 					{
-						scrollTop: $scrollTo.offset().top - $( window ).height() / 2,
+						scrollTop:
+							$scrollTo.offset().top - $( window ).height() / 2,
 					},
 					500
 				);
@@ -361,7 +366,12 @@
 				}
 
 				// filter
-				var data = acf.applyFilters( 'validation_complete', json.data, this.$el, this );
+				var data = acf.applyFilters(
+					'validation_complete',
+					json.data,
+					this.$el,
+					this
+				);
 
 				// add errors
 				if ( ! data.valid ) {
@@ -607,7 +617,9 @@
 	acf.lockForm = function ( $form ) {
 		// vars
 		var $wrap = findSubmitWrap( $form );
-		var $submit = $wrap.find( '.button, [type="submit"]' ).not( '.acf-nav, .acf-repeater-add-row' );
+		var $submit = $wrap
+			.find( '.button, [type="submit"]' )
+			.not( '.acf-nav, .acf-repeater-add-row' );
 		var $spinner = $wrap.find( '.spinner, .acf-spinner' );
 
 		// hide all spinners (hides the preview spinner)
@@ -633,7 +645,9 @@
 	acf.unlockForm = function ( $form ) {
 		// vars
 		var $wrap = findSubmitWrap( $form );
-		var $submit = $wrap.find( '.button, [type="submit"]' ).not( '.acf-nav, .acf-repeater-add-row' );
+		var $submit = $wrap
+			.find( '.button, [type="submit"]' )
+			.not( '.acf-nav, .acf-repeater-add-row' );
 		var $spinner = $wrap.find( '.spinner, .acf-spinner' );
 
 		// unlock
@@ -732,13 +746,20 @@
 	 *
 	 * @date	20/10/2021
 	 * @since	ACF 5.11.0
+	 *
+	 * @param {jQuery} [$form] - Optional form element to scope the input search to. If omitted, searches the entire document.
 	 */
-	var ensureInvalidFieldVisibility = function () {
-		// Load each ACF input field and check it's browser validation state.
-		var $inputs = $( '.acf-field input' );
+	const ensureInvalidFieldVisibility = function ( $form ) {
+		// Load each ACF input field and check its browser validation state.
+		// Scope to the given form if provided, otherwise search the entire document.
+		const $inputs = $form
+			? $form.find( '.acf-field input' )
+			: $( '.acf-field input' );
 		$inputs.each( function () {
-			if ( ! this.checkValidity() ) {
-				// Field is invalid, so we need to make sure it's metabox is visible.
+			// Use validity.valid (a property) instead of checkValidity() (a method) to avoid
+			// dispatching the native 'invalid' event, which can trigger ACF validation prematurely.
+			if ( ! this.validity.valid ) {
+				// Field is invalid, so we need to make sure its metabox is visible.
 				ensureFieldPostBoxIsVisible( $( this ) );
 			}
 		} );
@@ -910,19 +931,37 @@
 		 *
 		 *  Callback when clicking submit.
 		 *
+		 *  Only acts on submit buttons that are associated with a form containing ACF fields.
+		 *  This prevents submit buttons in unrelated UI (e.g. the WP link inserter modal) from
+		 *  triggering premature validation of ACF fields on the page behind the modal.
+		 *
+		 *  Uses the native HTMLButtonElement.form property to resolve the associated form,
+		 *  which correctly handles both DOM-ancestor forms and the HTML form="id" attribute.
+		 *
 		 *  @date	4/9/18
 		 *  @since	ACF 5.7.5
 		 *
 		 *  @param	object e The event object.
-		 *  @param	jQuery $el The input element.
+		 *  @param	jQuery $el The submit button element.
 		 *  @return	void
 		 */
 		onClickSubmit: function ( e, $el ) {
-			// Some browsers (safari) force their browser validation before our AJAX validation,
-			// so we need to make sure fields are visible earlier than showErrors()
-			ensureInvalidFieldVisibility();
+			const form = $el.length ? $el[ 0 ].form : null;
 
-			// store the "click event" for later use in this.onSubmit()
+			if ( ! form ) {
+				return;
+			}
+
+			const $form = $( form );
+
+			if ( ! $form.find( '.acf-field' ).length ) {
+				return;
+			}
+
+			// Some browsers (safari) force their browser validation before our AJAX validation,
+			// so we need to make sure fields are visible earlier than showErrors().
+			ensureInvalidFieldVisibility( $form );
+
 			this.set( 'originalEvent', e );
 		},
 
@@ -1052,9 +1091,12 @@
 			var useValidation = false;
 			var lastPostStatus = '';
 			wp.data.subscribe( function () {
-				var postStatus = editorSelect.getEditedPostAttribute( 'status' );
-				useValidation = postStatus === 'publish' || postStatus === 'future';
-				lastPostStatus = postStatus !== 'publish' ? postStatus : lastPostStatus;
+				var postStatus =
+					editorSelect.getEditedPostAttribute( 'status' );
+				useValidation =
+					postStatus === 'publish' || postStatus === 'future';
+				lastPostStatus =
+					postStatus !== 'publish' ? postStatus : lastPostStatus;
 			} );
 
 			// Create validation version.
@@ -1064,9 +1106,12 @@
 				// Backup vars.
 				var _this = this;
 				var _args = arguments;
-
 				// Perform validation within a Promise.
 				return new Promise( function ( resolve, reject ) {
+					if ( typeof acf.gutenbergEditPost === 'function' ) {
+						acf.gutenbergEditPost();
+					}
+
 					// Bail early if is autosave or preview.
 					if ( options.isAutosave || options.isPreview ) {
 						return resolve( 'Validation ignored (autosave).' );
@@ -1079,10 +1124,16 @@
 
 					// Check if we've currently got an ACF block selected which is failing validation, but might not be presented yet.
 					if ( 'undefined' !== typeof acf.blockInstances ) {
-						const selectedBlockId = wp.data.select( 'core/block-editor' ).getSelectedBlockClientId();
+						const selectedBlockId = wp.data
+							.select( 'core/block-editor' )
+							.getSelectedBlockClientId();
 
-						if ( selectedBlockId && selectedBlockId in acf.blockInstances ) {
-							const acfBlockState = acf.blockInstances[ selectedBlockId ];
+						if (
+							selectedBlockId &&
+							selectedBlockId in acf.blockInstances
+						) {
+							const acfBlockState =
+								acf.blockInstances[ selectedBlockId ];
 
 							if ( acfBlockState.validation_errors ) {
 								// Deselect the block to show the error and lock the save.
@@ -1090,24 +1141,127 @@
 									'Rejecting save because the block editor has a invalid ACF block selected.'
 								);
 								notices.createErrorNotice(
-									acf.__( 'An ACF Block on this page requires attention before you can save.' ),
+									acf.__(
+										'An ACF Block on this page requires attention before you can save.'
+									),
 									{
 										id: 'acf-validation',
 										isDismissible: true,
 									}
 								);
 
-								wp.data.dispatch( 'core/editor' ).lockPostSaving( 'acf/block/' + selectedBlockId );
-								wp.data.dispatch( 'core/block-editor' ).selectBlock( false );
+								wp.data
+									.dispatch( 'core/editor' )
+									.lockPostSaving(
+										'acf/block/' + selectedBlockId
+									);
+								wp.data
+									.dispatch( 'core/block-editor' )
+									.selectBlock( false );
 
-								return reject( 'ACF Validation failed for selected block.' );
+								return reject(
+									'ACF Validation failed for selected block.'
+								);
 							}
 						}
 					}
 
+					// Recursive function to check all blocks (including nested innerBlocks) for ACF validation errors
+					function checkBlocksForErrors( blocks ) {
+						const errors = [];
+						return new Promise( function ( resolve ) {
+							// Iterate through each block
+							blocks.forEach( ( block ) => {
+								// If this block has nested blocks, recursively check them
+								if ( block.innerBlocks.length > 0 ) {
+									checkBlocksForErrors(
+										block.innerBlocks
+									).then( ( hasError ) => {
+										if ( hasError ) {
+											return resolve( true );
+										}
+									} );
+								}
+
+								// Check if this block has an ACF error attribute
+								if ( block.attributes.hasAcfError ) {
+									// Check if the publish panel is open and close it if so
+									const publishPanel =
+										document.getElementsByClassName(
+											'editor-post-publish-panel'
+										)[ 0 ];
+									if ( publishPanel ) {
+										// See https://github.com/WordPress/secure-custom-fields/pull/272
+										// `togglePublishSidebar` was only introduced in WP 6.6, it should be optional
+										wp.data
+											.dispatch( 'core/editor' )
+											.togglePublishSidebar?.();
+									}
+
+									// Add block to errors array
+									errors.push( block );
+
+									// Dispatch a custom event to notify about the block with validation error
+									document.dispatchEvent(
+										new CustomEvent(
+											'acf/block/has-error',
+											{
+												detail: {
+													acfBlocksWithValidationErrors:
+														block.clientId,
+												},
+											}
+										)
+									);
+
+									// Log debug message
+									acf.debug(
+										'Rejecting save because the block editor has a invalid ACF block selected.'
+									);
+
+									// Resolve with true (error found)
+									return resolve( true );
+								}
+							} );
+
+							// If errors were found, select the first one
+							if ( errors.length > 0 ) {
+								const blockClientId = errors[ 0 ].clientId;
+								wp.data
+									.dispatch( 'core/block-editor' )
+									.selectBlock( blockClientId );
+							}
+
+							// No errors found, resolve with false
+							return resolve( false );
+						} );
+					}
+
+					// Call the function with all blocks from the editor
+					checkBlocksForErrors(
+						wp.data.select( 'core/block-editor' ).getBlocks()
+					).then( ( hasError ) => {
+						// If errors were found
+						if ( hasError ) {
+							// Display an error notice
+							notices.createErrorNotice(
+								acf.__(
+									'An ACF Block on this page requires attention before you can save.'
+								),
+								{
+									id: 'acf-blocks-validation',
+									isDismissible: true,
+								}
+							);
+
+							// Reject the save operation
+							return reject( 'ACF Block Validation failed' );
+						}
+					} );
+
 					// Validate the editor form.
 					var valid = acf.validateForm( {
-						form: $( '#editor' ),
+						form: $( '#wpbody-content > .block-editor' ),
 						reset: true,
 						complete: function ( $form, validator ) {
 							// Always unlock the form after AJAX.
@@ -1116,12 +1270,35 @@
 						failure: function ( $form, validator ) {
 							// Get validation error and append to Gutenberg notices.
 							var notice = validator.get( 'notice' );
-							notices.createErrorNotice( notice.get( 'text' ), {
-								id: 'acf-validation',
-								isDismissible: true,
-							} );
+							var action = validator.get( 'action' );
+							if (
+								action &&
+								'object' === typeof action &&
+								action.label &&
+								action.url
+							) {
+								notices.createErrorNotice(
+									notice.get( 'text', {
+										id: 'acf-validation',
+										isDismissible: true,
+										actions: [
+											{
+												label: action.label,
+												url: action.url,
+											},
+										],
+									} )
+								);
+							} else {
+								notices.createErrorNotice(
+									notice.get( 'text' ),
+									{
+										id: 'acf-validation',
+										isDismissible: true,
+									}
+								);
+							}
 							notice.remove();
-
 							// Restore last non "publish" status.
 							if ( lastPostStatus ) {
 								editor.editPost( {

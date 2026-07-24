@@ -26,9 +26,10 @@ if ( ! class_exists( 'acf_field_date_and_time_picker' ) ) :
 			$this->doc_url       = 'https://developer.wordpress.org/secure-custom-fields/features/fields/date-time-picker/';
 			$this->tutorial_url  = 'https://developer.wordpress.org/secure-custom-fields/features/fields/date-time-picker/date-time-picker-tutorial/';
 			$this->defaults      = array(
-				'display_format' => 'd/m/Y g:i a',
-				'return_format'  => 'd/m/Y g:i a',
-				'first_day'      => 1,
+				'display_format'          => 'd/m/Y g:i a',
+				'return_format'           => 'd/m/Y g:i a',
+				'first_day'               => 1,
+				'default_to_current_date' => 0,
 			);
 		}
 
@@ -125,8 +126,9 @@ if ( ! class_exists( 'acf_field_date_and_time_picker' ) ) :
 				'value' => $hidden_value,
 			);
 			$text_input   = array(
-				'class' => $field['class'] . ' input',
-				'value' => $display_value,
+				'class'                 => $field['class'] . ' input',
+				'value'                 => $display_value,
+				'data-default-to-today' => $field['default_to_current_date'],
 			);
 			foreach ( array( 'readonly', 'disabled' ) as $k ) {
 				if ( ! empty( $field[ $k ] ) ) {
@@ -213,6 +215,17 @@ if ( ! class_exists( 'acf_field_date_and_time_picker' ) ) :
 					'choices'      => array_values( $wp_locale->weekday ),
 				)
 			);
+
+			acf_render_field_setting(
+				$field,
+				array(
+					'label'        => __( 'Default to the current date', 'secure-custom-fields' ),
+					'instructions' => __( 'Use the current date as the default value for this field.', 'secure-custom-fields' ),
+					'type'         => 'true_false',
+					'name'         => 'default_to_current_date',
+					'ui'           => 1,
+				)
+			);
 		}
 
 		/**
@@ -266,8 +279,46 @@ if ( ! class_exists( 'acf_field_date_and_time_picker' ) ) :
 				'required'    => ! empty( $field['required'] ),
 			);
 		}
-	}
 
+		/**
+		 * Returns an array of JSON-LD Property output types that are supported by this field type.
+		 *
+		 * @since 6.8
+		 *
+		 * @return string[]
+		 */
+		public function get_jsonld_output_types(): array {
+			return array( 'DateTime' );
+		}
+
+		/**
+		 * Formats the field value for JSON-LD output.
+		 *
+		 * Converts the stored Y-m-d H:i:s format to ISO 8601 datetime format.
+		 *
+		 * @since 6.8.0
+		 *
+		 * @param mixed          $value   The value of the field.
+		 * @param integer|string $post_id The ID of the post.
+		 * @param array          $field   The field array.
+		 * @return string|null ISO 8601 formatted datetime or null.
+		 */
+		public function format_value_for_jsonld( $value, $post_id, $field ) {
+			if ( empty( $value ) || ! is_string( $value ) ) {
+				return null;
+			}
+
+			// ACF stores date_time_picker internally as 'Y-m-d H:i:s'.
+			// Use WordPress site timezone so the ISO 8601 offset is correct.
+			$date = \DateTime::createFromFormat( 'Y-m-d H:i:s', $value, wp_timezone() );
+			if ( ! $date ) {
+				return null;
+			}
+
+			// Return ISO 8601 datetime format with timezone.
+			return $date->format( 'c' );
+		}
+	}
 
 	// initialize
 	acf_register_field_type( 'acf_field_date_and_time_picker' );

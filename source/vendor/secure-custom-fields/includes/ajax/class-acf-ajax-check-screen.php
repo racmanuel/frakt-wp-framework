@@ -51,14 +51,14 @@ if ( ! class_exists( 'ACF_Ajax_Check_Screen' ) ) :
 
 					// vars
 					$item = array(
-						'id'       => 'acf-' . $field_group['key'],
-						'key'      => $field_group['key'],
-						'title'    => $field_group['title'],
-						'position' => $field_group['position'],
+						'id'       => esc_attr( 'acf-' . $field_group['key'] ),
+						'key'      => esc_attr( $field_group['key'] ),
+						'title'    => acf_esc_html( acf_get_field_group_title( $field_group ) ),
+						'position' => esc_attr( $field_group['position'] ),
 						'classes'  => postbox_classes( 'acf-' . $field_group['key'], $args['screen'] ),
-						'style'    => $field_group['style'],
-						'label'    => $field_group['label_placement'],
-						'edit'     => acf_get_field_group_edit_link( $field_group['ID'] ),
+						'style'    => esc_attr( $field_group['style'] ),
+						'label'    => esc_attr( $field_group['label_placement'] ),
+						'edit'     => esc_url( acf_get_field_group_edit_link( $field_group['ID'] ) ),
 						'html'     => '',
 					);
 
@@ -67,6 +67,8 @@ if ( ! class_exists( 'ACF_Ajax_Check_Screen' ) ) :
 					if ( is_array( $hidden_metaboxes ) && in_array( $item['id'], $hidden_metaboxes ) ) {
 						$item['classes'] = trim( $item['classes'] . ' hide-if-js' );
 					}
+
+					$item['classes'] = esc_attr( $item['classes'] );
 
 					// append html if doesnt already exist on page
 					if ( ! in_array( $field_group['key'], $args['exists'] ) ) {
@@ -96,8 +98,17 @@ if ( ! class_exists( 'ACF_Ajax_Check_Screen' ) ) :
 				$response['sorted'] = get_user_option( 'meta-box-order_' . $this->get( 'post_type' ) );
 			}
 
-			// return
-			return $response;
+			/**
+			 * Filters the check_screen response, allowing extensions to attach
+			 * extra data tied to the screen.
+			 *
+			 * @since ACF 6.8.1
+			 *
+			 * @param array $response     The response array.
+			 * @param array $field_groups The field groups returned for this screen.
+			 * @param array $args         The check_screen request args.
+			 */
+			return apply_filters( 'acf/ajax/check_screen/response', $response, $field_groups, $args );
 		}
 	}
 

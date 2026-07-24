@@ -1,0 +1,382 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "3febdf1ed9432ad7883edad7b045611e",
+    "packages": [
+        {
+            "name": "composer/installers",
+            "version": "v2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/installers.git",
+                "reference": "12fb2dfe5e16183de69e784a7b84046c43d97e8e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/installers/zipball/12fb2dfe5e16183de69e784a7b84046c43d97e8e",
+                "reference": "12fb2dfe5e16183de69e784a7b84046c43d97e8e",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "composer/composer": "^1.10.27 || ^2.7",
+                "composer/semver": "^1.7.2 || ^3.4.0",
+                "phpstan/phpstan": "^1.11",
+                "phpstan/phpstan-phpunit": "^1",
+                "symfony/phpunit-bridge": "^7.1.1",
+                "symfony/process": "^5 || ^6 || ^7"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Composer\\Installers\\Plugin",
+                "branch-alias": {
+                    "dev-main": "2.x-dev"
+                },
+                "plugin-modifies-install-path": true
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\Installers\\": "src/Composer/Installers"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kyle Robinson Young",
+                    "email": "kyle@dontkry.com",
+                    "homepage": "https://github.com/shama"
+                }
+            ],
+            "description": "A multi-framework Composer library installer",
+            "homepage": "https://composer.github.io/installers/",
+            "keywords": [
+                "Dolibarr",
+                "Eliasis",
+                "Hurad",
+                "ImageCMS",
+                "Kanboard",
+                "Lan Management System",
+                "MODX Evo",
+                "MantisBT",
+                "Mautic",
+                "Maya",
+                "OXID",
+                "Plentymarkets",
+                "Porto",
+                "RadPHP",
+                "SMF",
+                "Starbug",
+                "Thelia",
+                "Whmcs",
+                "WolfCMS",
+                "agl",
+                "annotatecms",
+                "attogram",
+                "bitrix",
+                "cakephp",
+                "chef",
+                "cockpit",
+                "codeigniter",
+                "concrete5",
+                "concreteCMS",
+                "croogo",
+                "dokuwiki",
+                "drupal",
+                "eZ Platform",
+                "elgg",
+                "expressionengine",
+                "fuelphp",
+                "grav",
+                "installer",
+                "itop",
+                "known",
+                "kohana",
+                "laravel",
+                "lavalite",
+                "lithium",
+                "magento",
+                "majima",
+                "mako",
+                "matomo",
+                "mediawiki",
+                "miaoxing",
+                "modulework",
+                "modx",
+                "moodle",
+                "osclass",
+                "pantheon",
+                "phpbb",
+                "piwik",
+                "ppi",
+                "processwire",
+                "puppet",
+                "pxcms",
+                "reindex",
+                "roundcube",
+                "shopware",
+                "silverstripe",
+                "sydes",
+                "sylius",
+                "tastyigniter",
+                "wordpress",
+                "yawik",
+                "zend",
+                "zikula"
+            ],
+            "support": {
+                "issues": "https://github.com/composer/installers/issues",
+                "source": "https://github.com/composer/installers/tree/v2.3.0"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2024-06-24T20:46:46+00:00"
+        },
+        {
+            "name": "wp-plugin/jwt-authentication-for-wp-rest-api",
+            "version": "1.5.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/jwt-authentication-for-wp-rest-api/",
+                "reference": "tags/1.5.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/jwt-authentication-for-wp-rest-api.1.5.0.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0|~2.0"
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "tmeister"
+                }
+            ],
+            "description": "Extends the WP REST API using JSON Web Tokens Authentication as an authentication method.",
+            "homepage": "https://enriquechavez.co",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/#developers",
+                "issues": "https://wordpress.org/support/plugin/jwt-authentication-for-wp-rest-api",
+                "source": "https://plugins.svn.wordpress.org/jwt-authentication-for-wp-rest-api"
+            },
+            "time": "2026-03-23T19:23:21+00:00"
+        },
+        {
+            "name": "wp-plugin/plugin-check",
+            "version": "2.0.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/plugin-check/",
+                "reference": "tags/2.0.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/plugin-check.2.0.0.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0|~2.0"
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "WordPress.org"
+                }
+            ],
+            "description": "Plugin Check is a WordPress.org tool which provides checks to help plugins meet the directory requirements and follow various best practices.",
+            "homepage": "https://github.com/WordPress/plugin-check",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/plugin-check/#developers",
+                "issues": "https://wordpress.org/support/plugin/plugin-check",
+                "source": "https://plugins.svn.wordpress.org/plugin-check"
+            },
+            "time": "2026-05-29T15:35:57+00:00"
+        },
+        {
+            "name": "wp-plugin/query-monitor",
+            "version": "4.0.7",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/query-monitor/",
+                "reference": "tags/4.0.7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/query-monitor.4.0.7.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0|~2.0"
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "John Blackbourn"
+                }
+            ],
+            "description": "Query Monitor is the developer tools panel for WordPress and WooCommerce.",
+            "homepage": "https://querymonitor.com/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/query-monitor/#developers",
+                "issues": "https://wordpress.org/support/plugin/query-monitor",
+                "source": "https://plugins.svn.wordpress.org/query-monitor"
+            },
+            "time": "2026-06-20T20:20:53+00:00"
+        },
+        {
+            "name": "wp-plugin/secure-custom-fields",
+            "version": "6.9.2",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/secure-custom-fields/",
+                "reference": "tags/6.9.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/secure-custom-fields.6.9.2.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0|~2.0"
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "WordPress.org"
+                }
+            ],
+            "description": "Secure Custom Fields boosts content management with custom fields and options. It deactivates Advanced Custom Fields to prevent duplicate code errors.",
+            "homepage": "https://developer.wordpress.org/secure-custom-fields/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/secure-custom-fields/#developers",
+                "issues": "https://wordpress.org/support/plugin/secure-custom-fields",
+                "source": "https://plugins.svn.wordpress.org/secure-custom-fields"
+            },
+            "time": "2026-07-21T15:45:58+00:00"
+        },
+        {
+            "name": "wp-plugin/transients-manager",
+            "version": "2.0.7",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/transients-manager/",
+                "reference": "tags/2.0.7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/transients-manager.2.0.7.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0|~2.0"
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "Syed Balkhi"
+                }
+            ],
+            "description": "Provides a familiar interface to view, search, edit, and delete Transients.",
+            "homepage": "https://wordpress.org/plugins/transients-manager/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/transients-manager/#developers",
+                "issues": "https://wordpress.org/support/plugin/transients-manager",
+                "source": "https://plugins.svn.wordpress.org/transients-manager"
+            },
+            "time": "2026-03-23T19:23:21+00:00"
+        },
+        {
+            "name": "wp-plugin/user-switching",
+            "version": "1.12.1",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/user-switching/",
+                "reference": "tags/1.12.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/user-switching.1.12.1.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0|~2.0"
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "John Blackbourn"
+                }
+            ],
+            "description": "Instant switching between user accounts in WordPress and WooCommerce.",
+            "homepage": "https://wordpress.org/plugins/user-switching/",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/user-switching/#developers",
+                "issues": "https://wordpress.org/support/plugin/user-switching",
+                "source": "https://plugins.svn.wordpress.org/user-switching"
+            },
+            "time": "2026-07-09T00:26:11+00:00"
+        },
+        {
+            "name": "wp-plugin/wp-crontrol",
+            "version": "1.21.0",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/wp-crontrol/",
+                "reference": "tags/1.21.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/wp-crontrol.1.21.0.zip"
+            },
+            "require": {
+                "composer/installers": "~1.0|~2.0"
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://wp-packages.org/downloads",
+            "authors": [
+                {
+                    "name": "John Blackbourn"
+                }
+            ],
+            "description": "WP Crontrol enables you to take control of the cron events on your WordPress website.",
+            "homepage": "https://wp-crontrol.com",
+            "support": {
+                "changelog": "https://wordpress.org/plugins/wp-crontrol/#developers",
+                "issues": "https://wordpress.org/support/plugin/wp-crontrol",
+                "source": "https://plugins.svn.wordpress.org/wp-crontrol"
+            },
+            "time": "2026-05-20T14:41:16+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}

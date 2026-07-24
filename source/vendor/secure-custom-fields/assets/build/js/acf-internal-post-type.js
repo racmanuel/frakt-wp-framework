@@ -285,7 +285,7 @@
         const $select = popup.$('select');
         const val = $select.val();
         if (!val.length) {
-          $select.focus();
+          $select.trigger('focus');
           return;
         }
         acf.startButtonLoading(popup.$('.button'));
@@ -307,7 +307,7 @@
         if (wp.a11y && wp.a11y.speak && acf.__) {
           wp.a11y.speak(acf.__('Field groups linked successfully.'), 'polite');
         }
-        popup.$('button.acf-close-popup').focus();
+        popup.$('button.acf-close-popup').trigger('focus');
       };
       step1();
     }

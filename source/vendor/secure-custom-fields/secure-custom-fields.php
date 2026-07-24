@@ -6,13 +6,13 @@
  * Plugin Name:       Secure Custom Fields
  * Plugin URI:        https://developer.wordpress.org/secure-custom-fields/
  * Description:       Secure Custom Fields (SCF) offers an intuitive way for developers to enhance WordPress content management by adding extra fields and options without coding requirements.
- * Version:           6.5.5
+ * Version:           6.9.2
  * Author:            WordPress.org
  * Author URI:        https://wordpress.org/
  * Text Domain:       secure-custom-fields
  * Domain Path:       /lang
  * Requires PHP:      7.4
- * Requires at least: 6.0
+ * Requires at least: 6.2
  *
  * @package wordpress/secure-custom-fields
  */
@@ -33,7 +33,7 @@ if ( ! class_exists( 'ACF' ) ) {
 		 *
 		 * @var string
 		 */
-		public $version = '6.5.5';
+		public $version = '6.9.2';
 
 		/**
 		 * The plugin settings array.
@@ -55,6 +55,48 @@ if ( ! class_exists( 'ACF' ) ) {
 		 * @var array
 		 */
 		public $instances = array();
+
+		/**
+		 * The loop instance.
+		 *
+		 * @var acf_loop
+		 */
+		public $loop;
+
+		/**
+		 * The revisions instance.
+		 *
+		 * @var acf_revisions
+		 */
+		public $revisions;
+
+		/**
+		 * The fields instance.
+		 *
+		 * @var acf_fields
+		 */
+		public $fields;
+
+		/**
+		 * The form front instance.
+		 *
+		 * @var acf_form_front
+		 */
+		public $form_front;
+
+		/**
+		 * The validation instance.
+		 *
+		 * @var acf_validation
+		 */
+		public $validation;
+
+		/**
+		 * The admin tools instance.
+		 *
+		 * @var acf_admin_tools
+		 */
+		public $admin_tools;
 
 		/**
 		 * A dummy constructor to ensure ACF is only setup once.
@@ -128,6 +170,8 @@ if ( ! class_exists( 'ACF' ) ) {
 				'enable_shortcode'        => true,
 				'enable_bidirection'      => true,
 				'enable_block_bindings'   => true,
+				'enable_acf_ai'           => false,
+				'enable_schema'           => false,
 				'pro'                     => true,
 			);
 
@@ -146,7 +190,9 @@ if ( ! class_exists( 'ACF' ) ) {
 			acf_include( 'includes/class-acf-data.php' );
 			acf_include( 'includes/class-acf-internal-post-type.php' );
 			acf_include( 'includes/class-acf-options-page.php' );
-			acf_include( 'includes/class-acf-site-health.php' );
+			acf_include( 'includes/class-scf-json-schema-validator.php' );
+			acf_include( 'includes/class-scf-schema-builder.php' );
+			acf_include( 'includes/abilities/class-scf-abilities-integration.php' );
 			acf_include( 'includes/fields/class-acf-field.php' );
 			acf_include( 'includes/locations/abstract-acf-legacy-location.php' );
 			acf_include( 'includes/locations/abstract-acf-location.php' );
@@ -159,6 +205,18 @@ if ( ! class_exists( 'ACF' ) ) {
 			acf_new_instance( 'SCF\Meta\Term' );
 			acf_new_instance( 'SCF\Meta\User' );
 			acf_new_instance( 'SCF\Meta\Option' );
+
+			if ( class_exists( 'SCF\Site_Health\Site_Health' ) ) {
+				acf_new_instance( 'SCF\Site_Health\Site_Health' );
+			}
+
+			if ( class_exists( 'SCF\AI\AI' ) ) {
+				acf_new_instance( 'SCF\AI\AI' );
+			}
+
+			if ( defined( 'WP_CLI' ) && WP_CLI && class_exists( 'SCF\CLI\CLI' ) ) {
+				acf_new_instance( 'SCF\CLI\CLI' );
+			}
 
 			acf_include( 'includes/acf-hook-functions.php' );
 			acf_include( 'includes/acf-field-functions.php' );
@@ -200,11 +258,13 @@ if ( ! class_exists( 'ACF' ) ) {
 			acf_include( 'includes/upgrades.php' );
 			acf_include( 'includes/validation.php' );
 			acf_include( 'includes/rest-api.php' );
+			acf_include( 'includes/datastore.php' );
 			acf_include( 'includes/blocks.php' );
 			acf_include( 'includes/class-acf-options-page.php' );
 
-			// Include field group class.
+			// Include field group and field manager classes.
 			acf_include( 'includes/post-types/class-acf-field-group.php' );
+			acf_include( 'includes/post-types/class-scf-field-manager.php' );
 
 			// Include ajax.
 			acf_include( 'includes/ajax/class-acf-ajax.php' );
@@ -233,6 +293,20 @@ if ( ! class_exists( 'ACF' ) ) {
 
 			// Include PRO.
 			acf_include( 'pro/acf-pro.php' );
+
+			// Initialize GEO Blocks output.
+			if ( class_exists( 'SCF\AI\GEO\Outputs\Blocks' ) ) {
+				new \SCF\AI\GEO\Outputs\Blocks();
+			}
+
+			// Datastore integration (self-gates on acf_is_using_datastore()).
+			acf_new_instance( 'SCF\Datastore\REST_Save' );
+			acf_new_instance( 'SCF\Datastore\Localization' );
+			acf_new_instance( 'SCF\Datastore\Revisions' );
+			acf_new_instance( 'SCF\Datastore\Check_Screen' );
+
+			// JS block bindings layer (self-gates on enable_block_bindings + datastore).
+			acf_new_instance( 'SCF\Blocks\Bindings_Editor' );
 
 			// Add actions.
 			add_action( 'init', array( $this, 'register_post_status' ), 4 );
@@ -424,7 +498,7 @@ if ( ! class_exists( 'ACF' ) ) {
 			// If we're on WP 6.5 or newer, load block bindings. This will move to an autoloader in ACF 6.3.
 			if ( version_compare( get_bloginfo( 'version' ), '6.5-beta1', '>=' ) ) {
 				acf_include( 'includes/Blocks/Bindings.php' );
-				new ACF\Blocks\Bindings();
+				new SCF\Blocks\Bindings();
 			}
 
 			/**
@@ -794,6 +868,24 @@ if ( ! class_exists( 'ACF' ) ) {
 	acf();
 } // class_exists check
 
+if ( ! function_exists( 'scf_map_plugin_dependency_slug' ) ) {
+	/**
+	 * Maps ACF dependency slugs so SCF satisfies plugins requiring ACF.
+	 *
+	 * @param string $slug Plugin dependency slug.
+	 * @return string
+	 */
+	function scf_map_plugin_dependency_slug( $slug ) {
+		if ( 'advanced-custom-fields' === $slug ) {
+			return 'secure-custom-fields';
+		}
+
+		return $slug;
+	}
+
+	add_filter( 'wp_plugin_dependencies_slug', 'scf_map_plugin_dependency_slug' );
+}
+
 if ( ! function_exists( 'scf_deactivate_other_instances' ) ) {
 	/**
 	 * Checks if another version of ACF/ACF PRO is active and deactivates it.
@@ -811,7 +903,6 @@ if ( ! function_exists( 'scf_deactivate_other_instances' ) ) {
 		} elseif ( is_plugin_active( 'advanced-custom-fields/acf.php' ) ) {
 			// Check if the plugin to deactivate is 'advanced-custom-fields/acf.php' but the title is 'Secure Custom Fields'.
 			if ( ! function_exists( 'get_plugin_data' ) ) {
-				/** @phpstan-ignore-next-line */ // phpcs:ignore
 				require_once ABSPATH . 'wp-admin/includes/plugin.php';
 			}
 			$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_to_deactivate );
@@ -879,7 +970,6 @@ function scf_plugin_uninstall() {
 	// List of known beta features.
 	$beta_features = array(
 		'editor_sidebar',
-		'connect_fields',
 	);
 
 	foreach ( $beta_features as $beta_feature ) {
