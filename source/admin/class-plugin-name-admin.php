@@ -93,6 +93,7 @@ class Plugin_Name_Admin
 
     }
 
+    /* TKT_GEN_ACF_START */
     /**
      * Fixes the assets URL for Secure Custom Fields (SCF).
      *
@@ -159,4 +160,5 @@ class Plugin_Name_Admin
     {
         return false;
     }
+    /* TKT_GEN_ACF_END */
 }

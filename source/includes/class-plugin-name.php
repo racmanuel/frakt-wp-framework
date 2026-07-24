@@ -302,6 +302,7 @@ class Plugin_Name
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
 
+        /* TKT_GEN_ACF_START */
         // Hook to modify SCF asset URL
         $this->loader->add_filter('acf/assets_url', $plugin_admin, 'scf_fix_assets_url');
 
@@ -316,6 +317,7 @@ class Plugin_Name
 
         // Hook to disable SCF plugin update notifications
         $this->loader->add_filter('acf/settings/show_updates', $plugin_admin, 'scf_show_updates');
+        /* TKT_GEN_ACF_END */
     }
     /* TKT_GEN_ADMIN_END */
 
