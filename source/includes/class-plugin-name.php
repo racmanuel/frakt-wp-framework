@@ -125,6 +125,7 @@ class Plugin_Name
          */
         require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/autoload.php';
 
+        /* TKT_GEN_ACF_START */
         /**
          * Load the Secure Custom Fields plugin manually if it's not already loaded.
          *
@@ -152,6 +153,7 @@ class Plugin_Name
              */
             require_once MY_SCF_PATH . 'secure-custom-fields.php';
         }
+        /* TKT_GEN_ACF_END */
 
         /**
          * Load development-only plugins when debugging is enabled.
@@ -163,6 +165,7 @@ class Plugin_Name
          */
         if (defined('WP_DEBUG') && WP_DEBUG) {
 
+            /* TKT_GEN_QM_START */
             /**
              * Load Query Monitor if it's not already loaded.
              * Useful for debugging SQL queries, hooks, and performance.
@@ -170,7 +173,9 @@ class Plugin_Name
             if (! class_exists('QueryMonitor')) {
                 require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/query-monitor/query-monitor.php';
             }
+            /* TKT_GEN_QM_END */
 
+            /* TKT_GEN_WPC_START */
             /**
              * Load WP Crontrol if the constant is not already defined.
              * This allows inspection and management of WP-Cron events.
@@ -178,7 +183,9 @@ class Plugin_Name
             if (! defined('WP_CRONTROL_VERSION')) {
                 require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/wp-crontrol/wp-crontrol.php';
             }
+            /* TKT_GEN_WPC_END */
 
+            /* TKT_GEN_US_START */
             /**
              * Load User Switching if the class is not already loaded.
              * Enables quickly switching between user accounts in admin.
@@ -186,7 +193,9 @@ class Plugin_Name
             if (! class_exists('user_switching')) {
                 require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/user-switching/user-switching.php';
             }
+            /* TKT_GEN_US_END */
 
+            /* TKT_GEN_PC_START */
             /**
              * Load Plugin Check if the version constant is not yet defined.
              * Provides tools to validate plugin requirements and versions.
@@ -194,7 +203,9 @@ class Plugin_Name
             if (! defined('WP_PLUGIN_CHECK_VERSION')) {
                 require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/plugin-check/plugin.php';
             }
+            /* TKT_GEN_PC_END */
 
+            /* TKT_GEN_TM_START */
             /**
              * Load Transients Manager if the class is not already loaded.
              * Provides tools to manage transient options in WordPress.
@@ -202,6 +213,7 @@ class Plugin_Name
             if (! class_exists('Transients_Manager')) {
                 require_once plugin_dir_path(dirname(__FILE__)) . 'vendor/transients-manager/transients-manager.php';
             }
+            /* TKT_GEN_TM_END */
         }
 
         /**

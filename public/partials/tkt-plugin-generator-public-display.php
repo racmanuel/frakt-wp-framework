@@ -7,12 +7,52 @@
  * @link       https://www.tukutoi.com/
  * @since      1.0.0
  * @since      2.0.0 Added PHP requirement field, changed order of fields, changed explanations.
+ * @since      2.0.1 Added loading overlay, error/success messages, and JS feedback.
  *
  * @package    Tkt_Plugin_Generator
  * @subpackage Tkt_Plugin_Generator/public/partials
  */
 
 ?>
+
+<?php
+/**
+ * Display feedback messages stored in transient by replace_zip_and_download().
+ */
+$tkt_feedback_message = get_transient( 'tkt_gen_feedback' );
+$tkt_feedback_type    = 'success';
+
+if ( ! empty( $tkt_feedback_message ) ) {
+
+	/**
+	 * Determine message type based on content.
+	 * Messages starting with 'Error:' are styled as errors.
+	 */
+	if ( 0 === strpos( $tkt_feedback_message, 'Error:' ) ) {
+		$tkt_feedback_type = 'error';
+	}
+
+	printf(
+		'<div class="tkt-generator-message %s">%s</div>',
+		esc_attr( $tkt_feedback_type ),
+		esc_html( $tkt_feedback_message )
+	);
+
+	// Delete the transient so the message doesn't persist on refresh.
+	delete_transient( 'tkt_gen_feedback' );
+}
+?>
+
+<!-- Loading Overlay -->
+<div id="tkt-plugin-generator-overlay" aria-hidden="true">
+	<div class="tkt-generator-spinner"></div>
+	<div class="tkt-generator-overlay-text">
+		<?php esc_html_e( 'Generando plugin...', 'tkt-plugin-generator' ); ?>
+	</div>
+	<div class="tkt-generator-overlay-hint">
+		<?php esc_html_e( 'Esto puede tomar unos segundos. No recargues la página.', 'tkt-plugin-generator' ); ?>
+	</div>
+</div>
 
 <form id="tkt-plugin-generator-generator" method="post" >
 	<div class="form-input-container">
@@ -158,9 +198,83 @@
 		</label>
 		<input type="url" id="donate_link" name="donate_link" placeholder="https://domain.tld/donate">
 	</div>
+
+    <div class="form-input-container">
+        <p><strong><?php esc_html_e( 'Include Plugins', 'tkt-plugin-generator' ); ?></strong></p>
+        
+        <label for="include_acf">
+            <input type="checkbox" id="include_acf" name="include_acf" value="1" checked>
+            <?php esc_html_e( 'Secure Custom Fields (ACF)', 'tkt-plugin-generator' ); ?>
+        </label><br>
+
+        <label for="include_qm">
+            <input type="checkbox" id="include_qm" name="include_qm" value="1" checked>
+            <?php esc_html_e( 'Query Monitor', 'tkt-plugin-generator' ); ?>
+        </label><br>
+
+        <label for="include_wpc">
+            <input type="checkbox" id="include_wpc" name="include_wpc" value="1" checked>
+            <?php esc_html_e( 'WP Crontrol', 'tkt-plugin-generator' ); ?>
+        </label><br>
+
+        <label for="include_us">
+            <input type="checkbox" id="include_us" name="include_us" value="1" checked>
+            <?php esc_html_e( 'User Switching', 'tkt-plugin-generator' ); ?>
+        </label><br>
+
+        <label for="include_pc">
+            <input type="checkbox" id="include_pc" name="include_pc" value="1" checked>
+            <?php esc_html_e( 'Plugin Check', 'tkt-plugin-generator' ); ?>
+        </label><br>
+
+        <label for="include_tm">
+            <input type="checkbox" id="include_tm" name="include_tm" value="1" checked>
+            <?php esc_html_e( 'Transients Manager', 'tkt-plugin-generator' ); ?>
+        </label><br>
+
+        <label for="include_jwt">
+            <input type="checkbox" id="include_jwt" name="include_jwt" value="1" checked>
+            <?php esc_html_e( 'JWT Authentication for WP REST API', 'tkt-plugin-generator' ); ?>
+        </label>
+    </div>
 	<div class="form-input-container">
 		<button id="tkt-plugin-generator-generator-submit" type="submit" value="tkt_plugin_generator_submit" name="tkt_plugin_generator_submit"> <?php esc_html_e( 'Generate', 'tkt-plugin-generator' ); ?> </button>
 	</div>
 	<?php wp_nonce_field( 'generate_plugin_submit', 'generate_plugin_nonce' ); ?>
 </form>
+
+<script>
+(function() {
+	'use strict';
+
+	var form     = document.getElementById('tkt-plugin-generator-generator');
+	var overlay  = document.getElementById('tkt-plugin-generator-overlay');
+	var submitBtn = document.getElementById('tkt-plugin-generator-generator-submit');
+
+	if ( ! form || ! overlay ) {
+		return;
+	}
+
+	form.addEventListener('submit', function() {
+		// Show loading overlay
+		overlay.classList.add('show');
+
+		// Disable submit button to prevent double submission
+		if ( submitBtn ) {
+			submitBtn.disabled = true;
+		}
+
+		/**
+		 * Safety timeout: hide overlay after 60 seconds if something goes wrong
+		 * and no redirect occurred (e.g., browser stalls).
+		 */
+		setTimeout(function() {
+			overlay.classList.remove('show');
+			if ( submitBtn ) {
+				submitBtn.disabled = false;
+			}
+		}, 60000);
+	});
+})();
+</script>
 

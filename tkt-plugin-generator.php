@@ -21,7 +21,7 @@
  * Author URI:        https://racmanuel.dev
  * License:           GPL-2.0+
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       tkt-plugin-generato
+ * Text Domain:       tkt-plugin-generator
  * Domain Path:       /languages
  */
 

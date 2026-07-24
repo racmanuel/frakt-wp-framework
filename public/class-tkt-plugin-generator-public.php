@@ -109,6 +109,7 @@ class Tkt_Plugin_Generator_Public
   * Zip new folder and Download.
   *
   * @since 1.0.0
+  * @since 2.0.1 Added error feedback with redirect + transient messages.
   * @param array $new_data Array with new data to use for replace.
   */
  public function replace_zip_and_download($new_data)
@@ -129,46 +130,89 @@ class Tkt_Plugin_Generator_Public
   $orig_path = plugin_dir_path(__DIR__) . 'builds/' . $filename;
   $zip_path  = plugin_dir_path(__DIR__) . 'builds/' . $zip_name;
 
+  // Ensure source directory exists.
+  if ( ! is_dir( $source ) ) {
+   $this->redirect_with_error(
+    __( 'Error: No se encuentra la carpeta de origen (source/).', 'tkt-plugin-generator' )
+   );
+   return;
+  }
+
   // Create a copy of the source files to the new source.
-  $this->create_source_copy($source, $orig_path, 0755);
+  $copied = $this->create_source_copy( $source, $orig_path, 0755 );
+  if ( false === $copied ) {
+   $this->redirect_with_error(
+    __( 'Error: No se pudo copiar la plantilla del plugin. Verifica los permisos de escritura.', 'tkt-plugin-generator' )
+   );
+   return;
+  }
 
   // Find all files in the new source.
-  $files = $this->find_all_files($orig_path);
+  $files = $this->find_all_files( $orig_path );
 
-  foreach ($files as $file) {
+  if ( empty( $files ) ) {
+   $this->redirect_with_error(
+    __( 'Error: No se encontraron archivos en la plantilla copiada.', 'tkt-plugin-generator' )
+   );
+   return;
+  }
+
+  foreach ( $files as $file ) {
 
    // Replace all strings (including filenames) in the new source.
-   $this->replace_names($file, $new_data);
+   $this->replace_names( $file, $new_data );
 
   }
 
-  // 🧩 Ejecutar composer install si existe composer.json en el nuevo origen
+  // Modify composer.json based on selected options.
+  $this->process_composer_dependencies( $orig_path, $new_data );
+
+  // Run composer install if composer.json exists.
   $composer_json_path = $orig_path . '/composer.json';
 
-  if (file_exists($composer_json_path) && function_exists('shell_exec')) {
-   $cmd    = 'cd ' . escapeshellarg($orig_path) . ' && composer install --no-dev --prefer-dist 2>&1';
-   $output = shell_exec($cmd);
+  if ( file_exists( $composer_json_path ) && function_exists( 'shell_exec' ) ) {
+   $cmd    = 'cd ' . escapeshellarg( $orig_path ) . ' && composer install --no-dev --prefer-dist 2>&1';
+   $output = shell_exec( $cmd );
 
-   // Guarda salida del comando por si se necesita depurar
-   file_put_contents(plugin_dir_path(__DIR__) . 'composer.log', $output);
-  } else {
-   // Registrar que no se ejecutó por falta de shell_exec o composer.json
+   // Guarda salida del comando por si se necesita depurar.
+   file_put_contents( plugin_dir_path( __DIR__ ) . 'composer.log', $output );
+  } elseif ( file_exists( $composer_json_path ) ) {
    file_put_contents(
-    plugin_dir_path(__DIR__) . 'composer.log',
-    "composer install omitted: shell_exec not available or composer.json not found.\n",
+    plugin_dir_path( __DIR__ ) . 'composer.log',
+    "composer install omitted: shell_exec is not available on this server.\n",
     FILE_APPEND
    );
   }
 
   // Build a new zip with the new source.
-  $zip = $this->zip_up_folder_recursive($orig_path, $zip_path);
+  $zip = $this->zip_up_folder_recursive( $orig_path, $zip_path );
 
-  if (true === $zip) {
+  if ( true === $zip ) {
 
    // Download the new Zip.
-   $this->download_zip($zip_path, $zip_name);
+   $this->download_zip( $zip_path, $zip_name );
+
+  } else {
+
+   $this->redirect_with_error(
+    __( 'Error: No se pudo generar el archivo ZIP. Verifica que la extensión ZIP de PHP esté habilitada y que la carpeta builds/ tenga permisos de escritura.', 'tkt-plugin-generator' )
+   );
 
   }
+
+ }
+
+ /**
+  * Redirect back to the form page with an error message stored in a transient.
+  *
+  * @since 2.0.1
+  * @param string $message The error message to display.
+  */
+ private function redirect_with_error( $message ) {
+
+  set_transient( 'tkt_gen_feedback', $message, 60 );
+  wp_safe_redirect( remove_query_arg( 'tkt_gen_status', wp_get_referer() ) );
+  exit;
 
  }
 
@@ -349,6 +393,31 @@ class Tkt_Plugin_Generator_Public
   $file_contents = str_replace('Your Name', $new_data[ 'author' ], $file_contents);
   $file_contents = str_replace('<email@example.com>', $new_data[ 'author_email' ], $file_contents);
   $file_contents = str_replace('Requires PHP:      X.X', 'Requires PHP:      ' . $new_data[ 'plugin_requires_php' ], $file_contents);
+
+  // Optional Plugins Logic
+  $optional_plugins = [
+      'include_acf' => 'ACF',
+      'include_qm'  => 'QM',
+      'include_wpc' => 'WPC',
+      'include_us'  => 'US',
+      'include_pc'  => 'PC',
+      'include_tm'  => 'TM',
+  ];
+
+  foreach ($optional_plugins as $key => $marker) {
+      $start_marker = "/* TKT_GEN_{$marker}_START */";
+      $end_marker   = "/* TKT_GEN_{$marker}_END */";
+
+      if (empty($new_data[$key])) {
+          // Remove the block entirely
+          $pattern = '/' . preg_quote($start_marker, '/') . '.*?' . preg_quote($end_marker, '/') . '/s';
+          $file_contents = preg_replace($pattern, '', $file_contents);
+      } else {
+          // Remove only the markers
+          $file_contents = str_replace([$start_marker, $end_marker], '', $file_contents);
+      }
+  }
+
   $new_file      = str_replace('plugin-name', $new_data[ 'plugin_file_name' ], $file);
 
   file_put_contents($file, $file_contents);
@@ -423,6 +492,7 @@ class Tkt_Plugin_Generator_Public
   * Download the ZIPped file.
   *
   * @since 1.0.1
+  * @since 2.0.1 Added exit after readfile() to cleanly terminate the response.
   * @param string $zip_path The Path to the file to download.
   * @param string $zip_name The Name of the ZIP.
   */
@@ -437,6 +507,8 @@ class Tkt_Plugin_Generator_Public
   readfile($zip_path);
 
   //$this->delete_file($zip_path);
+
+  exit;
 
  }
 
@@ -556,10 +628,66 @@ class Tkt_Plugin_Generator_Public
    'plugin_const_name'   => strtoupper(str_replace('-', '_', ucwords(isset($_POST[ 'plugin_slug' ]) ? sanitize_title(wp_unslash($_POST[ 'plugin_slug' ]), '', 'save') : 'plugin-slug'))) . '_',
    'author'              => isset($_POST[ 'author' ]) ? sanitize_text_field(wp_unslash($_POST[ 'author' ])) : 'Your Name or Your Company Name',
    'author_email'        => isset($_POST[ 'author_email' ]) ? '<' . sanitize_email(wp_unslash($_POST[ 'author_email' ])) . '>' : '<your@email.com>',
+   'include_acf'         => isset($_POST['include_acf']) ? (bool) $_POST['include_acf'] : false,
+   'include_qm'          => isset($_POST['include_qm']) ? (bool) $_POST['include_qm'] : false,
+   'include_wpc'         => isset($_POST['include_wpc']) ? (bool) $_POST['include_wpc'] : false,
+   'include_us'          => isset($_POST['include_us']) ? (bool) $_POST['include_us'] : false,
+   'include_pc'          => isset($_POST['include_pc']) ? (bool) $_POST['include_pc'] : false,
+   'include_tm'          => isset($_POST['include_tm']) ? (bool) $_POST['include_tm'] : false,
+   'include_jwt'         => isset($_POST['include_jwt']) ? (bool) $_POST['include_jwt'] : false,
    ];
 
   return $new_data;
 
  }
+
+	/**
+	 * Process Composer Dependencies based on selection.
+	 *
+	 * @since 2.0.0
+	 * @param string $target_path The path to the new plugin folder.
+	 * @param array  $new_data    The data from the form.
+	 */
+	private function process_composer_dependencies($target_path, $new_data)
+	{
+		$composer_file = $target_path . '/composer.json';
+
+		if (! file_exists($composer_file)) {
+			return;
+		}
+
+		$composer_content = file_get_contents($composer_file);
+		$composer_json    = json_decode($composer_content, true);
+
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			return;
+		}
+
+		// Map form fields to composer packages
+		$dependency_map = [
+			'include_acf' => 'wpackagist-plugin/secure-custom-fields',
+			'include_qm'  => 'wpackagist-plugin/query-monitor',
+			'include_us'  => 'wpackagist-plugin/user-switching',
+			'include_wpc' => 'wpackagist-plugin/wp-crontrol',
+			'include_pc'  => 'wpackagist-plugin/plugin-check',
+			'include_jwt' => 'wpackagist-plugin/jwt-authentication-for-wp-rest-api',
+			'include_tm'  => 'wpackagist-plugin/transients-manager',
+		];
+
+		foreach ($dependency_map as $field_key => $package_name) {
+			// If the checkbox was NOT checked (false in $new_data), remove the dependency
+			if (empty($new_data[ $field_key ])) {
+				if (isset($composer_json['require'][ $package_name ])) {
+					unset($composer_json['require'][ $package_name ]);
+				}
+			}
+		}
+
+		// Save the modified composer.json
+		file_put_contents(
+			$composer_file,
+			json_encode($composer_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+		);
+	}
 
 }
