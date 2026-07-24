@@ -116,6 +116,10 @@ class Tkt_Plugin_Generator_Public
       'composerInstruction'  => __('After extracting the ZIP, run this command before activating the plugin:', 'tkt-plugin-generator'),
       'copyCommand'          => __('Copy command', 'tkt-plugin-generator'),
       'downloadZip'          => __('Download ZIP', 'tkt-plugin-generator'),
+      'playgroundTest'        => __('Test in WordPress Playground', 'tkt-plugin-generator'),
+      'playgroundTestLocally' => __('Or test locally with WordPress Playground:', 'tkt-plugin-generator'),
+      'playgroundCopyCommand' => __('Copy command', 'tkt-plugin-generator'),
+      'playgroundLabel'       => __('Playground CLI command', 'tkt-plugin-generator'),
     'loader' => [
         [
           'title' => __('Generating %s for WordPress', 'tkt-plugin-generator'),
@@ -375,6 +379,8 @@ class Tkt_Plugin_Generator_Public
 
   $this->delete_path($orig_path);
 
+  $playground_token = str_replace('-', '', wp_generate_uuid4());
+
   $download_token = str_replace('-', '', wp_generate_uuid4());
   set_transient(
    'tkt_gen_download_' . $download_token,
@@ -384,6 +390,22 @@ class Tkt_Plugin_Generator_Public
     'job_path' => $job_path,
    ],
    15 * MINUTE_IN_SECONDS
+  );
+
+  $playground_blueprint_url = rest_url('tkt-generator/v1/playground/' . $playground_token);
+  set_transient(
+   'tkt_gen_playground_' . $playground_token,
+   [
+    'download_url' => add_query_arg(
+     [
+      'action' => 'tkt_download_plugin',
+      'token'  => $download_token,
+     ],
+     admin_url('admin-ajax.php')
+    ),
+    'plugin_slug'  => $filename,
+   ],
+   HOUR_IN_SECONDS
   );
 
   return [
@@ -397,6 +419,11 @@ class Tkt_Plugin_Generator_Public
    ),
    'dependencies' => array_values($dependencies),
    'command'      => empty($dependencies) ? '' : 'composer install --no-dev --prefer-dist --optimize-autoloader',
+   'playground_url'      => 'https://playground.wordpress.net/?blueprint-url=' . urlencode($playground_blueprint_url),
+   'playground_command'  => sprintf(
+    'npx @wp-playground/cli@latest server --mount="./%1$s":"/wordpress/wp-content/plugins/%1$s"',
+    $filename
+   ),
   ];
  }
 
@@ -442,6 +469,91 @@ class Tkt_Plugin_Generator_Public
 
   $this->delete_path($data['job_path']);
   exit;
+ }
+
+ /**
+  * Register the REST API endpoint for Playground blueprints.
+  *
+  * @since 2.5.0
+  */
+ public function register_playground_endpoint()
+ {
+  register_rest_route(
+   'tkt-generator/v1',
+   '/playground/(?P<token>[a-f0-9]+)',
+   [
+    'methods'             => 'GET',
+    'callback'            => [$this, 'serve_playground_blueprint'],
+    'permission_callback' => '__return_true',
+    'args'                => [
+     'token' => [
+      'required'          => true,
+      'validate_callback' => function ($value) {
+       return (bool) preg_match('/^[a-f0-9]+$/', $value);
+      },
+      'sanitize_callback' => 'sanitize_key',
+     ],
+    ],
+   ]
+  );
+ }
+
+ /**
+  * Serve a Playground blueprint JSON that installs the generated plugin.
+  *
+  * @since 2.5.0
+  * @param WP_REST_Request $request The request object.
+  * @return WP_REST_Response|WP_Error
+  */
+ public function serve_playground_blueprint($request)
+ {
+  $token = $request->get_param('token');
+  $data  = get_transient('tkt_gen_playground_' . $token);
+
+  if (empty($token) || ! is_array($data) || empty($data['download_url']) || empty($data['plugin_slug'])) {
+   return new WP_Error(
+    'playground_expired',
+    __('The Playground session has expired. Generate the plugin again.', 'tkt-plugin-generator'),
+    ['status' => 404]
+   );
+  }
+
+  $blueprint = [
+   '$schema'           => 'https://playground.wordpress.net/blueprint-schema.json',
+   'meta'              => [
+    'title'       => sprintf('%s - WordPress Playground', $data['plugin_slug']),
+    'author'      => get_bloginfo('name'),
+    'description' => sprintf(__('Test %s in WordPress Playground.', 'tkt-plugin-generator'), $data['plugin_slug']),
+   ],
+   'landingPage'       => '/wp-admin/plugins.php',
+   'preferredVersions' => [
+    'php' => '8.3',
+    'wp'  => 'latest',
+   ],
+   'features'          => [
+    'networking' => true,
+   ],
+   'steps'             => [
+    [
+     'step'           => 'installPlugin',
+     'pluginZipFile'  => [
+      'resource' => 'url',
+      'url'      => $data['download_url'],
+     ],
+     'options'        => [
+      'activate' => true,
+     ],
+    ],
+    [
+     'step' => 'login',
+    ],
+   ],
+  ];
+
+  return new WP_REST_Response($blueprint, 200, [
+   'Content-Type'  => 'application/json',
+   'Cache-Control' => 'no-cache, no-store, must-revalidate',
+  ]);
  }
 
  private function redirect_with_error( $message ) {
@@ -635,6 +747,7 @@ class Tkt_Plugin_Generator_Public
   $file_contents = str_replace('Your Name', $new_data[ 'author' ], $file_contents);
   $file_contents = str_replace('<email@example.com>', $new_data[ 'author_email' ], $file_contents);
   $file_contents = str_replace('Requires PHP:      X.X', 'Requires PHP:      ' . $new_data[ 'plugin_requires_php' ], $file_contents);
+  $file_contents = str_replace('{{plugin_download_url}}', $new_data['plugin_download_url'], $file_contents);
 
   // Optional Plugins Logic
   $optional_plugins = [

@@ -127,6 +127,27 @@
     @apply tkt-bg-wordpress-500 tkt-text-charcoal-700 tkt-shadow-sm hover:tkt-bg-wordpress-600 hover:tkt-text-white;
   }
 
+  .tkt-generator-result-actions {
+    @apply tkt-mt-4 tkt-flex tkt-flex-col tkt-gap-3 sm:tkt-flex-row sm:tkt-flex-wrap;
+  }
+
+  .tkt-generator-playground {
+    @apply tkt-inline-flex tkt-min-h-11 tkt-cursor-pointer tkt-items-center tkt-justify-center tkt-rounded-xl tkt-border-0 tkt-px-5 tkt-py-3 tkt-text-sm tkt-font-semibold tkt-no-underline tkt-transition hover:tkt--translate-y-0.5 focus:tkt-outline-none focus:tkt-ring-4 focus:tkt-ring-wordpress-100 disabled:tkt-cursor-not-allowed disabled:tkt-opacity-60;
+    @apply tkt-border tkt-border-wordpress-500 tkt-bg-white tkt-text-charcoal-500 tkt-shadow-sm hover:tkt-bg-wordpress-50 hover:tkt-text-charcoal-700;
+  }
+
+  .tkt-generator-cli-section {
+    @apply tkt-mt-6 tkt-rounded-xl tkt-border tkt-border-slate-200 tkt-bg-slate-50 tkt-p-4;
+  }
+
+  .tkt-generator-cli-section p {
+    @apply tkt-m-0 tkt-mb-2 tkt-text-xs tkt-font-semibold tkt-text-slate-600;
+  }
+
+  .tkt-generator-cli-command {
+    @apply tkt-mb-0 tkt-mt-0 tkt-bg-charcoal-500 tkt-text-white;
+  }
+
   .tkt-generator-next,
   #tkt-plugin-generator-generator-submit {
     @apply sm:tkt-ml-auto;

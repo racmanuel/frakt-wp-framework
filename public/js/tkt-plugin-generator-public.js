@@ -250,12 +250,6 @@
 			command.textContent = data.command;
 			result.appendChild(command);
 
-			var download = document.createElement('a');
-			download.className = 'tkt-generator-download';
-			download.href = data.download_url;
-			download.textContent = tktPluginGenerator.messages.downloadZip || 'Download ZIP';
-			result.appendChild(download);
-
 			var copyButton = document.createElement('button');
 			copyButton.type = 'button';
 			copyButton.className = 'tkt-generator-copy';
@@ -264,14 +258,63 @@
 				copyCommand(data.command, copyButton);
 			});
 			result.appendChild(copyButton);
-		} else {
-			var download = document.createElement('a');
-			download.className = 'tkt-generator-download';
-			download.href = data.download_url;
-			download.textContent = tktPluginGenerator.messages.downloadZip || 'Download ZIP';
-			result.appendChild(download);
 		}
+
+		// Actions row
+		var actionsRow = document.createElement('div');
+		actionsRow.className = 'tkt-generator-result-actions';
+
+		var download = document.createElement('a');
+		download.className = 'tkt-generator-download';
+		download.href = data.download_url;
+		download.textContent = tktPluginGenerator.messages.downloadZip || 'Download ZIP';
+		actionsRow.appendChild(download);
+
+		if (data.playground_url) {
+			var playgroundButton = document.createElement('a');
+			playgroundButton.className = 'tkt-generator-playground';
+			playgroundButton.href = data.playground_url;
+			playgroundButton.target = '_blank';
+			playgroundButton.rel = 'noopener noreferrer';
+			playgroundButton.textContent = tktPluginGenerator.messages.playgroundTest || 'Test in WordPress Playground';
+			actionsRow.appendChild(playgroundButton);
+		}
+
+		result.appendChild(actionsRow);
+
+		// CLI command section
+		if (data.playground_command) {
+			var cliSection = document.createElement('div');
+			cliSection.className = 'tkt-generator-cli-section';
+
+			var cliLabel = document.createElement('p');
+			cliLabel.textContent = tktPluginGenerator.messages.playgroundTestLocally || 'Or test locally with WordPress Playground:';
+			cliSection.appendChild(cliLabel);
+
+			var cliCommand = document.createElement('code');
+			cliCommand.className = 'tkt-generator-command tkt-generator-cli-command';
+			cliCommand.textContent = data.playground_command;
+			cliSection.appendChild(cliCommand);
+
+			var cliCopyButton = document.createElement('button');
+			cliCopyButton.type = 'button';
+			cliCopyButton.className = 'tkt-generator-copy';
+			cliCopyButton.textContent = tktPluginGenerator.messages.playgroundCopyCommand || 'Copy command';
+			cliCopyButton.addEventListener('click', function () {
+				copyCommand(data.playground_command, cliCopyButton);
+			});
+			cliSection.appendChild(cliCopyButton);
+
+			result.appendChild(cliSection);
+		}
+
 		result.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+
+		try {
+			sessionStorage.removeItem(draftKey);
+		} catch (error) {
+			// Storage can be unavailable in privacy-focused browser modes.
+		}
 
 		try {
 			sessionStorage.removeItem(draftKey);
@@ -372,6 +415,7 @@
 			previewFile('LICENSE.txt'),
 			previewFile('.gitignore'),
 			previewDirectory('scf-json/', [previewFile('index.php')]),
+			previewDirectory('playground/', [previewFile('blueprint.json')]),
 			previewDirectory('includes/', includesFiles)
 		];
 
