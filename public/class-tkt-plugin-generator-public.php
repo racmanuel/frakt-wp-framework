@@ -247,7 +247,15 @@ class Tkt_Plugin_Generator_Public
   }
 
   // Create a copy of the source files to the new source.
-  $copied = $this->create_source_copy( $source, $orig_path, 0755 );
+  $copied = $this->create_source_copy(
+   $source,
+   $orig_path,
+   0755,
+    [
+     wp_normalize_path( trailingslashit( $source ) . 'composer.lock' ),
+     wp_normalize_path( trailingslashit( $source ) . 'composer.json.backup' ),
+    ]
+  );
   if ( false === $copied ) {
    $this->redirect_with_error(
     __( 'Error: The plugin template could not be copied. Check the write permissions.', 'tkt-plugin-generator' )
@@ -346,7 +354,11 @@ class Tkt_Plugin_Generator_Public
    $source,
    $orig_path,
    0755,
-   [wp_normalize_path(trailingslashit($source) . 'vendor')]
+   [
+    wp_normalize_path( trailingslashit( $source ) . 'vendor' ),
+    wp_normalize_path( trailingslashit( $source ) . 'composer.lock' ),
+    wp_normalize_path( trailingslashit( $source ) . 'composer.json.backup' ),
+   ]
   );
 
   if (false === $copied) {
@@ -1085,6 +1097,7 @@ class Tkt_Plugin_Generator_Public
 
   $contents = "# Dependency installation\n\n";
   $contents .= "This plugin was generated without the `vendor/` directory.\n\n";
+  $contents .= "The generated ZIP intentionally excludes `composer.lock` because dependencies are selected during generation. Composer will resolve and create a lock file for this plugin.\n\n";
   $contents .= "Selected dependencies:\n\n" . $dependency_list . "\n";
   $contents .= "Before activating the plugin, open a terminal in this directory and run:\n\n";
   $contents .= "```bash\ncomposer install --no-dev --prefer-dist --optimize-autoloader\n```\n\n";
@@ -1188,7 +1201,8 @@ class Tkt_Plugin_Generator_Public
 			],
 		];
 
-		$selected_dependencies = [];
+    $selected_dependencies = [];
+    $selected_packages     = [];
 
 		foreach ($dependency_map as $field_key => $dependency) {
 			$package_name = $dependency['package'];
@@ -1200,12 +1214,25 @@ class Tkt_Plugin_Generator_Public
 				}
 			} else {
 				$selected_dependencies[ $field_key ] = $dependency['label'];
+        $selected_packages[ $package_name ] = true;
 			}
 		}
 
 		// Decode custom (user-searched) dependencies.
 		$custom_slugs = json_decode($new_data['custom_dependencies'] ?? '[]', true);
-		$custom_slugs = is_array($custom_slugs) ? $custom_slugs : [];
+    $custom_slugs = is_array($custom_slugs) ? $custom_slugs : [];
+    $custom_slugs = array_values(
+      array_unique(
+        array_filter(
+          array_map(
+            static function ($slug) {
+              return sanitize_title($slug, '', 'save');
+            },
+            $custom_slugs
+          )
+        )
+      )
+    );
 
 		if (empty($selected_dependencies) && empty($custom_slugs)) {
 			unlink($composer_file);
@@ -1214,16 +1241,19 @@ class Tkt_Plugin_Generator_Public
 
 		// Add custom dependencies to composer.json.
 		foreach ($custom_slugs as $slug) {
-			$slug = sanitize_title($slug, '', 'save');
-			if (empty($slug)) {
-				continue;
-			}
-			$composer_json['require']["wp-plugin/{$slug}"] = '*';
-			$selected_dependencies['custom_' . $slug] = sprintf(
-				/* translators: %s: plugin slug */
-				__('Custom: %s', 'tkt-plugin-generator'),
-				$slug
-			);
+      $package_name = "wp-plugin/{$slug}";
+
+ 			if (isset($selected_packages[ $package_name ])) {
+ 				continue;
+ 			}
+
+      $composer_json['require'][ $package_name ] = '*';
+      $selected_packages[ $package_name ]        = true;
+      $selected_dependencies['custom_' . $slug]  = sprintf(
+        /* translators: %s: plugin slug */
+        __('Custom: %s', 'tkt-plugin-generator'),
+        $slug
+      );
 		}
 
 		// Save the modified composer.json

@@ -367,6 +367,31 @@
 		return Boolean(field && field.checked);
 	}
 
+	function customDependencySlugs() {
+		var field = document.getElementById('tkt-custom-deps');
+		var slugs;
+
+		if (!field) {
+			return [];
+		}
+
+		try {
+			slugs = JSON.parse(field.value || '[]');
+		} catch (error) {
+			return [];
+		}
+
+		if (!Array.isArray(slugs)) {
+			return [];
+		}
+
+		return slugs.filter(function (slug, index) {
+			return typeof slug === 'string'
+				&& slug.length > 0
+				&& slugs.indexOf(slug) === index;
+		});
+	}
+
 	function previewFile(label) {
 		return {type: 'file', label: label};
 	}
@@ -377,7 +402,7 @@
 
 	function getPreviewTree() {
 		var slug = fieldValue('plugin_slug') || 'plugin-slug';
-		var dependencies = [
+		var hasBuiltInDependencies = [
 			'include_acf',
 			'include_qm',
 			'include_wpc',
@@ -386,6 +411,8 @@
 			'include_tm',
 			'include_jwt'
 		].some(checkboxValue);
+		var hasCustomDependencies = customDependencySlugs().length > 0;
+		var dependencies = hasBuiltInDependencies || hasCustomDependencies;
 		var includeI18n = checkboxValue('include_i18n');
 		var includeLifecycle = checkboxValue('include_lifecycle');
 		var includeUninstall = checkboxValue('include_uninstall');
@@ -417,7 +444,7 @@
 			checkboxValue('include_acf') ? previewDirectory('scf-json/', [previewFile('index.php')]) : null,
 			previewDirectory('playground/', [previewFile('blueprint.json')]),
 			previewDirectory('includes/', includesFiles)
-		];
+		].filter(Boolean);
 
 		if (includeAdmin) {
 			root.push(previewDirectory('admin/', [
@@ -597,27 +624,33 @@
 			]
 		);
 
-		var dependencies = [
-			checkboxValue('include_acf') ? 'Secure Custom Fields' : '',
-			checkboxValue('include_qm') ? 'Query Monitor' : '',
-			checkboxValue('include_wpc') ? 'WP Crontrol' : '',
-			checkboxValue('include_us') ? 'User Switching' : '',
-			checkboxValue('include_pc') ? 'Plugin Check' : '',
-			checkboxValue('include_tm') ? 'Transients Manager' : '',
-			checkboxValue('include_jwt') ? 'JWT Authentication' : ''
-		].filter(Boolean);
+		var dependencyPackages = [];
+		var dependencies = [];
+		var builtInDependencies = [
+			['include_acf', 'wp-plugin/secure-custom-fields', 'Secure Custom Fields'],
+			['include_qm', 'wp-plugin/query-monitor', 'Query Monitor'],
+			['include_wpc', 'wp-plugin/wp-crontrol', 'WP Crontrol'],
+			['include_us', 'wp-plugin/user-switching', 'User Switching'],
+			['include_pc', 'wp-plugin/plugin-check', 'Plugin Check'],
+			['include_tm', 'wp-plugin/transients-manager', 'Transients Manager'],
+			['include_jwt', 'wp-plugin/jwt-authentication-for-wp-rest-api', 'JWT Authentication']
+		];
 
-		// Include custom searched dependencies.
-		try {
-			var customDeps = JSON.parse((document.getElementById('tkt-custom-deps') || {}).value || '[]');
-			if (Array.isArray(customDeps)) {
-				customDeps.forEach(function (slug) {
-					dependencies.push('wp-plugin/' + slug);
-				});
+		builtInDependencies.forEach(function (dependency) {
+			if (checkboxValue(dependency[0]) && dependencyPackages.indexOf(dependency[1]) === -1) {
+				dependencyPackages.push(dependency[1]);
+				dependencies.push(dependency[2]);
 			}
-		} catch (e) {
-			// ignore
-		}
+		});
+
+		customDependencySlugs().forEach(function (slug) {
+			var packageName = 'wp-plugin/' + slug;
+
+			if (dependencyPackages.indexOf(packageName) === -1) {
+				dependencyPackages.push(packageName);
+				dependencies.push(packageName);
+			}
+		});
 
 		appendReviewSection(
 			reviewTitles.dependencies || 'Dependencies',
@@ -989,6 +1022,10 @@
 		}
 
 		function addChip(slug, name) {
+			if (selectedContainer.querySelector('[data-slug="' + slug + '"]')) {
+				return;
+			}
+
 			var chip = document.createElement('span');
 			chip.className = 'tkt-package-chip';
 			chip.setAttribute('data-slug', slug);
@@ -1082,6 +1119,10 @@
 				var slugs = JSON.parse(customStr);
 				if (Array.isArray(slugs) && slugs.length) {
 					slugs.forEach(function (slug) {
+						if (typeof slug !== 'string' || !slug || selectedSlugs.indexOf(slug) !== -1) {
+							return;
+						}
+
 						selectedSlugs.push(slug);
 						addChip(slug, slug);
 					});
