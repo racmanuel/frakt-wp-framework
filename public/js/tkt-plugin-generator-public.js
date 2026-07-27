@@ -606,6 +606,19 @@
 			checkboxValue('include_tm') ? 'Transients Manager' : '',
 			checkboxValue('include_jwt') ? 'JWT Authentication' : ''
 		].filter(Boolean);
+
+		// Include custom searched dependencies.
+		try {
+			var customDeps = JSON.parse((document.getElementById('tkt-custom-deps') || {}).value || '[]');
+			if (Array.isArray(customDeps)) {
+				customDeps.forEach(function (slug) {
+					dependencies.push('wp-plugin/' + slug);
+				});
+			}
+		} catch (e) {
+			// ignore
+		}
+
 		appendReviewSection(
 			reviewTitles.dependencies || 'Dependencies',
 			4,
@@ -812,6 +825,280 @@
 	if (humanName && humanName.value) {
 		updateFromHumanName();
 	}
+
+	// ── Package Search ──────────────────────────────────────────────
+
+	var PackageSearch = (function () {
+		var searchInput = document.getElementById('tkt-package-search');
+		var resultsContainer = document.getElementById('tkt-package-search-results');
+		var selectedContainer = document.getElementById('tkt-package-selected');
+		var hiddenInput = document.getElementById('tkt-custom-deps');
+		var statusEl = document.getElementById('tkt-package-search-status');
+		var spinner = document.getElementById('tkt-package-search-spinner');
+		var selectedSlugs = [];
+		var debounceTimer = null;
+		var DEBOUNCE_MS = 300;
+		var MIN_CHARS = 2;
+
+		function init() {
+			if (!searchInput || !resultsContainer || !hiddenInput) {
+				return;
+			}
+
+			searchInput.addEventListener('input', onSearchInput);
+			searchInput.addEventListener('keydown', function (e) {
+				if (e.key === 'Escape') {
+					searchInput.value = '';
+					clearResults();
+				}
+			});
+		}
+
+		function onSearchInput() {
+			clearTimeout(debounceTimer);
+			var term = searchInput.value.trim();
+
+			if (term.length < MIN_CHARS) {
+				clearResults();
+				return;
+			}
+
+			debounceTimer = setTimeout(function () {
+				doSearch(term);
+			}, DEBOUNCE_MS);
+		}
+
+		function doSearch(term) {
+			setStatus('loading', 'Searching…');
+			showSpinner(true);
+
+			var url = tktPluginGenerator.ajaxUrl
+				+ '?action=tkt_search_wp_packages&term='
+				+ encodeURIComponent(term);
+
+			fetch(url, { method: 'GET', credentials: 'same-origin' })
+				.then(function (resp) {
+					return resp.json().catch(function () {
+						throw new Error('Invalid response');
+					});
+				})
+				.then(function (json) {
+					if (!json.success || !json.data) {
+						throw new Error(json.data && json.data.message ? json.data.message : 'Search failed');
+					}
+					renderResults(json.data.plugins, json.data.total);
+				})
+				.catch(function (err) {
+					setStatus('error', err.message || 'Search temporarily unavailable.');
+					clearResults();
+				})
+				.finally(function () {
+					showSpinner(false);
+				});
+		}
+
+		function renderResults(plugins, total) {
+			resultsContainer.innerHTML = '';
+
+			if (!plugins.length) {
+				statusEl.hidden = false;
+				statusEl.textContent = 'No plugins found for "' + searchInput.value.trim() + '".';
+				statusEl.className = 'tkt-package-search-status tkt-package-search-empty';
+				return;
+			}
+
+			statusEl.hidden = true;
+
+			plugins.forEach(function (plugin) {
+				var card = buildCard(plugin);
+				resultsContainer.appendChild(card);
+			});
+		}
+
+		function buildCard(plugin) {
+			var card = document.createElement('div');
+			card.className = 'tkt-package-card';
+
+			var iconUrl = (plugin.icons && plugin.icons['2x'])
+				|| (plugin.icons && plugin.icons['1x'])
+				|| (plugin.icons && plugin.icons['default'])
+				|| '';
+
+			var isAdded = selectedSlugs.indexOf(plugin.slug) !== -1;
+			var wpAvailable = plugin.wp_packages && plugin.wp_packages.available;
+
+			var starsHtml = buildStars(plugin.rating);
+
+			card.innerHTML =
+				'<div class="tkt-package-card__header">'
+				+ (iconUrl
+					? '<img class="tkt-package-card__icon" src="' + escapeHtml(iconUrl) + '" alt="" width="48" height="48" loading="lazy">'
+					: '<div class="tkt-package-card__icon tkt-package-card__icon--fallback"></div>')
+				+ '<div class="tkt-package-card__title">'
+				+ '<strong>' + escapeHtml(plugin.name) + '</strong>'
+				+ '<span class="tkt-package-card__slug">wp-plugin/' + escapeHtml(plugin.slug) + '</span>'
+				+ '</div>'
+				+ '</div>'
+				+ '<p class="tkt-package-card__desc">' + escapeHtml(plugin.short_description || '') + '</p>'
+				+ '<div class="tkt-package-card__meta">'
+				+ '<span class="tkt-package-card__author">By ' + escapeHtml(plugin.author || 'Unknown') + '</span>'
+				+ '<span class="tkt-package-card__rating">' + starsHtml + ' <small>(' + plugin.num_ratings + ')</small></span>'
+				+ '</div>'
+				+ '<div class="tkt-package-card__footer">'
+				+ '<span class="tkt-package-card__installs">' + formatInstalls(plugin.active_installs) + ' active installs</span>'
+				+ (wpAvailable
+					? '<span class="tkt-package-badge tkt-package-badge--ok">WP Packages v' + escapeHtml(plugin.wp_packages.latest_version) + '</span>'
+					: '<span class="tkt-package-badge tkt-package-badge--warn">Not in WP Packages</span>')
+				+ '<button type="button" class="tkt-package-card__btn ' + (isAdded ? 'tkt-package-card__btn--added' : '') + '"'
+				+ (wpAvailable ? '' : ' disabled')
+				+ ' data-slug="' + escapeHtml(plugin.slug) + '"'
+				+ ' data-name="' + escapeHtml(plugin.name) + '">'
+				+ (isAdded ? 'Added ✓' : 'Add')
+				+ '</button>'
+				+ '</div>';
+
+			var btn = card.querySelector('.tkt-package-card__btn');
+			btn.addEventListener('click', function () {
+				togglePlugin(plugin.slug, plugin.name, btn, wpAvailable);
+			});
+
+			return card;
+		}
+
+		function togglePlugin(slug, name, btn, wpAvailable) {
+			if (!wpAvailable) {
+				return;
+			}
+
+			var idx = selectedSlugs.indexOf(slug);
+
+			if (idx === -1) {
+				selectedSlugs.push(slug);
+				btn.textContent = 'Added ✓';
+				btn.classList.add('tkt-package-card__btn--added');
+				addChip(slug, name);
+			} else {
+				selectedSlugs.splice(idx, 1);
+				btn.textContent = 'Add';
+				btn.classList.remove('tkt-package-card__btn--added');
+				removeChip(slug);
+			}
+
+			updateHiddenInput();
+			saveDraft();
+		}
+
+		function addChip(slug, name) {
+			var chip = document.createElement('span');
+			chip.className = 'tkt-package-chip';
+			chip.setAttribute('data-slug', slug);
+			chip.innerHTML = '<span>' + escapeHtml(name) + '</span>'
+				+ '<small>wp-plugin/' + escapeHtml(slug) + '</small>'
+				+ '<button type="button" aria-label="Remove ' + escapeHtml(name) + '">&times;</button>';
+
+			chip.querySelector('button').addEventListener('click', function () {
+				selectedSlugs = selectedSlugs.filter(function (s) { return s !== slug; });
+				chip.remove();
+				updateHiddenInput();
+				refreshCardButtons();
+				saveDraft();
+			});
+
+			selectedContainer.appendChild(chip);
+		}
+
+		function removeChip(slug) {
+			var chip = selectedContainer.querySelector('[data-slug="' + slug + '"]');
+			if (chip) {
+				chip.remove();
+			}
+		}
+
+		function refreshCardButtons() {
+			resultsContainer.querySelectorAll('.tkt-package-card__btn').forEach(function (btn) {
+				var btnSlug = btn.getAttribute('data-slug');
+				var isAdded = selectedSlugs.indexOf(btnSlug) !== -1;
+				btn.textContent = isAdded ? 'Added ✓' : 'Add';
+				btn.classList.toggle('tkt-package-card__btn--added', isAdded);
+			});
+		}
+
+		function updateHiddenInput() {
+			if (hiddenInput) {
+				hiddenInput.value = JSON.stringify(selectedSlugs);
+			}
+		}
+
+		function clearResults() {
+			resultsContainer.innerHTML = '';
+			statusEl.hidden = true;
+		}
+
+		function setStatus(type, message) {
+			statusEl.hidden = false;
+			statusEl.textContent = message;
+			statusEl.className = 'tkt-package-search-status tkt-package-search-' + type;
+		}
+
+		function showSpinner(show) {
+			if (spinner) {
+				spinner.hidden = !show;
+			}
+		}
+
+		function buildStars(rating) {
+			var pct = Math.min(100, Math.max(0, (rating / 100) * 100));
+			var filled = Math.round(pct / 20);
+			var html = '';
+			for (var i = 1; i <= 5; i++) {
+				html += i <= filled
+					? '<span class="tkt-star tkt-star--filled">★</span>'
+					: '<span class="tkt-star">☆</span>';
+			}
+			return html;
+		}
+
+		function formatInstalls(count) {
+			if (count >= 1000000) {
+				return (count / 1000000).toFixed(1) + 'M';
+			}
+			if (count >= 1000) {
+				return (count / 1000).toFixed(0) + 'K';
+			}
+			return String(count);
+		}
+
+		function escapeHtml(str) {
+			var div = document.createElement('div');
+			div.appendChild(document.createTextNode(str));
+			return div.innerHTML;
+		}
+
+		// Restore from draft on init
+		function restoreFromDraft() {
+			try {
+				var draft = JSON.parse(sessionStorage.getItem(draftKey) || '{}');
+				var customStr = draft.custom_dependencies || '[]';
+				var slugs = JSON.parse(customStr);
+				if (Array.isArray(slugs) && slugs.length) {
+					slugs.forEach(function (slug) {
+						selectedSlugs.push(slug);
+						addChip(slug, slug);
+					});
+					updateHiddenInput();
+				}
+			} catch (e) {
+				// ignore
+			}
+		}
+
+		init();
+		restoreFromDraft();
+
+		return {
+			getSelectedSlugs: function () { return selectedSlugs.slice(); }
+		};
+	})();
 
 	form.addEventListener('submit', function (event) {
 		event.preventDefault();

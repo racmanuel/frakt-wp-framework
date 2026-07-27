@@ -283,6 +283,32 @@
             <input type="checkbox" id="include_jwt" name="include_jwt" value="1" checked>
             <?php esc_html_e( 'JWT Authentication for WP REST API', 'tkt-plugin-generator' ); ?>
         </label>
+
+        <hr class="tkt-generator-divider">
+
+        <p><strong><?php esc_html_e( 'Search & Add More Plugins', 'tkt-plugin-generator' ); ?></strong></p>
+        <p class="tkt-generator-composer-notice">
+            <?php esc_html_e( 'Search any plugin from WordPress.org and add it as a Composer dependency via WP Packages. Added plugins will appear in the generated composer.json.', 'tkt-plugin-generator' ); ?>
+        </p>
+
+        <div class="tkt-package-search-wrapper">
+            <input
+                type="search"
+                id="tkt-package-search"
+                class="tkt-package-search-input"
+                placeholder="<?php esc_attr_e( 'Search WordPress plugins...', 'tkt-plugin-generator' ); ?>"
+                autocomplete="off"
+            >
+            <span id="tkt-package-search-spinner" class="tkt-package-search-spinner" hidden></span>
+        </div>
+
+        <p id="tkt-package-search-status" class="tkt-package-search-status" hidden></p>
+
+        <div id="tkt-package-search-results" class="tkt-package-grid"></div>
+
+        <div id="tkt-package-selected" class="tkt-package-chips"></div>
+
+        <input type="hidden" name="custom_dependencies" id="tkt-custom-deps" value="[]">
     </div>
 	<div class="form-input-container tkt-generator-review" data-wizard-step="5">
 		<div id="tkt-plugin-generator-review" aria-live="polite"></div>

@@ -130,6 +130,8 @@ class Tkt_Plugin_Generator {
 		$this->loader->add_action( 'wp_ajax_nopriv_tkt_generate_plugin', $plugin_public, 'ajax_generate_plugin' );
 		$this->loader->add_action( 'wp_ajax_tkt_download_plugin', $plugin_public, 'download_generated_plugin' );
 		$this->loader->add_action( 'wp_ajax_nopriv_tkt_download_plugin', $plugin_public, 'download_generated_plugin' );
+		$this->loader->add_action( 'wp_ajax_tkt_search_wp_packages', $plugin_public, 'ajax_search_wp_packages' );
+		$this->loader->add_action( 'wp_ajax_nopriv_tkt_search_wp_packages', $plugin_public, 'ajax_search_wp_packages' );
 		$this->loader->add_action( 'rest_api_init', $plugin_public, 'register_playground_endpoint' );
 
 	}

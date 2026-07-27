@@ -1004,6 +1004,7 @@ class Tkt_Plugin_Generator_Public
    'include_i18n'        => isset($_POST['include_i18n']) ? (bool) $_POST['include_i18n'] : false,
    'include_lifecycle'   => isset($_POST['include_lifecycle']) ? (bool) $_POST['include_lifecycle'] : false,
    'include_uninstall'   => isset($_POST['include_uninstall']) ? (bool) $_POST['include_uninstall'] : false,
+   'custom_dependencies' => isset($_POST['custom_dependencies']) ? sanitize_text_field(wp_unslash($_POST['custom_dependencies'])) : '[]',
    ];
 
   if ('classic' !== $new_data['architecture_type']) {
@@ -1022,6 +1023,7 @@ class Tkt_Plugin_Generator_Public
    || $new_data['include_pc']
    || $new_data['include_tm']
    || $new_data['include_jwt']
+   || ! empty(json_decode($new_data['custom_dependencies'], true))
   );
 
   return $new_data;
@@ -1197,9 +1199,27 @@ class Tkt_Plugin_Generator_Public
 			}
 		}
 
-		if (empty($selected_dependencies)) {
+		// Decode custom (user-searched) dependencies.
+		$custom_slugs = json_decode($new_data['custom_dependencies'] ?? '[]', true);
+		$custom_slugs = is_array($custom_slugs) ? $custom_slugs : [];
+
+		if (empty($selected_dependencies) && empty($custom_slugs)) {
 			unlink($composer_file);
 			return [];
+		}
+
+		// Add custom dependencies to composer.json.
+		foreach ($custom_slugs as $slug) {
+			$slug = sanitize_title($slug, '', 'save');
+			if (empty($slug)) {
+				continue;
+			}
+			$composer_json['require']["wp-plugin/{$slug}"] = '*';
+			$selected_dependencies['custom_' . $slug] = sprintf(
+				/* translators: %s: plugin slug */
+				__('Custom: %s', 'tkt-plugin-generator'),
+				$slug
+			);
 		}
 
 		// Save the modified composer.json
@@ -1209,6 +1229,167 @@ class Tkt_Plugin_Generator_Public
 		);
 
 		return $selected_dependencies;
+	}
+
+	/**
+	 * Handle AJAX search for WP Packages plugins.
+	 *
+	 * Searches WordPress.org Plugin API and cross-references with
+	 * the WP Packages Composer repository to verify availability.
+	 *
+	 * @since 2.5.0
+	 */
+	public function ajax_search_wp_packages()
+	{
+		$term = isset($_GET['term']) ? sanitize_text_field(wp_unslash($_GET['term'])) : '';
+
+		if (empty($term) || strlen($term) < 2) {
+			wp_send_json_success(['plugins' => [], 'total' => 0]);
+		}
+
+		$cache_key = 'tkt_pkg_search_' . md5($term);
+		$cached    = get_transient($cache_key);
+
+		if (false !== $cached) {
+			wp_send_json_success($cached);
+		}
+
+		$per_page = 10;
+		$page     = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+
+		$request = [
+			'search'   => $term,
+			'per_page' => $per_page,
+			'page'     => $page,
+			'fields'   => [
+				'icons'             => true,
+				'short_description' => true,
+				'active_installs'   => true,
+				'rating'            => true,
+				'ratings'           => false,
+				'downloaded'        => false,
+				'banners'           => false,
+				'tags'              => false,
+				'sections'          => false,
+				'contributors'      => false,
+			],
+		];
+
+		$response = wp_remote_get(
+			'https://api.wordpress.org/plugins/info/1.2/?' . http_build_query([
+				'action'  => 'query_plugins',
+				'request' => $request,
+			]),
+			['timeout' => 10]
+		);
+
+		if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+			wp_send_json_error([
+				'message' => __('Search temporarily unavailable. Please try again.', 'tkt-plugin-generator'),
+			], 503);
+		}
+
+		$body = json_decode(wp_remote_retrieve_body($response), true);
+
+		if (empty($body['plugins'])) {
+			$empty_result = ['plugins' => [], 'total' => 0];
+			set_transient($cache_key, $empty_result, HOUR_IN_SECONDS);
+			wp_send_json_success($empty_result);
+		}
+
+		$plugins = [];
+
+		foreach ($body['plugins'] as $plugin) {
+			$slug = sanitize_title($plugin['slug'], '', 'save');
+
+			if (empty($slug)) {
+				continue;
+			}
+
+			$wp_pkg_info = $this->fetch_wp_package_info($slug);
+
+			$plugins[] = [
+				'slug'              => $slug,
+				'name'              => $plugin['name'],
+				'version'           => $plugin['version'] ?? '',
+				'author'            => wp_strip_all_tags($plugin['author'] ?? ''),
+				'rating'            => (int) ($plugin['rating'] ?? 0),
+				'num_ratings'       => (int) ($plugin['num_ratings'] ?? 0),
+				'active_installs'   => (int) ($plugin['active_installs'] ?? 0),
+				'short_description' => wp_strip_all_tags($plugin['short_description'] ?? ''),
+				'icons'             => $plugin['icons'] ?? [],
+				'homepage'          => $plugin['homepage'] ?? '',
+				'wp_packages'       => [
+					'available'       => $wp_pkg_info['available'],
+					'latest_version'  => $wp_pkg_info['latest_version'],
+				],
+			];
+		}
+
+		$result = [
+			'plugins' => $plugins,
+			'total'   => (int) ($body['info']['results'] ?? count($plugins)),
+			'page'    => $page,
+			'pages'   => (int) ($body['info']['pages'] ?? 1),
+		];
+
+		set_transient($cache_key, $result, HOUR_IN_SECONDS);
+
+		wp_send_json_success($result);
+	}
+
+	/**
+	 * Query WP Packages Composer repository for package availability.
+	 *
+	 * @since 2.5.0
+	 * @param string $slug Plugin slug.
+	 * @return array{available: bool, latest_version: string}
+	 */
+	private function fetch_wp_package_info($slug)
+	{
+		$cache_key = 'tkt_pkg_info_' . $slug;
+		$cached    = get_transient($cache_key);
+
+		if (false !== $cached) {
+			return $cached;
+		}
+
+		$response = wp_remote_get(
+			'https://repo.wp-packages.org/p2/wp-plugin/' . $slug . '.json',
+			['timeout' => 5]
+		);
+
+		$result = ['available' => false, 'latest_version' => ''];
+
+		if (is_wp_error($response)) {
+			set_transient($cache_key, $result, 30 * MINUTE_IN_SECONDS);
+			return $result;
+		}
+
+		$code = wp_remote_retrieve_response_code($response);
+		if ($code !== 200) {
+			set_transient($cache_key, $result, 30 * MINUTE_IN_SECONDS);
+			return $result;
+		}
+
+		$body = json_decode(wp_remote_retrieve_body($response), true);
+
+		if (empty($body['packages']['wp-plugin/' . $slug])) {
+			set_transient($cache_key, $result, 30 * MINUTE_IN_SECONDS);
+			return $result;
+		}
+
+		$versions = $body['packages']['wp-plugin/' . $slug];
+		$latest   = array_key_last($versions);
+
+		$result = [
+			'available'      => true,
+			'latest_version' => $latest,
+		];
+
+		set_transient($cache_key, $result, 30 * MINUTE_IN_SECONDS);
+
+		return $result;
 	}
 
 }
