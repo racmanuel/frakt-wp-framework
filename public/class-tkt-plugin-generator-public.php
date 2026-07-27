@@ -1062,6 +1062,10 @@ class Tkt_Plugin_Generator_Public
   if (empty($new_data['include_uninstall'])) {
    $this->delete_path(trailingslashit($target_path) . 'uninstall.php');
   }
+
+  if (empty($new_data['include_acf'])) {
+   $this->delete_path(trailingslashit($target_path) . 'scf-json');
+  }
  }
 
  /**

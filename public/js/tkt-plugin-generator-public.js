@@ -414,7 +414,7 @@
 			previewFile('README.txt'),
 			previewFile('LICENSE.txt'),
 			previewFile('.gitignore'),
-			previewDirectory('scf-json/', [previewFile('index.php')]),
+			checkboxValue('include_acf') ? previewDirectory('scf-json/', [previewFile('index.php')]) : null,
 			previewDirectory('playground/', [previewFile('blueprint.json')]),
 			previewDirectory('includes/', includesFiles)
 		];
