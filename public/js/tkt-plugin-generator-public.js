@@ -253,7 +253,7 @@
 			var copyButton = document.createElement('button');
 			copyButton.type = 'button';
 			copyButton.className = 'tkt-generator-copy';
-			copyButton.textContent = tktPluginGenerator.messages.copyCommand || 'Copy command';
+			setControlContent(copyButton, tktPluginGenerator.messages.copyCommand || 'Copy command', 'clipboard');
 			copyButton.addEventListener('click', function () {
 				copyCommand(data.command, copyButton);
 			});
@@ -267,7 +267,7 @@
 		var download = document.createElement('a');
 		download.className = 'tkt-generator-download';
 		download.href = data.download_url;
-		download.textContent = tktPluginGenerator.messages.downloadZip || 'Download ZIP';
+		setControlContent(download, tktPluginGenerator.messages.downloadZip || 'Download ZIP', 'download');
 		actionsRow.appendChild(download);
 
 		if (data.playground_url) {
@@ -276,7 +276,7 @@
 			playgroundButton.href = data.playground_url;
 			playgroundButton.target = '_blank';
 			playgroundButton.rel = 'noopener noreferrer';
-			playgroundButton.textContent = tktPluginGenerator.messages.playgroundTest || 'Test in WordPress Playground';
+			setControlContent(playgroundButton, tktPluginGenerator.messages.playgroundTest || 'Test in WordPress Playground', 'external-link');
 			actionsRow.appendChild(playgroundButton);
 		}
 
@@ -299,7 +299,7 @@
 			var cliCopyButton = document.createElement('button');
 			cliCopyButton.type = 'button';
 			cliCopyButton.className = 'tkt-generator-copy';
-			cliCopyButton.textContent = tktPluginGenerator.messages.playgroundCopyCommand || 'Copy command';
+			setControlContent(cliCopyButton, tktPluginGenerator.messages.playgroundCopyCommand || 'Copy command', 'clipboard');
 			cliCopyButton.addEventListener('click', function () {
 				copyCommand(data.playground_command, cliCopyButton);
 			});
@@ -324,7 +324,9 @@
 	}
 
 	var wizardConfig = tktPluginGenerator.wizard || {};
+	var iconsUrl = tktPluginGenerator.iconsUrl || '';
 	var wizardSteps = wizardConfig.steps || [
+		'Introduction',
 		'Basic information',
 		'Author and compatibility',
 		'Architecture',
@@ -343,7 +345,51 @@
 	var draftKey = 'tktPluginGeneratorDraftV3';
 	var publicModule = document.getElementById('include_public');
 	var shortcodeModule = document.getElementById('include_shortcode');
+	var cssLocationWrapper = form.querySelector('.tkt-generator-css-location');
+	var cssLocationBoth = form.querySelector('input[name="css_enqueue_location"][value="both"]');
+	var previewName = document.getElementById('tkt-generator-preview-name');
+	var previewDescription = document.getElementById('tkt-generator-preview-description');
+	var previewVersion = document.getElementById('tkt-generator-preview-version');
+	var previewAuthor = document.getElementById('tkt-generator-preview-author');
 
+	function createIcon(name, className) {
+		var icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+
+		icon.classList.add('tkt-generator-ui-icon');
+		if (className) {
+			icon.classList.add(className);
+		}
+		icon.setAttribute('aria-hidden', 'true');
+		icon.setAttribute('focusable', 'false');
+		use.setAttribute('href', iconsUrl + '#' + 'icon-' + name);
+		icon.appendChild(use);
+
+		return icon;
+	}
+
+	function hydrateIcons() {
+		if (!iconsUrl) {
+			return;
+		}
+
+		form.parentElement.querySelectorAll('[data-icon]').forEach(function (element) {
+			var use = element.querySelector('use');
+			var name = element.getAttribute('data-icon');
+
+			if (element.tagName.toLowerCase() === 'button' && name && !use) {
+				element.insertBefore(createIcon(name), element.firstChild);
+			} else if (use && name) {
+				use.setAttribute('href', iconsUrl + '#icon-' + name);
+			}
+		});
+	}
+
+	function setControlContent(control, label, iconName) {
+		var labelNode = document.createElement('span');
+		labelNode.textContent = label;
+		control.replaceChildren(createIcon(iconName), labelNode);
+	}
 	function syncArchitectureControls() {
 		if (!publicModule || !shortcodeModule) {
 			return;
@@ -357,14 +403,57 @@
 		}
 	}
 
+	function syncCssLocationControls() {
+		var selectedFramework = radioValue('css_framework', 'vanilla');
+		var onlyCss = selectedFramework === 'vanilla';
+
+		if (cssLocationWrapper) {
+			cssLocationWrapper.hidden = onlyCss;
+		}
+
+		if (onlyCss && cssLocationBoth) {
+			cssLocationBoth.checked = true;
+		}
+	}
+
 	function fieldValue(fieldId) {
 		var field = document.getElementById(fieldId);
 		return field ? field.value : '';
 	}
 
+	function renderPluginCardPreview() {
+		var values = {
+			name: fieldValue('plugin_human').trim() || 'WordPress Plugin Boilerplate',
+			description: fieldValue('plugin_description').trim() || "A short description of what the plugin does. It's displayed in the WordPress admin area.",
+			version: fieldValue('plugin_version').trim() || '1.0.0',
+			author: fieldValue('author').trim() || 'Your Name or Your Company'
+		};
+
+		if (previewName) {
+			previewName.textContent = values.name;
+		}
+
+		if (previewDescription) {
+			previewDescription.textContent = values.description;
+		}
+
+		if (previewVersion) {
+			previewVersion.textContent = values.version;
+		}
+
+		if (previewAuthor) {
+			previewAuthor.textContent = values.author;
+		}
+	}
+
 	function checkboxValue(fieldId) {
 		var field = document.getElementById(fieldId);
 		return Boolean(field && field.checked);
+	}
+
+	function radioValue(name, fallback) {
+		var field = form.querySelector('input[name="' + name + '"]:checked');
+		return field ? field.value : fallback;
 	}
 
 	function customDependencySlugs() {
@@ -402,6 +491,12 @@
 
 	function getPreviewTree() {
 		var slug = fieldValue('plugin_slug') || 'plugin-slug';
+		var cssFramework = radioValue('css_framework', 'vanilla');
+		var cssLocation = cssFramework === 'vanilla'
+			? 'both'
+			: radioValue('css_enqueue_location', 'both');
+		var loadFrontendCss = cssLocation === 'frontend' || cssLocation === 'both';
+		var loadAdminCss = cssLocation === 'admin' || cssLocation === 'both';
 		var hasBuiltInDependencies = [
 			'include_acf',
 			'include_qm',
@@ -447,20 +542,30 @@
 		].filter(Boolean);
 
 		if (includeAdmin) {
+			var adminFrameworkFiles = cssFramework === 'vanilla' || !loadAdminCss
+				? []
+				: [previewFile(slug + '-' + cssFramework + '-admin.css')];
 			root.push(previewDirectory('admin/', [
 				previewFile('class-' + slug + '-admin.php'),
 				previewFile('index.php'),
-				previewDirectory('css/', [previewFile(slug + '-admin.css')]),
+				previewDirectory('css/', [
+					previewFile(slug + '-admin.css'),
+					].concat(adminFrameworkFiles)),
 				previewDirectory('js/', [previewFile(slug + '-admin.js')]),
 				previewDirectory('partials/', [previewFile(slug + '-admin-display.php')])
 			]));
 		}
 
 		if (includePublic) {
+			var publicFrameworkFiles = cssFramework === 'vanilla' || !loadFrontendCss
+				? []
+				: [previewFile(slug + '-' + cssFramework + '-public.css')];
 			root.push(previewDirectory('public/', [
 				previewFile('class-' + slug + '-public.php'),
 				previewFile('index.php'),
-				previewDirectory('css/', [previewFile(slug + '-public.css')]),
+				previewDirectory('css/', [
+					previewFile(slug + '-public.css'),
+					].concat(publicFrameworkFiles)),
 				previewDirectory('js/', [previewFile(slug + '-public.js')]),
 				previewDirectory('partials/', [previewFile(slug + '-public-display.php')])
 			]));
@@ -538,9 +643,15 @@
 
 	function createButton(label, className, handler) {
 		var button = document.createElement('button');
+		var labelNode = document.createElement('span');
+		var iconName = className.indexOf('previous') !== -1 ? 'arrow-left' : className.indexOf('edit') !== -1 ? 'pencil' : className.indexOf('next') !== -1 ? 'arrow-right' : '';
 		button.type = 'button';
 		button.className = className;
-		button.textContent = label;
+		if (iconName) {
+			button.appendChild(createIcon(iconName));
+		}
+		labelNode.textContent = label;
+		button.appendChild(labelNode);
 		button.addEventListener('click', handler);
 		return button;
 	}
@@ -586,7 +697,7 @@
 		var reviewTitles = wizardConfig.reviewTitles || {};
 		appendReviewSection(
 			reviewTitles.basic || 'Basic information',
-			1,
+			2,
 			[
 				['Name', fieldValue('plugin_human')],
 				['Slug', fieldValue('plugin_slug')],
@@ -597,7 +708,7 @@
 		);
 		appendReviewSection(
 			reviewTitles.author || 'Author and compatibility',
-			2,
+			3,
 			[
 				['Author', fieldValue('author')],
 				['Email', fieldValue('author_email')],
@@ -617,10 +728,12 @@
 		].filter(Boolean);
 		appendReviewSection(
 			reviewTitles.architecture || 'Architecture',
-			3,
+			4,
 			[
 				['Structure', 'Frakt Classic'],
-				['Modules', architecture.join(', ') || (wizardConfig.noneSelected || 'None')]
+				['Modules', architecture.join(', ') || (wizardConfig.noneSelected || 'None')],
+				['CSS framework', radioValue('css_framework', 'vanilla') === 'vanilla' ? 'Only CSS' : radioValue('css_framework', 'vanilla')],
+				['CSS loaded in', radioValue('css_framework', 'vanilla') === 'vanilla' ? 'Both (default)' : radioValue('css_enqueue_location', 'both')]
 			]
 		);
 
@@ -654,7 +767,7 @@
 
 		appendReviewSection(
 			reviewTitles.dependencies || 'Dependencies',
-			4,
+			5,
 			[
 				['Selected', dependencies.join(', ') || (wizardConfig.noneSelected || 'None')],
 				['Composer', dependencies.length ? 'Required before activation' : 'Not required']
@@ -683,7 +796,7 @@
 			fieldset.hidden = index + 1 !== step;
 		});
 
-		if (step === 5) {
+		if (step === 6) {
 			renderReview();
 		}
 
@@ -731,6 +844,10 @@
 				return;
 			}
 
+			if (field.type === 'radio' && !field.checked) {
+				return;
+			}
+
 			draft[field.name] = field.type === 'checkbox'
 				? Boolean(field.checked)
 				: field.value;
@@ -761,6 +878,11 @@
 
 			if (field.type === 'checkbox') {
 				field.checked = Boolean(draft[name]);
+			} else if (field.type === 'radio') {
+				var selectedRadio = form.querySelector('input[type="radio"][name="' + name + '"][value="' + draft[name] + '"]');
+				if (selectedRadio) {
+					selectedRadio.checked = true;
+				}
 			} else {
 				field.value = draft[name];
 			}
@@ -783,6 +905,7 @@
 
 		wizardSteps.forEach(function (title, index) {
 			var step = index + 1;
+			var stepIconNames = ['info', 'pencil', 'user-round', 'settings-2', 'list-checks', 'check-circle'];
 			var fieldset = document.createElement('fieldset');
 			var legend = document.createElement('legend');
 			var navigation = document.createElement('div');
@@ -794,7 +917,10 @@
 
 			stepNodes
 				.filter(function (node) {
-					return Number(node.dataset.wizardStep) === step;
+					var originalStep = Number(node.dataset.wizardStep);
+					var isWelcome = node.classList.contains('tkt-generator-welcome');
+
+					return (isWelcome ? originalStep : originalStep + 1) === step;
 				})
 				.forEach(function (node) {
 					fieldset.appendChild(node);
@@ -839,17 +965,23 @@
 					}
 				}
 			);
+			stepButton.insertBefore(createIcon(stepIconNames[index] || 'info', 'tkt-generator-step-icon'), stepButton.firstChild);
 			stepper.appendChild(stepButton);
 			stepButtons.push(stepButton);
 		});
 
 		form.addEventListener('input', saveDraft);
+		form.addEventListener('input', renderPluginCardPreview);
 		form.addEventListener('change', saveDraft);
 		form.addEventListener('change', renderPreview);
+		form.addEventListener('change', syncCssLocationControls);
 		if (publicModule) {
 			publicModule.addEventListener('change', syncArchitectureControls);
 		}
 		syncArchitectureControls();
+		syncCssLocationControls();
+		renderPluginCardPreview();
+		hydrateIcons();
 		showStep(1);
 	}
 
@@ -858,6 +990,8 @@
 	if (humanName && humanName.value) {
 		updateFromHumanName();
 	}
+
+	renderPluginCardPreview();
 
 	// ── Package Search ──────────────────────────────────────────────
 

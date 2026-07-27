@@ -8,11 +8,15 @@
   }
 
   .tkt-generator-intro {
-    @apply tkt-mb-7 tkt-rounded-2xl tkt-border-0 tkt-bg-charcoal-500 tkt-p-5 sm:tkt-p-6;
+    @apply tkt-mb-7 tkt-grid tkt-grid-cols-1 tkt-items-center tkt-gap-6 tkt-rounded-2xl tkt-border-0 tkt-bg-wordpress-500 tkt-p-5 sm:tkt-p-6 md:tkt-grid-cols-[minmax(0,0.9fr)_minmax(20rem,1.1fr)];
+  }
+
+  .tkt-generator-intro-copy {
+    @apply tkt-min-w-0;
   }
 
   .tkt-generator-eyebrow {
-    @apply tkt-mb-2 tkt-text-xs tkt-font-bold tkt-uppercase tkt-tracking-widest tkt-text-wordpress-500;
+    @apply tkt-mb-2 tkt-text-xs tkt-font-bold tkt-uppercase tkt-tracking-widest tkt-text-white;
   }
 
   .tkt-generator-intro h2 {
@@ -20,23 +24,171 @@
   }
 
   .tkt-generator-intro p:last-child {
-    @apply tkt-mb-0 tkt-mt-3 tkt-max-w-3xl tkt-text-sm tkt-leading-6 tkt-text-white/75 sm:tkt-text-base;
+    @apply tkt-mb-0 tkt-mt-3 tkt-max-w-3xl tkt-text-sm tkt-leading-6 tkt-text-white/90 sm:tkt-text-base;
+  }
+
+  .tkt-generator-plugin-preview {
+    @apply tkt-min-w-0 tkt-overflow-hidden tkt-rounded-lg tkt-border tkt-border-slate-200 tkt-bg-white tkt-shadow-lg;
+  }
+
+  .tkt-generator-plugin-preview-header {
+    @apply tkt-flex tkt-items-center tkt-gap-3 tkt-border-b tkt-border-slate-200 tkt-bg-slate-50 tkt-px-5 tkt-py-4 tkt-text-base tkt-font-semibold tkt-text-slate-600;
+  }
+
+  .tkt-generator-plugin-preview-checkbox {
+    @apply tkt-h-6 tkt-w-6 tkt-shrink-0 tkt-rounded-md tkt-border tkt-border-slate-300 tkt-bg-white;
+    border-style: solid;
+  }
+
+  .tkt-generator-plugin-preview-body {
+    @apply tkt-p-5;
+  }
+
+  .tkt-generator-plugin-preview-title {
+    @apply tkt-flex tkt-min-w-0 tkt-items-center tkt-gap-3;
+  }
+
+  .tkt-generator-plugin-preview-title .tkt-generator-plugin-preview-checkbox {
+    @apply tkt-h-6 tkt-w-6;
+  }
+
+  .tkt-generator-plugin-preview-title h3 {
+    @apply tkt-m-0 tkt-min-w-0 tkt-truncate tkt-text-xl tkt-font-bold tkt-leading-7 tkt-text-slate-900;
+  }
+
+  .tkt-generator-plugin-preview-actions,
+  .tkt-generator-plugin-preview-meta {
+    @apply tkt-flex tkt-flex-wrap tkt-items-center tkt-gap-2 tkt-text-xs;
+  }
+
+  .tkt-generator-plugin-preview-actions {
+    @apply tkt-ml-9 tkt-mt-3 tkt-text-sm;
+  }
+
+  .tkt-generator-plugin-preview-activate,
+  .tkt-generator-plugin-preview-details,
+  .tkt-generator-plugin-preview-updates {
+    @apply tkt-text-blue-600;
+  }
+
+  .tkt-generator-plugin-preview-delete {
+    @apply tkt-text-red-600;
+  }
+
+  .tkt-generator-plugin-preview-actions i,
+  .tkt-generator-plugin-preview-meta i {
+    @apply tkt-h-4 tkt-w-px tkt-bg-slate-300;
+  }
+
+  .tkt-generator-plugin-preview-body > p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    @apply tkt-mb-4 tkt-ml-9 tkt-mt-5 tkt-text-sm tkt-leading-6 tkt-text-slate-700;
+  }
+
+  .tkt-generator-plugin-preview-meta {
+    @apply tkt-ml-9 tkt-text-sm tkt-text-slate-700;
+  }
+
+  .tkt-generator-plugin-preview-meta strong {
+    @apply tkt-font-normal tkt-text-slate-700;
+  }
+
+  .tkt-generator-plugin-preview-details {
+    @apply tkt-font-normal;
+  }
+
+  .tkt-generator-plugin-preview-updates {
+    @apply tkt-ml-9 tkt-mt-6 tkt-inline-block tkt-text-sm;
+  }
+
+  .tkt-generator-welcome {
+    @apply tkt-m-0 tkt-rounded-2xl tkt-border tkt-border-slate-200 tkt-bg-slate-50 tkt-p-5 sm:tkt-p-7;
+  }
+
+  .tkt-generator-welcome-intro {
+    @apply tkt-mb-6 tkt-max-w-3xl;
+  }
+
+  .tkt-generator-welcome-eyebrow {
+    @apply tkt-m-0 tkt-mb-2 tkt-text-xs tkt-font-bold tkt-uppercase tkt-tracking-widest tkt-text-wordpress-500;
+  }
+
+  .tkt-generator-welcome h3 {
+    @apply tkt-m-0 tkt-text-xl tkt-font-bold tkt-tracking-tight tkt-text-charcoal-500 sm:tkt-text-2xl;
+  }
+
+  .tkt-generator-welcome-intro > p:last-child {
+    @apply tkt-mb-0 tkt-mt-3 tkt-text-sm tkt-leading-6 tkt-text-slate-600 sm:tkt-text-base;
+  }
+
+  .tkt-generator-welcome-list {
+    @apply tkt-m-0 tkt-grid tkt-list-none tkt-grid-cols-1 tkt-gap-3 tkt-p-0 md:tkt-grid-cols-3;
+  }
+
+  .tkt-generator-welcome-list li {
+    @apply tkt-flex tkt-flex-col tkt-gap-2 tkt-rounded-xl tkt-border tkt-border-slate-200 tkt-bg-white tkt-p-4;
+  }
+
+  .tkt-generator-ui-icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex: 0 0 auto;
+    display: inline-block;
+    vertical-align: middle;
+    stroke: currentColor;
+  }
+
+  .tkt-generator-welcome-icon {
+    @apply tkt-mb-1 tkt-h-7 tkt-w-7 tkt-text-wordpress-500;
+  }
+
+  .tkt-generator-navigation button .tkt-generator-ui-icon,
+  #tkt-plugin-generator-generator-submit .tkt-generator-ui-icon,
+  .tkt-generator-copy .tkt-generator-ui-icon,
+  .tkt-generator-download .tkt-generator-ui-icon,
+  .tkt-generator-playground .tkt-generator-ui-icon {
+    @apply tkt-mr-2;
+  }
+
+  .tkt-generator-welcome-list li strong {
+    @apply tkt-text-sm tkt-font-bold tkt-text-charcoal-500;
+  }
+
+  .tkt-generator-welcome-list li span {
+    @apply tkt-text-sm tkt-leading-6 tkt-text-slate-600;
+  }
+
+  .tkt-generator-welcome-note {
+    @apply tkt-mb-0 tkt-mt-5 tkt-rounded-xl tkt-border tkt-border-wordpress-500 tkt-bg-white tkt-p-4 tkt-text-sm tkt-leading-6 tkt-text-charcoal-500;
   }
 
   .tkt-generator-steps {
-    @apply tkt-mb-6 tkt-grid tkt-grid-cols-1 tkt-gap-2 sm:tkt-grid-cols-5;
+    @apply tkt-mb-6 tkt-grid tkt-grid-cols-1 tkt-gap-2 sm:tkt-grid-cols-6;
   }
 
   .tkt-generator-step-button {
-    @apply tkt-flex tkt-min-h-12 tkt-items-center tkt-justify-center tkt-rounded-xl tkt-border tkt-border-slate-200 tkt-bg-slate-50 tkt-px-3 tkt-py-2 tkt-text-center tkt-text-xs tkt-font-semibold tkt-leading-5 tkt-text-slate-600 tkt-transition-colors hover:tkt-border-wordpress-200 hover:tkt-bg-wordpress-50 sm:tkt-text-sm;
+    @apply tkt-flex tkt-min-h-12 tkt-items-center tkt-justify-center tkt-rounded-xl tkt-border tkt-border-slate-200 tkt-bg-slate-50 tkt-px-3 tkt-py-2 tkt-text-center tkt-text-xs tkt-font-semibold tkt-leading-5 tkt-text-slate-600 tkt-transition-colors hover:tkt-border-wordpress-500 hover:tkt-bg-white sm:tkt-text-sm;
+  }
+
+  .tkt-generator-step-button .tkt-generator-step-icon {
+    @apply tkt-mr-2 tkt-h-4 tkt-w-4;
   }
 
   .tkt-generator-step-button.is-active {
-    @apply tkt-border-wordpress-500 tkt-bg-wordpress-500 tkt-text-charcoal-700 tkt-shadow-sm hover:tkt-border-wordpress-500 hover:tkt-bg-wordpress-500;
+    @apply tkt-border-wordpress-500 tkt-bg-wordpress-500 tkt-text-white tkt-shadow-sm hover:tkt-border-wordpress-500 hover:tkt-bg-wordpress-500 hover:tkt-text-white;
   }
 
   .tkt-generator-step-button.is-complete {
-    @apply tkt-border-wordpress-200 tkt-bg-wordpress-50 tkt-text-charcoal-500;
+    @apply tkt-border-wordpress-500 tkt-bg-white tkt-text-charcoal-500;
+  }
+
+  .tkt-generator-step-button.is-active,
+  .tkt-generator-step-button.is-complete.is-active,
+  .tkt-generator-step-button.is-active:hover {
+    @apply tkt-border-wordpress-500 tkt-bg-wordpress-500 tkt-text-white;
   }
 
   .tkt-generator-step-button:disabled {
@@ -66,7 +218,7 @@
   #tkt-plugin-generator-generator input:not([type='checkbox']):not([type='hidden']),
   #tkt-plugin-generator-generator textarea,
   #tkt-plugin-generator-generator select {
-    @apply tkt-m-0 tkt-min-h-12 tkt-w-full tkt-rounded-xl tkt-border tkt-border-slate-300 tkt-bg-white tkt-px-4 tkt-py-3 tkt-text-sm tkt-text-charcoal-500 tkt-shadow-sm tkt-transition placeholder:tkt-text-slate-400 hover:tkt-border-slate-400 focus:tkt-border-wordpress-500 focus:tkt-outline-none focus:tkt-ring-4 focus:tkt-ring-wordpress-100;
+    @apply tkt-m-0 tkt-min-h-12 tkt-w-full tkt-rounded-xl tkt-border tkt-border-slate-300 tkt-bg-white tkt-px-4 tkt-py-3 tkt-text-sm tkt-text-charcoal-500 tkt-shadow-sm tkt-transition placeholder:tkt-text-slate-400 hover:tkt-border-slate-400 focus:tkt-border-wordpress-500 focus:tkt-outline-none focus:tkt-ring-4 focus:tkt-ring-slate-200;
   }
 
   #tkt-plugin-generator-generator textarea {
@@ -96,15 +248,16 @@
 
   .tkt-generator-architecture > label[for^='include_'],
   .tkt-generator-dependencies > label[for^='include_'] {
-    @apply tkt-mb-2 tkt-flex tkt-min-h-12 tkt-cursor-pointer tkt-items-center tkt-gap-3 tkt-rounded-xl tkt-border tkt-border-slate-200 tkt-bg-white tkt-px-4 tkt-py-3 tkt-text-sm tkt-font-medium tkt-text-charcoal-500 tkt-transition hover:tkt-border-wordpress-200 hover:tkt-bg-wordpress-50;
+    @apply tkt-mb-2 tkt-flex tkt-min-h-12 tkt-cursor-pointer tkt-items-center tkt-gap-3 tkt-rounded-xl tkt-border tkt-border-slate-200 tkt-bg-white tkt-px-4 tkt-py-3 tkt-text-sm tkt-font-medium tkt-text-charcoal-500 tkt-transition hover:tkt-border-wordpress-500 hover:tkt-bg-white;
   }
 
   #tkt-plugin-generator-generator input[type='checkbox'] {
-    @apply tkt-m-0 tkt-h-5 tkt-w-5 tkt-shrink-0 tkt-rounded tkt-border-slate-300 tkt-text-wordpress-500 focus:tkt-ring-2 focus:tkt-ring-wordpress-200;
+    @apply tkt-m-0 tkt-h-5 tkt-w-5 tkt-shrink-0 tkt-rounded tkt-border-slate-300 tkt-text-wordpress-500 focus:tkt-ring-2 focus:tkt-ring-slate-200;
+    border-style: solid;
   }
 
   .tkt-generator-composer-notice {
-    @apply tkt-mb-5 tkt-rounded-xl tkt-border tkt-border-wordpress-200 tkt-bg-wordpress-50 tkt-p-4 tkt-text-sm tkt-leading-6 tkt-text-charcoal-500;
+    @apply tkt-mb-5 tkt-rounded-xl tkt-border tkt-border-wordpress-500 tkt-bg-white tkt-p-4 tkt-text-sm tkt-leading-6 tkt-text-charcoal-500;
   }
 
   .tkt-generator-navigation {
@@ -115,7 +268,7 @@
   #tkt-plugin-generator-generator-submit,
   .tkt-generator-copy,
   .tkt-generator-download {
-    @apply tkt-inline-flex tkt-min-h-11 tkt-cursor-pointer tkt-items-center tkt-justify-center tkt-rounded-xl tkt-border-0 tkt-px-5 tkt-py-3 tkt-text-sm tkt-font-semibold tkt-no-underline tkt-transition hover:tkt--translate-y-0.5 focus:tkt-outline-none focus:tkt-ring-4 focus:tkt-ring-wordpress-100 disabled:tkt-cursor-not-allowed disabled:tkt-opacity-60;
+    @apply tkt-inline-flex tkt-min-h-11 tkt-cursor-pointer tkt-items-center tkt-justify-center tkt-rounded-xl tkt-border-0 tkt-px-5 tkt-py-3 tkt-text-sm tkt-font-semibold tkt-no-underline tkt-transition hover:tkt--translate-y-0.5 focus:tkt-outline-none focus:tkt-ring-4 focus:tkt-ring-slate-200 disabled:tkt-cursor-not-allowed disabled:tkt-opacity-60;
   }
 
   .tkt-generator-next,
@@ -124,7 +277,7 @@
   }
 
   .tkt-generator-download {
-    @apply tkt-bg-wordpress-500 tkt-text-charcoal-700 tkt-shadow-sm hover:tkt-bg-wordpress-600 hover:tkt-text-white;
+    @apply tkt-bg-wordpress-500 tkt-text-charcoal-700 tkt-shadow-sm hover:tkt-bg-wordpress-500 hover:tkt-text-white;
   }
 
   .tkt-generator-result-actions {
@@ -132,8 +285,8 @@
   }
 
   .tkt-generator-playground {
-    @apply tkt-inline-flex tkt-min-h-11 tkt-cursor-pointer tkt-items-center tkt-justify-center tkt-rounded-xl tkt-border-0 tkt-px-5 tkt-py-3 tkt-text-sm tkt-font-semibold tkt-no-underline tkt-transition hover:tkt--translate-y-0.5 focus:tkt-outline-none focus:tkt-ring-4 focus:tkt-ring-wordpress-100 disabled:tkt-cursor-not-allowed disabled:tkt-opacity-60;
-    @apply tkt-border tkt-border-wordpress-500 tkt-bg-white tkt-text-charcoal-500 tkt-shadow-sm hover:tkt-bg-wordpress-50 hover:tkt-text-charcoal-700;
+    @apply tkt-inline-flex tkt-min-h-11 tkt-cursor-pointer tkt-items-center tkt-justify-center tkt-rounded-xl tkt-border-0 tkt-px-5 tkt-py-3 tkt-text-sm tkt-font-semibold tkt-no-underline tkt-transition hover:tkt--translate-y-0.5 focus:tkt-outline-none focus:tkt-ring-4 focus:tkt-ring-slate-200 disabled:tkt-cursor-not-allowed disabled:tkt-opacity-60;
+    @apply tkt-border tkt-border-wordpress-500 tkt-bg-white tkt-text-charcoal-500 tkt-shadow-sm hover:tkt-bg-wordpress-500 hover:tkt-text-charcoal-700;
   }
 
   .tkt-generator-cli-section {
@@ -191,7 +344,7 @@
   }
 
   .tkt-generator-preview-eyebrow {
-    @apply tkt-m-0 tkt-mb-1 tkt-text-xs tkt-font-bold tkt-uppercase tkt-tracking-widest tkt-text-wordpress-600;
+    @apply tkt-m-0 tkt-mb-1 tkt-text-xs tkt-font-bold tkt-uppercase tkt-tracking-widest tkt-text-wordpress-500;
   }
 
   .tkt-generator-preview h3 {
@@ -199,7 +352,7 @@
   }
 
   .tkt-generator-preview-count {
-    @apply tkt-inline-flex tkt-w-fit tkt-rounded-full tkt-bg-wordpress-100 tkt-px-3 tkt-py-1 tkt-text-xs tkt-font-semibold tkt-text-charcoal-500;
+    @apply tkt-inline-flex tkt-w-fit tkt-rounded-full tkt-border tkt-border-wordpress-500 tkt-bg-white tkt-px-3 tkt-py-1 tkt-text-xs tkt-font-semibold tkt-text-charcoal-500;
   }
 
   .tkt-generator-preview-tree {
@@ -244,7 +397,7 @@
   }
 
   .tkt-generator-edit {
-    @apply tkt-absolute tkt-right-4 tkt-top-4 tkt-rounded-lg tkt-border-0 tkt-bg-transparent tkt-px-2 tkt-py-1 tkt-text-sm tkt-font-semibold tkt-text-charcoal-500 hover:tkt-bg-wordpress-100 focus:tkt-outline-none focus:tkt-ring-2 focus:tkt-ring-wordpress-200;
+    @apply tkt-absolute tkt-right-4 tkt-top-4 tkt-rounded-lg tkt-border-0 tkt-bg-transparent tkt-px-2 tkt-py-1 tkt-text-sm tkt-font-semibold tkt-text-charcoal-500 hover:tkt-bg-slate-100 focus:tkt-outline-none focus:tkt-ring-2 focus:tkt-ring-slate-200;
   }
 
   #tkt-plugin-generator-result {
@@ -252,7 +405,7 @@
   }
 
   #tkt-plugin-generator-result.success {
-    @apply tkt-border-solid tkt-border-wordpress-200 tkt-bg-wordpress-50 tkt-text-charcoal-500;
+    @apply tkt-border-solid tkt-border-wordpress-500 tkt-bg-white tkt-text-charcoal-500;
   }
 
   #tkt-plugin-generator-result.success > .tkt-generator-result-title {
@@ -289,7 +442,7 @@
   }
 
   .tkt-generator-loader-credit a {
-    @apply tkt-text-wordpress-500 tkt-no-underline hover:tkt-text-white hover:tkt-underline focus:tkt-rounded focus:tkt-outline-none focus:tkt-ring-2 focus:tkt-ring-wordpress-200;
+    @apply tkt-text-wordpress-500 tkt-no-underline hover:tkt-text-white hover:tkt-underline focus:tkt-rounded focus:tkt-outline-none focus:tkt-ring-2 focus:tkt-ring-slate-200;
   }
 
   .tkt-generator-signature {
@@ -297,7 +450,7 @@
   }
 
   .tkt-generator-signature a {
-    @apply tkt-font-semibold tkt-text-charcoal-500 tkt-no-underline hover:tkt-text-wordpress-600 hover:tkt-underline focus:tkt-rounded focus:tkt-outline-none focus:tkt-ring-2 focus:tkt-ring-wordpress-200;
+    @apply tkt-font-semibold tkt-text-charcoal-500 tkt-no-underline hover:tkt-text-wordpress-500 hover:tkt-underline focus:tkt-rounded focus:tkt-outline-none focus:tkt-ring-2 focus:tkt-ring-slate-200;
   }
 
   .tkt-generator-heart-icon {

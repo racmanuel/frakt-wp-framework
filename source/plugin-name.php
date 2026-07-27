@@ -40,6 +40,12 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'PLUGIN_NAME_VERSION', '1.0.0' );
 
 /**
+ * CSS framework selected during generation.
+ */
+define( 'PLUGIN_NAME_CSS_FRAMEWORK', 'vanilla' );
+define( 'PLUGIN_NAME_CSS_ENQUEUE_LOCATION', 'both' );
+
+/**
  * Define the Plugin basename
  */
 define( 'PLUGIN_NAME_BASE_NAME', plugin_basename( __FILE__ ) );

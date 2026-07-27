@@ -16,7 +16,7 @@
  * Plugin Name:       Frakt WP Generator
  * Plugin URI:        https://racmanuel.dev
  * Description:       Modern WordPress plugin framework based on Better WP Plugin Boilerplate. Includes SCF, Local/Sync JSON, Composer, local Tailwind CSS and more. Build powerful, modular plugins with clean architecture.
- * Version:           2.4.0
+ * Version:           2.8.3
  * Author:            racmanuel
  * Author URI:        https://racmanuel.dev
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'TKT_PLUGIN_GENERATOR_VERSION', '2.4.0' );
+define( 'TKT_PLUGIN_GENERATOR_VERSION', '2.8.3' );
 
 /**
  * The core plugin class that is used to define internationalization,

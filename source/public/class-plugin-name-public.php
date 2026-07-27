@@ -74,6 +74,16 @@ class Plugin_Name_Public {
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/plugin-name-public.css', array(), $this->version, 'all' );
 
+		if ( 'vanilla' !== PLUGIN_NAME_CSS_FRAMEWORK && in_array( PLUGIN_NAME_CSS_ENQUEUE_LOCATION, array( 'frontend', 'both' ), true ) ) {
+			wp_enqueue_style(
+				$this->plugin_name . '-framework',
+				plugin_dir_url( __FILE__ ) . 'css/' . $this->plugin_name . '-' . PLUGIN_NAME_CSS_FRAMEWORK . '-public.css',
+				array( $this->plugin_name ),
+				$this->version,
+				'all'
+			);
+		}
+
 	}
 
 	/**

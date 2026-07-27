@@ -108,6 +108,7 @@ class Tkt_Plugin_Generator_Public
    [
     'ajaxUrl' => admin_url('admin-ajax.php'),
     'action'  => 'tkt_generate_plugin',
+    'iconsUrl' => plugin_dir_url(__FILE__) . 'icons/lucide-sprite.svg',
     'messages' => [
     'genericError' => __('The plugin could not be generated. Please try again.', 'tkt-plugin-generator'),
     'networkError' => __('The request failed or took too long. Check your connection and try again.', 'tkt-plugin-generator'),
@@ -157,6 +158,7 @@ class Tkt_Plugin_Generator_Public
     ],
     'wizard' => [
      'steps' => [
+    __('Introduction', 'tkt-plugin-generator'),
     __('Basic information', 'tkt-plugin-generator'),
     __('Author and compatibility', 'tkt-plugin-generator'),
     __('Architecture', 'tkt-plugin-generator'),
@@ -754,6 +756,8 @@ class Tkt_Plugin_Generator_Public
   $file_contents = str_replace('Stable tag: 1.0.0', 'Stable tag: ' . $new_data[ 'plugin_stable' ], $file_contents);
   $file_contents = str_replace('comments, spam', $new_data[ 'plugin_tags' ], $file_contents);
   $file_contents = str_replace('https://donate.tld/', $new_data[ 'donate_link' ], $file_contents);
+  $file_contents = str_replace("define( 'PLUGIN_NAME_CSS_FRAMEWORK', 'vanilla' );", "define( 'PLUGIN_NAME_CSS_FRAMEWORK', '" . $new_data['css_framework'] . "' );", $file_contents);
+  $file_contents = str_replace("define( 'PLUGIN_NAME_CSS_ENQUEUE_LOCATION', 'frontend' );", "define( 'PLUGIN_NAME_CSS_ENQUEUE_LOCATION', '" . $new_data['css_enqueue_location'] . "' );", $file_contents);
   $file_contents = str_replace('PLUGIN_NAME_', $new_data[ 'plugin_const_name' ], $file_contents);
   $file_contents = str_replace('Your Name or Your Company Name', $new_data[ 'author' ], $file_contents);
   $file_contents = str_replace('Your Name', $new_data[ 'author' ], $file_contents);
@@ -1016,11 +1020,25 @@ class Tkt_Plugin_Generator_Public
    'include_i18n'        => isset($_POST['include_i18n']) ? (bool) $_POST['include_i18n'] : false,
    'include_lifecycle'   => isset($_POST['include_lifecycle']) ? (bool) $_POST['include_lifecycle'] : false,
    'include_uninstall'   => isset($_POST['include_uninstall']) ? (bool) $_POST['include_uninstall'] : false,
+  'css_framework'       => isset($_POST['css_framework']) ? sanitize_key(wp_unslash($_POST['css_framework'])) : 'vanilla',
+  'css_enqueue_location' => isset($_POST['css_enqueue_location']) ? sanitize_key(wp_unslash($_POST['css_enqueue_location'])) : 'both',
    'custom_dependencies' => isset($_POST['custom_dependencies']) ? sanitize_text_field(wp_unslash($_POST['custom_dependencies'])) : '[]',
    ];
 
   if ('classic' !== $new_data['architecture_type']) {
    $new_data['architecture_type'] = 'classic';
+  }
+
+  if (! in_array($new_data['css_framework'], [ 'vanilla', 'tailwind', 'bootstrap', 'bulma' ], true)) {
+   $new_data['css_framework'] = 'vanilla';
+  }
+
+  if (! in_array($new_data['css_enqueue_location'], [ 'frontend', 'admin', 'both' ], true)) {
+    $new_data['css_enqueue_location'] = 'both';
+    }
+
+    if ('vanilla' === $new_data['css_framework']) {
+    $new_data['css_enqueue_location'] = 'both';
   }
 
   if (! $new_data['include_public']) {
@@ -1077,6 +1095,25 @@ class Tkt_Plugin_Generator_Public
 
   if (empty($new_data['include_acf'])) {
    $this->delete_path(trailingslashit($target_path) . 'scf-json');
+  }
+
+  $css_frameworks = [ 'tailwind', 'bootstrap', 'bulma' ];
+  foreach ($css_frameworks as $framework) {
+   if ($framework !== $new_data['css_framework']) {
+    $this->delete_path(trailingslashit($target_path) . 'public/css/' . $slug . '-' . $framework . '-public.css');
+    $this->delete_path(trailingslashit($target_path) . 'admin/css/' . $slug . '-' . $framework . '-admin.css');
+   }
+
+  }
+
+  if ('vanilla' !== $new_data['css_framework']) {
+   if (! in_array($new_data['css_enqueue_location'], [ 'frontend', 'both' ], true)) {
+    $this->delete_path(trailingslashit($target_path) . 'public/css/' . $slug . '-' . $new_data['css_framework'] . '-public.css');
+   }
+
+   if (! in_array($new_data['css_enqueue_location'], [ 'admin', 'both' ], true)) {
+    $this->delete_path(trailingslashit($target_path) . 'admin/css/' . $slug . '-' . $new_data['css_framework'] . '-admin.css');
+   }
   }
  }
 

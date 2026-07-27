@@ -1,13 +1,15 @@
 {
   "name": "frakt-wp-generator-assets",
   "private": true,
-  "version": "2.4.0",
+  "version": "2.8.3",
   "description": "Herramientas de desarrollo para los estilos del Frakt WP Generator.",
   "scripts": {
     "build": "tailwindcss -i ./assets/css/tkt-plugin-generator-tailwind.css -o ./public/css/tkt-plugin-generator-tailwind.css --minify",
-    "watch": "tailwindcss -i ./assets/css/tkt-plugin-generator-tailwind.css -o ./public/css/tkt-plugin-generator-tailwind.css --watch"
+    "watch": "tailwindcss -i ./assets/css/tkt-plugin-generator-tailwind.css -o ./public/css/tkt-plugin-generator-tailwind.css --watch",
+    "update:css-frameworks": "node scripts/update-css-frameworks.mjs"
   },
   "devDependencies": {
+    "lucide-static": "^0.468.0",
     "tailwindcss": "^3.4.17"
   }
 }

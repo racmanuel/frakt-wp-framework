@@ -78,7 +78,7 @@
 
 
 /* =============================================
-   Package Search — Step 4
+   Package Search ï¿½ Step 4
    ============================================= */
 
 .tkt-generator-divider {
@@ -94,13 +94,23 @@ margin-bottom: 0.75rem;
 
 .tkt-package-search-input {
 width: 100%;
-padding: 0.625rem 2.5rem 0.625rem 0.875rem;
+padding: 0.625rem 2.5rem 0.625rem 2.5rem;
 border: 1px solid #cbd5e1;
 border-radius: 0.5rem;
 font-size: 0.9375rem;
 line-height: 1.5;
 background: #fff;
 transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tkt-package-search-icon {
+position: absolute;
+left: 0.75rem;
+top: 50%;
+z-index: 1;
+transform: translateY(-50%);
+color: #9fca28;
+pointer-events: none;
 }
 
 .tkt-package-search-input:focus {
@@ -258,7 +268,7 @@ border-radius: 9999px;
 white-space: nowrap;
 }
 
-.tkt-package-badge--ok { background: #ecfdf5; color: #065f46; }
+.tkt-package-badge--ok { background: #9fca28; color: #2f343a; }
 .tkt-package-badge--warn { background: #fef2f2; color: #991b1b; }
 
 .tkt-package-card__btn {
@@ -283,8 +293,8 @@ color: #94a3b8;
 cursor: not-allowed;
 }
 
-.tkt-package-card__btn--added { background: #16a34a; border-color: #16a34a; }
-.tkt-package-card__btn--added:hover { background: #15803d; border-color: #15803d; }
+.tkt-package-card__btn--added { background: #9fca28; border-color: #9fca28; color: #2f343a; }
+.tkt-package-card__btn--added:hover { background: #9fca28; border-color: #9fca28; color: #ffffff; }
 
 .tkt-package-chips {
 display: flex;
@@ -327,3 +337,201 @@ transition: background 0.15s ease;
 }
 
 .tkt-package-chip button:hover { background: #dbeafe; color: #1e40af; }
+
+/* CSS framework selector */
+#tkt-plugin-generator-generator input[type='checkbox'] {
+	accent-color: #9fca28;
+	appearance: none;
+	-webkit-appearance: none;
+	width: 1.25rem;
+	height: 1.25rem;
+	margin: 0;
+	border: 1px solid #cbd5e1 !important;
+	border-radius: 0.25rem;
+	background-color: #ffffff;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 0.75rem;
+	box-shadow: none;
+	cursor: pointer;
+	flex: 0 0 auto;
+}
+
+#tkt-plugin-generator-generator input[type='checkbox']:checked {
+	border-color: #9fca28 !important;
+	background-color: #9fca28;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%232f343a' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='m3 8 3 3 7-7'/%3E%3C/svg%3E");
+}
+
+#tkt-plugin-generator-generator input[type='checkbox']:focus-visible {
+	outline: 2px solid #9fca28;
+	outline-offset: 2px;
+}
+
+.tkt-generator-architecture > label[for^='include_'],
+.tkt-generator-dependencies > label[for^='include_'] {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	box-sizing: border-box;
+	width: 100%;
+	margin: 0;
+	padding: 0.75rem 0.875rem;
+	border: 1px solid transparent;
+	border-radius: 0.625rem;
+	transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.tkt-generator-architecture > label[for^='include_']:hover,
+.tkt-generator-dependencies > label[for^='include_']:hover {
+	border-color: #9fca28;
+	background: #ffffff;
+}
+
+.tkt-generator-architecture > label[for^='include_'] input[type='checkbox'],
+.tkt-generator-dependencies > label[for^='include_'] input[type='checkbox'] {
+	margin-top: 0.125rem;
+	accent-color: #9fca28;
+}
+
+.tkt-generator-module-copy {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	gap: 0.125rem;
+	min-width: 0;
+}
+
+.tkt-generator-module-copy strong {
+	color: #2f343a;
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.tkt-generator-module-copy small {
+	color: #64748b;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.45;
+}
+
+.tkt-generator-choice-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+	margin: 0.75rem 0 1.25rem;
+}
+
+.tkt-generator-choice-grid--compact {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tkt-generator-choice-card {
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: 0.625rem;
+	box-sizing: border-box;
+	min-width: 0;
+	min-height: 4.5rem;
+	margin: 0;
+	padding: 1rem 1rem 1rem 3.25rem;
+	border: 1px solid #e2e8f0;
+	border-radius: 0.625rem;
+	background: #fff;
+	cursor: pointer;
+	isolation: isolate;
+	transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.tkt-generator-choice-card:hover,
+.tkt-generator-choice-card:has(input:checked) {
+	border-color: #9fca28;
+	background: #9fca28;
+	box-shadow: 0 0 0 2px rgba(159, 202, 40, 0.16);
+}
+
+.tkt-generator-choice-card:hover {
+	transform: translateY(-1px);
+}
+
+.tkt-generator-choice-card:has(input:focus-visible) {
+	outline: 3px solid rgba(159, 202, 40, 0.28);
+	outline-offset: 2px;
+}
+
+.tkt-generator-choice-card input {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	min-width: 1px !important;
+	min-height: 1px !important;
+	margin: -1px !important;
+	top: 0;
+	left: 0;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.tkt-generator-choice-card span {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	width: auto;
+	flex: 1 1 auto;
+	min-width: 0;
+	position: relative;
+	z-index: 1;
+}
+
+.tkt-generator-choice-card input:checked {
+	border-color: #9fca28;
+	background: #9fca28;
+}
+
+.tkt-generator-choice-card input:focus-visible {
+	outline: 3px solid rgba(159, 202, 40, 0.32);
+	outline-offset: 2px;
+}
+
+.tkt-generator-choice-card::before {
+	content: '';
+	position: absolute;
+	left: 1rem;
+	top: 50%;
+	width: 1.25rem;
+	height: 1.25rem;
+	box-sizing: border-box;
+	border: 1.5px solid #cbd5e1;
+	border-radius: 50%;
+	background: #fff;
+	transform: translateY(-50%);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	z-index: 0;
+}
+
+.tkt-generator-choice-card:has(input:checked)::before {
+	border-color: #9fca28;
+	box-shadow: inset 0 0 0 0.3125rem #fff, inset 0 0 0 0.75rem #9fca28;
+}
+
+.tkt-generator-choice-card strong {
+	color: #1e293b;
+	font-size: 0.875rem;
+}
+
+.tkt-generator-choice-card small {
+	color: #64748b;
+	font-size: 0.75rem;
+	line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+	.tkt-generator-choice-grid,
+	.tkt-generator-choice-grid--compact {
+		grid-template-columns: 1fr;
+	}
+}

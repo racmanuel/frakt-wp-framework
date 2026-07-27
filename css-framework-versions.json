@@ -1,0 +1,35 @@
+{
+  "updatedAt": "2026-07-27T18:14:36.308Z",
+  "assets": {
+    "bootstrap": {
+      "package": "bootstrap",
+      "version": "5.3.8",
+      "packageIntegrity": "sha512-HP1SZDqaLDPwsNiqRqi5NcP0SSXciX2s9E+RyqJIIqGo+vJeN5AJVM98CXmW/Wux0nQ5L7jeWUdplCEf0Ee+tg==",
+      "source": "package/dist/css/bootstrap.min.css",
+      "outputs": [
+        "source/admin/css/plugin-name-bootstrap-admin.css",
+        "source/public/css/plugin-name-bootstrap-public.css"
+      ],
+      "sha512": "2bBQCjcnw658Lho4nlXJcc6WkV/UxpE/sAokbXPxQNGqmNdQrWqtw26Ns9kFF/yG792pKR1Sx8/Y1Lf1XN4GKA=="
+    },
+    "bulma": {
+      "package": "bulma",
+      "version": "1.0.4",
+      "packageIntegrity": "sha512-Ffb6YGXDiZYX3cqvSbHWqQ8+LkX6tVoTcZuVB3lm93sbAVXlO0D6QlOTMnV6g18gILpAXqkG2z9hf9z4hCjz2g==",
+      "source": "package/css/bulma.min.css",
+      "outputs": [
+        "source/admin/css/plugin-name-bulma-admin.css",
+        "source/public/css/plugin-name-bulma-public.css"
+      ],
+      "sha512": "yh2RE0wZCVZeysGiqTwDTO/dKelCbS9bP2L94UvOFtl/FKXcNAje3Y2oBg/ZMZ3LS1sicYk4dYVGtDex75fvvA=="
+    },
+    "tailwind": {
+      "package": "tailwindcss",
+      "note": "Asset precompilado localmente; requiere el workflow de Tailwind del generador.",
+      "outputs": [
+        "source/admin/css/plugin-name-tailwind-admin.css",
+        "source/public/css/plugin-name-tailwind-public.css"
+      ]
+    }
+  }
+}

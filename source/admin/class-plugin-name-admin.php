@@ -78,6 +78,16 @@ class Plugin_Name_Admin
 
         wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/plugin-name-admin.css', [], $this->version, 'all');
 
+        if (PLUGIN_NAME_CSS_FRAMEWORK !== 'vanilla' && in_array(PLUGIN_NAME_CSS_ENQUEUE_LOCATION, ['admin', 'both'], true)) {
+            wp_enqueue_style(
+                $this->plugin_name . '-framework',
+            plugin_dir_url(__FILE__) . 'css/' . $this->plugin_name . '-' . PLUGIN_NAME_CSS_FRAMEWORK . '-admin.css',
+                [$this->plugin_name],
+                $this->version,
+                'all'
+            );
+        }
+
     }
 
     /**

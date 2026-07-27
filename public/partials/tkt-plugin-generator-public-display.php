@@ -42,14 +42,68 @@
 
 <div class="tkt-generator-shell tkt-font-sans">
 	<header class="tkt-generator-intro">
-		<p class="tkt-generator-eyebrow"><?php esc_html_e( 'Frakt WP Generator', 'tkt-plugin-generator' ); ?></p>
-		<h2><?php esc_html_e( 'Create your WordPress plugin', 'tkt-plugin-generator' ); ?></h2>
-		<p><?php esc_html_e( 'Complete the wizard step by step. Key metadata will be filled automatically, and you can review everything before downloading the ZIP.', 'tkt-plugin-generator' ); ?></p>
+		<div class="tkt-generator-intro-copy">
+			<p class="tkt-generator-eyebrow"><?php esc_html_e( 'Frakt WP Generator', 'tkt-plugin-generator' ); ?></p>
+			<h2><?php esc_html_e( 'Build your WordPress plugin faster', 'tkt-plugin-generator' ); ?></h2>
+			<p><?php esc_html_e( 'Turn your plugin idea into a clean, ready-to-customize WordPress foundation. This generator assembles the structure, metadata, modules, local CSS assets, and Composer configuration you choose.', 'tkt-plugin-generator' ); ?></p>
+		</div>
+
+		<article class="tkt-generator-plugin-preview" aria-label="<?php esc_attr_e( 'Live plugin preview', 'tkt-plugin-generator' ); ?>">
+			<div class="tkt-generator-plugin-preview-header">
+				<span class="tkt-generator-plugin-preview-checkbox" aria-hidden="true"></span>
+				<span><?php esc_html_e( 'Plugin', 'tkt-plugin-generator' ); ?></span>
+			</div>
+			<div class="tkt-generator-plugin-preview-body">
+				<div class="tkt-generator-plugin-preview-title">
+					<span class="tkt-generator-plugin-preview-checkbox" aria-hidden="true"></span>
+					<h3 id="tkt-generator-preview-name"><?php esc_html_e( 'WordPress Plugin Boilerplate', 'tkt-plugin-generator' ); ?></h3>
+				</div>
+				<div class="tkt-generator-plugin-preview-actions" aria-hidden="true">
+					<span class="tkt-generator-plugin-preview-activate"><?php esc_html_e( 'Activate', 'tkt-plugin-generator' ); ?></span>
+					<i aria-hidden="true"></i>
+					<span class="tkt-generator-plugin-preview-delete"><?php esc_html_e( 'Delete', 'tkt-plugin-generator' ); ?></span>
+				</div>
+				<p id="tkt-generator-preview-description"><?php esc_html_e( "A short description of what the plugin does. It's displayed in the WordPress admin area.", 'tkt-plugin-generator' ); ?></p>
+				<div class="tkt-generator-plugin-preview-meta">
+					<span><?php esc_html_e( 'Version', 'tkt-plugin-generator' ); ?> <strong id="tkt-generator-preview-version">1.0.0</strong></span>
+					<i aria-hidden="true"></i>
+					<span><?php esc_html_e( 'By', 'tkt-plugin-generator' ); ?> <strong id="tkt-generator-preview-author"><?php esc_html_e( 'Your Name or Your Company', 'tkt-plugin-generator' ); ?></strong></span>
+					<i aria-hidden="true"></i>
+					<span class="tkt-generator-plugin-preview-details"><?php esc_html_e( 'View Details', 'tkt-plugin-generator' ); ?></span>
+				</div>
+				<span class="tkt-generator-plugin-preview-updates" aria-hidden="true"><?php esc_html_e( 'Enable auto-updates', 'tkt-plugin-generator' ); ?></span>
+			</div>
+		</article>
 	</header>
 
 	<nav id="tkt-plugin-generator-steps" class="tkt-generator-steps" aria-label="<?php esc_attr_e( 'Generation progress', 'tkt-plugin-generator' ); ?>"></nav>
 
 	<form id="tkt-plugin-generator-generator" method="post" data-wizard-form>
+	<div class="form-input-container tkt-generator-welcome" data-wizard-step="1">
+		<div class="tkt-generator-welcome-intro">
+			<p class="tkt-generator-welcome-eyebrow"><?php esc_html_e( 'Start here', 'tkt-plugin-generator' ); ?></p>
+			<h3><?php esc_html_e( 'How the generator works', 'tkt-plugin-generator' ); ?></h3>
+			<p><?php esc_html_e( 'Use this wizard to create a personalized WordPress plugin scaffold without starting from an empty folder.', 'tkt-plugin-generator' ); ?></p>
+		</div>
+		<ol class="tkt-generator-welcome-list">
+			<li>
+				<svg class="tkt-generator-ui-icon tkt-generator-welcome-icon" data-icon="pencil" aria-hidden="true"><use href=""></use></svg>
+				<strong><?php esc_html_e( 'Define your plugin', 'tkt-plugin-generator' ); ?></strong>
+				<span><?php esc_html_e( 'Enter the name and core metadata. Related values such as the slug, prefix, and description are completed automatically when possible.', 'tkt-plugin-generator' ); ?></span>
+			</li>
+			<li>
+				<svg class="tkt-generator-ui-icon tkt-generator-welcome-icon" data-icon="package" aria-hidden="true"><use href=""></use></svg>
+				<strong><?php esc_html_e( 'Choose your foundation', 'tkt-plugin-generator' ); ?></strong>
+				<span><?php esc_html_e( 'Select the administration, public, translation, lifecycle, CSS, and other modules your plugin needs.', 'tkt-plugin-generator' ); ?></span>
+			</li>
+			<li>
+				<svg class="tkt-generator-ui-icon tkt-generator-welcome-icon" data-icon="wand-sparkles" aria-hidden="true"><use href=""></use></svg>
+				<strong><?php esc_html_e( 'Add dependencies and build', 'tkt-plugin-generator' ); ?></strong>
+				<span><?php esc_html_e( 'Choose bundled Composer dependencies, review the generated file tree, and download your ZIP when everything looks right.', 'tkt-plugin-generator' ); ?></span>
+			</li>
+		</ol>
+		<p class="tkt-generator-welcome-note"><strong><?php esc_html_e( 'Important:', 'tkt-plugin-generator' ); ?></strong> <?php esc_html_e( 'Composer dependencies are listed in composer.json, but the vendor folder is never included. Run Composer after extracting the ZIP.', 'tkt-plugin-generator' ); ?></p>
+	</div>
 	<div class="form-input-container" data-wizard-step="1">
 		<label for="plugin_human"> 
 			<?php esc_html_e( 'Plugin Human Name', 'tkt-plugin-generator' ); ?> 
@@ -70,6 +124,7 @@
 			</svg>
 		</label>
 		<input type="text" id="plugin_name" name="plugin_name" placeholder="My Awesome Plugin" required >
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'The official plugin name used in the main file header and text domain.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="1">
 		<label for="plugin_slug"> <?php esc_html_e( 'Plugin Slug', 'tkt-plugin-generator' ); ?>
@@ -78,6 +133,7 @@
 			</svg>
 		</label>
 		<input type="text" id="plugin_slug" name="plugin_slug" placeholder="my-awesome-plugin" required>
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'Use lowercase letters and hyphens. This becomes the plugin folder, file prefix, and text domain.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="1">
 		<label for="plugin_prefix"> 
@@ -87,6 +143,7 @@
 			</svg>
 		</label>
 		<input type="text" id="plugin_prefix" name="plugin_prefix" placeholder="my_wsm_plgn" required>
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'A unique lowercase prefix for functions, hooks, classes, and constants. The generator adds the final underscore.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="1">
 		<label for="plugin_version"> 
@@ -96,6 +153,7 @@
 			</svg>
 		</label>
 		<input type="text" id="plugin_version" name="plugin_version" pattern="^[a-zA-Z0-9\.]*$" placeholder="1.0.0" required >
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'The current release version of your plugin, following Semantic Versioning such as 1.0.0.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="1">
 		<label for="plugin_stable"> 
@@ -105,6 +163,7 @@
 			</svg>
 		</label>
 		<input type="text" id="plugin_stable" name="plugin_stable" placeholder="1.0.0" required >
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'The stable release tag shown to WordPress.org users. Usually, it matches the plugin version.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="2">
 		<label for="plugin_requires"> 
@@ -114,6 +173,7 @@
 			</svg>
 		</label>
 		<input type="text" id="plugin_requires" name="plugin_requires" placeholder="1.0.0" required >
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'The minimum WordPress version required for this plugin to work correctly.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="2">
 		<label for="plugin_requires_php"> 
@@ -123,6 +183,7 @@
 			</svg>
 		</label>
 		<input type="text" id="plugin_requires_php" name="plugin_requires_php" placeholder="7.0.0" required >
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'The minimum PHP version supported by your plugin code and dependencies.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="2">
 		<label for="plugin_tested"> 
@@ -132,6 +193,7 @@
 			</svg>
 		</label>
 		<input type="text" id="plugin_tested" name="plugin_tested" placeholder="4.9.99" required >
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'The latest WordPress version you have tested the plugin with.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="1">
 		<label for="plugin_tags"> 
@@ -141,6 +203,7 @@
 			</svg>
 		</label>
 		<input type="text" id="plugin_tags" name="plugin_tags" placeholder="comments, spam" required >
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'Comma-separated keywords that describe your plugin. Use relevant terms only.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="1">
 		<label for="plugin_description" style="min-width: fit-content;"> 
@@ -150,6 +213,7 @@
 			</svg>
 		</label>
 		<textarea name="plugin_description" id="plugin_description" rows="3" cols="43" required>A Short Plugin description. Keep it to the point.</textarea>
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'A short summary displayed in the WordPress Plugins screen. Explain the main benefit in one or two sentences.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="1">
 		<label for="plugin_uri"> 
@@ -159,6 +223,7 @@
 			</svg>
 		</label>
 		<input type="url" id="plugin_uri" name="plugin_uri" placeholder="https://www.domain.tld/plugin-name" required >
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'The public URL for this plugin, such as its documentation, homepage, or repository.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="2">
 		<label for="author"> 
@@ -168,6 +233,7 @@
 			</svg>
 		</label>
 		<input type="text" id="author" name="author" placeholder="wp-or-cp-username" required>
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'The person, team, or company credited as the plugin author.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="2">
 		<label for="author_uri"> 
@@ -177,6 +243,7 @@
 			</svg>
 		</label>
 		<input type="url" id="author_uri" name="author_uri" placeholder="https://www.domain.tld/" required >
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'The author or company website shown in the plugin metadata.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="2">
 		<label for="author_email"> 
@@ -186,6 +253,7 @@
 			</svg>
 		</label>
 		<input type="email" id="author_email" name="author_email" placeholder="name@domain.tld" required>
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'A valid contact email for the plugin author or support team.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 	<div class="form-input-container" data-wizard-step="2">
 		<label for="donate_link"> 
@@ -195,47 +263,109 @@
 			</svg>
 		</label>
 		<input type="url" id="donate_link" name="donate_link" placeholder="https://domain.tld/donate">
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'Optional: a URL where users can support the plugin financially.', 'tkt-plugin-generator' ); ?></small>
 	</div>
 
 	<div class="form-input-container tkt-generator-architecture" data-wizard-step="3">
-		<p><strong><?php esc_html_e( 'Architecture', 'tkt-plugin-generator' ); ?></strong></p>
 		<label for="architecture_type"><?php esc_html_e( 'Base structure', 'tkt-plugin-generator' ); ?></label>
 		<select id="architecture_type" name="architecture_type">
 			<option value="classic"><?php esc_html_e( 'Frakt classic', 'tkt-plugin-generator' ); ?></option>
 		</select>
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'Select the folder and class organization used by the generated plugin. More architectures may be added later.', 'tkt-plugin-generator' ); ?></small>
 		<p class="tkt-generator-field-hint">
-			<?php esc_html_e( 'Modular and PSR-4 structures will be available in a future version.', 'tkt-plugin-generator' ); ?>
+			<?php esc_html_e( 'The classic structure is the stable option currently available.', 'tkt-plugin-generator' ); ?>
 		</p>
 
 		<label for="include_admin">
 			<input type="checkbox" id="include_admin" name="include_admin" value="1" checked>
-			<?php esc_html_e( 'Administration module', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Administration module', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Adds the WordPress admin class, styles, scripts, and screen integration.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
 		<label for="include_public">
 			<input type="checkbox" id="include_public" name="include_public" value="1" checked>
-			<?php esc_html_e( 'Public module', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Public module', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Adds frontend hooks, styles, scripts, and public-facing functionality.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
 		<label for="include_shortcode">
 			<input type="checkbox" id="include_shortcode" name="include_shortcode" value="1" checked>
-			<?php esc_html_e( 'Example shortcode', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Example shortcode', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Adds a sample shortcode and its public display template.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
 		<label for="include_i18n">
 			<input type="checkbox" id="include_i18n" name="include_i18n" value="1" checked>
-			<?php esc_html_e( 'Internationalization loader', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Internationalization loader', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Adds translation support and the plugin language file.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
 		<label for="include_lifecycle">
 			<input type="checkbox" id="include_lifecycle" name="include_lifecycle" value="1" checked>
-			<?php esc_html_e( 'Activation and deactivation hooks', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Activation and deactivation hooks', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Adds lifecycle callbacks for plugin setup and cleanup.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
 		<label for="include_uninstall">
 			<input type="checkbox" id="include_uninstall" name="include_uninstall" value="1" checked>
-			<?php esc_html_e( 'Uninstall file', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Uninstall file', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Adds a secure uninstall routine for removing plugin data.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
+
+		<hr class="tkt-generator-divider">
+
+		<p><strong><?php esc_html_e( 'CSS framework', 'tkt-plugin-generator' ); ?></strong></p>
+		<p class="tkt-generator-field-hint">
+			<?php esc_html_e( 'Choose the CSS toolkit for the generated plugin. Assets are kept local and only loaded in the context you select.', 'tkt-plugin-generator' ); ?>
+		</p>
+		<div class="tkt-generator-choice-grid" role="radiogroup" aria-label="<?php esc_attr_e( 'CSS framework', 'tkt-plugin-generator' ); ?>">
+			<label class="tkt-generator-choice-card" for="css_framework_vanilla">
+				<input type="radio" id="css_framework_vanilla" name="css_framework" value="vanilla" checked>
+				<span><strong><?php esc_html_e( 'Only CSS', 'tkt-plugin-generator' ); ?></strong><small><?php esc_html_e( 'Use your own CSS only. No framework asset is added.', 'tkt-plugin-generator' ); ?></small></span>
+			</label>
+			<label class="tkt-generator-choice-card" for="css_framework_tailwind">
+				<input type="radio" id="css_framework_tailwind" name="css_framework" value="tailwind">
+				<span><strong><?php esc_html_e( 'Tailwind CSS', 'tkt-plugin-generator' ); ?></strong><small><?php esc_html_e( 'Prefixed utility classes, compiled locally.', 'tkt-plugin-generator' ); ?></small></span>
+			</label>
+			<label class="tkt-generator-choice-card" for="css_framework_bootstrap">
+				<input type="radio" id="css_framework_bootstrap" name="css_framework" value="bootstrap">
+				<span><strong><?php esc_html_e( 'Bootstrap 5 CSS', 'tkt-plugin-generator' ); ?></strong><small><?php esc_html_e( 'CSS components only; no Bootstrap JavaScript.', 'tkt-plugin-generator' ); ?></small></span>
+			</label>
+			<label class="tkt-generator-choice-card" for="css_framework_bulma">
+				<input type="radio" id="css_framework_bulma" name="css_framework" value="bulma">
+				<span><strong><?php esc_html_e( 'Bulma', 'tkt-plugin-generator' ); ?></strong><small><?php esc_html_e( 'Responsive CSS components without JavaScript.', 'tkt-plugin-generator' ); ?></small></span>
+			</label>
+		</div>
+
+		<div class="tkt-generator-css-location" hidden>
+			<p><strong><?php esc_html_e( 'Load CSS in', 'tkt-plugin-generator' ); ?></strong></p>
+			<div class="tkt-generator-choice-grid tkt-generator-choice-grid--compact" role="radiogroup" aria-label="<?php esc_attr_e( 'CSS loading location', 'tkt-plugin-generator' ); ?>">
+			<label class="tkt-generator-choice-card" for="css_enqueue_location_frontend">
+				<input type="radio" id="css_enqueue_location_frontend" name="css_enqueue_location" value="frontend">
+				<span><strong><?php esc_html_e( 'Frontend', 'tkt-plugin-generator' ); ?></strong><small><?php esc_html_e( 'Public-facing pages only.', 'tkt-plugin-generator' ); ?></small></span>
+			</label>
+			<label class="tkt-generator-choice-card" for="css_enqueue_location_admin">
+				<input type="radio" id="css_enqueue_location_admin" name="css_enqueue_location" value="admin">
+				<span><strong><?php esc_html_e( 'Administration', 'tkt-plugin-generator' ); ?></strong><small><?php esc_html_e( 'Only the plugin admin screens.', 'tkt-plugin-generator' ); ?></small></span>
+			</label>
+			<label class="tkt-generator-choice-card" for="css_enqueue_location_both">
+				<input type="radio" id="css_enqueue_location_both" name="css_enqueue_location" value="both" checked>
+				<span><strong><?php esc_html_e( 'Both', 'tkt-plugin-generator' ); ?></strong><small><?php esc_html_e( 'Frontend and plugin administration.', 'tkt-plugin-generator' ); ?></small></span>
+			</label>
+			</div>
+		</div>
 	</div>
 
 	<div class="form-input-container tkt-generator-dependencies" data-wizard-step="4">
@@ -251,37 +381,58 @@
         
         <label for="include_acf">
             <input type="checkbox" id="include_acf" name="include_acf" value="1" checked>
-            <?php esc_html_e( 'Secure Custom Fields (ACF)', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Secure Custom Fields (ACF)', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Provides custom fields and field group management for WordPress content.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
         <label for="include_qm">
             <input type="checkbox" id="include_qm" name="include_qm" value="1" checked>
-            <?php esc_html_e( 'Query Monitor', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Query Monitor', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Adds developer tools for inspecting queries, hooks, HTTP requests, and performance.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
         <label for="include_wpc">
             <input type="checkbox" id="include_wpc" name="include_wpc" value="1" checked>
-            <?php esc_html_e( 'WP Crontrol', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'WP Crontrol', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Lets you inspect, run, and manage scheduled WordPress cron events.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
         <label for="include_us">
             <input type="checkbox" id="include_us" name="include_us" value="1" checked>
-            <?php esc_html_e( 'User Switching', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'User Switching', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Allows administrators to switch user sessions for testing permissions and workflows.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
         <label for="include_pc">
             <input type="checkbox" id="include_pc" name="include_pc" value="1" checked>
-            <?php esc_html_e( 'Plugin Check', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Plugin Check', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Checks plugin code for WordPress coding standards and compatibility issues.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
         <label for="include_tm">
             <input type="checkbox" id="include_tm" name="include_tm" value="1" checked>
-            <?php esc_html_e( 'Transients Manager', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'Transients Manager', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Provides tools for viewing and deleting temporary WordPress transients.', 'tkt-plugin-generator' ); ?></small>
+			</span>
 		</label>
 
         <label for="include_jwt">
             <input type="checkbox" id="include_jwt" name="include_jwt" value="1" checked>
-            <?php esc_html_e( 'JWT Authentication for WP REST API', 'tkt-plugin-generator' ); ?>
+			<span class="tkt-generator-module-copy">
+				<strong><?php esc_html_e( 'JWT Authentication for WP REST API', 'tkt-plugin-generator' ); ?></strong>
+				<small><?php esc_html_e( 'Adds JSON Web Token authentication for decoupled WordPress REST API clients.', 'tkt-plugin-generator' ); ?></small>
+			</span>
         </label>
 
         <hr class="tkt-generator-divider">
@@ -292,6 +443,7 @@
         </p>
 
         <div class="tkt-package-search-wrapper">
+			<svg class="tkt-generator-ui-icon tkt-package-search-icon" data-icon="search" aria-hidden="true"><use href=""></use></svg>
             <input
                 type="search"
                 id="tkt-package-search"
@@ -301,6 +453,7 @@
             >
             <span id="tkt-package-search-spinner" class="tkt-package-search-spinner" hidden></span>
         </div>
+		<small class="tkt-generator-field-hint"><?php esc_html_e( 'Search the official WordPress.org directory and add a plugin as a WP Packages Composer dependency.', 'tkt-plugin-generator' ); ?></small>
 
         <p id="tkt-package-search-status" class="tkt-package-search-status" hidden></p>
 
@@ -327,7 +480,7 @@
 		</section>
 	</div>
 	<div class="form-input-container" data-wizard-step="5">
-		<button id="tkt-plugin-generator-generator-submit" type="submit" value="tkt_plugin_generator_submit" name="tkt_plugin_generator_submit"> <?php esc_html_e( 'Generate', 'tkt-plugin-generator' ); ?> </button>
+		<button id="tkt-plugin-generator-generator-submit" data-icon="wand-sparkles" type="submit" value="tkt_plugin_generator_submit" name="tkt_plugin_generator_submit"> <?php esc_html_e( 'Generate', 'tkt-plugin-generator' ); ?> </button>
 	</div>
 	<?php wp_nonce_field( 'generate_plugin_submit', 'generate_plugin_nonce' ); ?>
 	</form>

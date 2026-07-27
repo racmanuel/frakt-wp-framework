@@ -12,12 +12,12 @@ module.exports = {
     extend: {
       colors: {
         wordpress: {
-          50: '#f6f9e9',
-          100: '#eaf3c9',
-          200: '#d5e89a',
+          50: '#9FCA28',
+          100: '#9FCA28',
+          200: '#9FCA28',
           500: '#9FCA28',
-          600: '#83a91c',
-          700: '#607d12',
+          600: '#9FCA28',
+          700: '#9FCA28',
         },
         charcoal: {
           50: '#f4f5f6',
